@@ -82,8 +82,9 @@ public class KHFCEditorMenu {
 				if (tr.GetComponent<ParticleSystem>() != null) {
 					if (!tr.name.StartsWith("eff_"))
 						tr.name = "eff_" + tr.name;
-				} else if (tr.GetComponent<SpriteRenderer>() != null ||
-						 tr.GetComponent<UISprite>() != null) {
+				} else if (tr.GetComponent<SpriteRenderer>() != null
+						//|| tr.GetComponent<UISprite>() != null	// NGUI 전용
+						 ) {
 					if (!tr.name.StartsWith("spr_"))
 						tr.name = "spr_" + tr.name;
 				}

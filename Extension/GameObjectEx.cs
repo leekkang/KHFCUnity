@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public static class GameObjectEx {
-	private static void _ChangeLayerRecursivley(this GameObject obj, int layer) {
+	static void ChangeLayerRecursivleyInternal(this GameObject obj, int layer) {
 		foreach (Transform child in obj.transform) {
 			child.gameObject.layer = layer;
-			child.gameObject._ChangeLayerRecursivley(layer);
+			child.gameObject.ChangeLayerRecursivleyInternal(layer);
 		}
 	}
 	public static void ChangeLayerRecursivley(this GameObject obj, int layer) {
 		obj.layer = layer;
-		obj._ChangeLayerRecursivley(layer);
+		obj.ChangeLayerRecursivleyInternal(layer);
 	}
 
 
-	private static void _ChangeLayerRecursivley(this GameObject obj, string layerName) {
+	static void ChangeLayerRecursivleyInternal(this GameObject obj, string layerName) {
 		foreach (Transform child in obj.transform) {
 			child.gameObject.layer = LayerMask.NameToLayer(layerName);
-			child.gameObject._ChangeLayerRecursivley(layerName);
+			child.gameObject.ChangeLayerRecursivleyInternal(layerName);
 		}
 	}
 	public static void ChangeLayerRecursivley(this GameObject obj, string layerName) {
 		obj.layer = LayerMask.NameToLayer(layerName);
-		obj._ChangeLayerRecursivley(layerName);
+		obj.ChangeLayerRecursivleyInternal(layerName);
 	}
 
 	public static void RemoveComponent<T>(this GameObject obj) where T : Component {

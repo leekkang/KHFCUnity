@@ -4,26 +4,27 @@ using System.Collections.Generic;
 public static class ListExt {
 	/// <summary> Array.Copy를 호출하지 않는 제거함수 </summary>
 	/// <remarks> Time Complexity : O(1) </remarks>
-	public static void RemoveAtBySwap<T>(this List<T> list, int index) {
+	public static bool RemoveAtBySwap<T>(this List<T> list, int index) {
 		if (index < 0 || index >= list.Count)
-			return;
+			return false;
 		list[index] = list[^1];		// c# 8.0 : Indices and har operator
 		//list[index] = list[list.Count - 1];
 		list.RemoveAt(list.Count - 1);
+		return true;
 	}
 
 	/// <summary> Array.Copy를 호출하지 않는 제거함수 </summary>
 	/// <remarks> Time Complexity : O(n) </remarks>
-	public static void RemoveBySwap<T>(this List<T> list, T item) {
+	public static bool RemoveBySwap<T>(this List<T> list, T item) {
 		int index = list.IndexOf(item);
-		RemoveAtBySwap(list, index);
+		return RemoveAtBySwap(list, index);
 	}
 
 	/// <summary> Array.Copy를 호출하지 않는 제거함수 </summary>
 	/// <remarks> Time Complexity : O(n) </remarks>
-	public static void RemoveBySwap<T>(this List<T> list, Predicate<T> predicate) {
+	public static bool RemoveBySwap<T>(this List<T> list, Predicate<T> predicate) {
 		int index = list.FindIndex(predicate);
-		RemoveAtBySwap(list, index);
+		return RemoveAtBySwap(list, index);
 	}
 
 	/// <summary> 리스트를 <paramref name="size"/> 크기로 변경하고 값을 넣어준다 </summary>

@@ -109,9 +109,9 @@ namespace KHFC {
 		}
 
 		/// <summary> 폴더 생성 </summary>
-		public static void CreateDir(string path, bool removeExist = false) {
+		public static void CreateDir(string path, bool delIfExists = false) {
 			if (System.IO.Directory.Exists(path)) {
-				if (removeExist) {
+				if (delIfExists) {
 					System.IO.Directory.Delete(path, true);
 					System.IO.Directory.CreateDirectory(path);
 				}

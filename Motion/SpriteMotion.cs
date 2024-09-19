@@ -43,9 +43,9 @@ public class SpriteMotion : MotionBase {
 
 	public int m_CurIndex = 0;
 
-	public UnityEngine.Sprite[] frames;
+	public UnityEngine.Sprite[] m_ArrFrame;
 
-	UnityEngine.SpriteRenderer mUnitySprite;
+	UnityEngine.SpriteRenderer m_Renderer;
 	//float mUpdate = 0f;
 
 	public bool isPlaying { get { return enabled; } }
@@ -54,9 +54,9 @@ public class SpriteMotion : MotionBase {
 	/// 
 	/// </summary>
 	/// <param name="type"> 색 구분이 없는 스프라이트의 경우 디폴트 값을 사용 </param>
-	public void Play(ColorType type = ColorType.None) {
+	//public void Play(ColorType type = ColorType.None) {
 		
-	}
+	//}
 
 	///// <summary>
 	///// Continue playing the animation. If the animation has reached the end, it will restart from beginning

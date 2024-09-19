@@ -2,13 +2,12 @@
 
 namespace KHFC {
 	public class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
-		private static T m_Instance;
-
-		private static object _lockObj = new object();
+		static T m_Instance;
+		static readonly object _lockObj = new();
 
 		public static T inst {
 			get {
-				if (applicationIsQuitting) {
+				if (ApplicationIsQuitting) {
 					Debug.LogWarning("[Singleton] Instance '" + typeof(T) +
 									"' already destroyed on application quit." +
 									" Won't create again - returning null.");
@@ -42,17 +41,17 @@ namespace KHFC {
 			}
 		}
 
-		private static bool applicationIsQuitting = false;
 		/// <summary>
 		/// When Unity quits, it destroys objects in a random order.
 		/// In principle, a Singleton is only destroyed when application quits.
-		/// If any script calls Instance after it have been destroyed, 
-		///   it will create a buggy ghost object that will stay on the Editor scene
-		///   even after stopping playing the Application. Really bad!
+		/// If any script calls Instance after it have been destroyed,
+		/// it will create a buggy ghost object that will stay on the Editor scene
+		/// even after stopping playing the Application. Really bad!
 		/// So, this was made to be sure we're not creating that buggy ghost object.
 		/// </summary>
+		static bool ApplicationIsQuitting = false;
 		public void OnDestroy() {
-			applicationIsQuitting = true;
+			ApplicationIsQuitting = true;
 		}
 	}
 }

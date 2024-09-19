@@ -8,12 +8,12 @@ namespace KHFC {
 		/// <summary> 모든 UI의 <see cref="Graphics"/>가 사용하는 아틀라스들의 리스트 </summary>
 		static RefList<UnityEngine.U2D.SpriteAtlas> mListLoadedAtlas;
 
-		static object _lockTouch = new object();
+		static readonly object LockTouch = new();
 		static int m_LockTouch = 0;
 		public static bool lockTouch {
-			get { lock (_lockTouch) { return m_LockTouch > 0; } }
+			get { lock (LockTouch) { return m_LockTouch > 0; } }
 			set {
-				lock (_lockTouch) {
+				lock (LockTouch) {
 					m_LockTouch += value ? 1 : -1;
 					if (m_LockTouch < 0)
 						m_LockTouch = 0;

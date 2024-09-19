@@ -11,7 +11,7 @@ namespace KHFC {
 		public string m_CurState = "";
 		public string m_PrevState = "";
 		
-		List<AbstractGameState> m_ListState = new List<AbstractGameState>();
+		readonly List<AbstractGameState> m_ListState = new();
 
 		/// <summary> 게임의 상태를 등록, 리스트에 저장한다. </summary>
 		/// <remarks> 주의 : <paramref name="stageName"/>은 반드시 클래스명과 동일해야 한다. </remarks>
