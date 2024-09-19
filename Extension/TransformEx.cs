@@ -1,0 +1,156 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public static class TransformEx {
+	/// <summary> 자식들 중 <paramref name="name"/> 이름을 가진 게임 오브젝트를 반환한다. (DFS) </summary>
+	public static Transform FindRecursively(this Transform parent, string name) {
+		if (parent.name == name)
+			return parent;
+
+		foreach (Transform child in parent) {
+			var r = child.FindRecursively(name);
+
+			if (r != null)
+				return r;
+		}
+		return null;
+	}
+	//public static Transform FindRecursive(this Transform t, string name) {
+	//    for (int i = 0; i < t.childCount; i++) {
+	//        Transform child = t.GetChild(i);
+	//        if (child.name == name)
+	//            return child;
+	//        else {
+	//            child = FindRecursive(child, name);
+	//            if (child != null)
+	//                return child;
+	//        }
+	//    }
+	//    return null;
+	//}
+
+	/// <summary> 자식들 중 <paramref name="name"/> 이름을 가진 게임 오브젝트를 반환한다. (BFS) </summary>
+	public static Transform FindRecursivelyB(this Transform parent, string name) {
+		if (parent.name == name)
+			return parent;
+
+		List<Transform> listTmp = new() { parent }; // c# 9.0: Target-typed new expressions
+		while (listTmp.Count > 0) {
+			int count = listTmp.Count;
+			Transform[] arrParent = new Transform[count];
+			listTmp.CopyTo(arrParent, 0);
+			listTmp.Clear();
+
+			// 현재 depth의 모든 transform을 돌면서 이름 비교
+			for (int i = 0; i < count; ++i) {
+				foreach (Transform child in arrParent[i]) {
+					if (child.name == name)
+						return child;
+					listTmp.Add(child);
+				}
+			}
+		}
+		return null;
+	}
+
+	/// <summary> 자식들 중 <paramref name="name"/> 으로 시작하는 게임 오브젝트 어레이를 반환한다. </summary>
+	public static Transform[] FindChildren(this Transform parent, string name) {
+		List<Transform> listChild = new List<Transform>();
+
+		foreach (Transform child in parent) {
+			if (child.gameObject.name.StartsWith(name))
+				listChild.Add(child);
+		}
+
+		return listChild.ToArray();
+	}
+
+	/// <summary> 자식들 중 <paramref name="name"/> 이름인 게임 오브젝트를 반환한다. </summary>
+	public static Transform FindChild(this Transform parent, string name) {
+		foreach (Transform child in parent) {
+			if (null == child)
+				continue;
+
+			if (child.gameObject.name == name)
+				return child;
+		}
+
+		return null;
+	}
+
+	/// <summary> Depth-First Search 순서로 <paramref name="action"/>을 실행한다. </summary>
+	public static void DoRecursively(this Transform root, System.Action<Transform> action) {
+		action(root);
+		foreach (Transform child in root)
+			child.DoRecursively(action);
+	}
+
+	/// <summary> Breadth-First Search 순서로 <paramref name="action"/>을 실행한다. </summary>
+	public static void DoRecursivelyB(this Transform root, System.Action<Transform> action) {
+		action(root);
+
+		List<Transform> listTmp = new() { root }; // c# 9.0: Target-typed new expressions
+		while (listTmp.Count > 0) {
+			int count = listTmp.Count;
+			Transform[] arrParent = new Transform[count];
+			listTmp.CopyTo(arrParent, 0);
+			listTmp.Clear();
+
+			// 현재 depth의 모든 transform을 돌면서 이름 비교
+			for (int i = 0; i < count; ++i) {
+				foreach (Transform child in arrParent[i]) {
+					action(child);
+					listTmp.Add(child);
+				}
+			}
+		}
+	}
+
+	public static string GetFullName(this Transform target) {
+		var list = new Stack<string>();
+
+		while (target != null) {
+			list.Push(target.name);
+			target = target.parent;
+		}
+
+		System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+		while (list.Count > 0)
+			sb.AppendFormat("/{0}", list.Pop());
+
+		return sb.ToString();
+	}
+
+	public static Transform GetTransformByFullName(this Transform target, string fullName) {
+		int current = fullName.IndexOf(@"/");
+
+		if (current == -1) {
+			Transform tr = target.Find(fullName);
+
+			if (null == tr) {
+				Debug.LogError("Can't Find Transfrom by FullName : " + fullName);
+				return null;
+			}
+			return tr;
+		}
+
+		string gameObjectName = fullName[..current];	// c# 8.0 : Range operator
+		//string gameObjectName = fullName.Substring(0, current);
+
+		fullName = fullName.Substring(current + 1, fullName.Length - current - 1);
+
+		if (target.name == gameObjectName)
+			return target.GetTransformByFullName(fullName);
+
+		Transform child = target.Find(gameObjectName);
+
+		if (child == null) {
+			Debug.LogError("Can't Find Transfrom by FullName : " + fullName);
+			return null;
+		}
+
+		return child.GetTransformByFullName(fullName);
+	}
+}
