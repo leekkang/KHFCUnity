@@ -153,4 +153,51 @@ public static class TransformEx {
 
 		return child.GetTransformByFullName(fullName);
 	}
+
+	public static void SetPosX(this Transform tr, float x) {
+		Vector3 pos = tr.position;
+		pos.x = x;
+		tr.position = pos;
+	}
+	public static void SetPosY(this Transform tr, float y) {
+		Vector3 pos = tr.position;
+		pos.y = y;
+		tr.position = pos;
+	}
+	public static void SetPosZ(this Transform tr, float z) {
+		Vector3 pos = tr.position;
+		pos.z = z;
+		tr.position = pos;
+	}
+	public static void SetLocalPosX(this Transform tr, float x) {
+		Vector3 pos = tr.localPosition;
+		pos.x = x;
+		tr.localPosition = pos;
+	}
+	public static void SetLocalPosY(this Transform tr, float y) {
+		Vector3 pos = tr.localPosition;
+		pos.y = y;
+		tr.localPosition = pos;
+	}
+	public static void SetLocalPosZ(this Transform tr, float z) {
+		Vector3 pos = tr.localPosition;
+		pos.z = z;
+		tr.localPosition = pos;
+	}
+
+	public static void SetPosX(this RectTransform tr, float x) {
+		Vector3 pos = tr.anchoredPosition3D;
+		pos.x = x;
+		tr.anchoredPosition3D = pos;
+	}
+	public static void SetPosY(this RectTransform tr, float y) {
+		Vector3 pos = tr.anchoredPosition3D;
+		pos.y = y;
+		tr.anchoredPosition3D = pos;
+	}
+	public static void SetPosZ(this RectTransform tr, float z) {
+		Vector3 pos = tr.anchoredPosition3D;
+		pos.z = z;
+		tr.anchoredPosition3D = pos;
+	}
 }
