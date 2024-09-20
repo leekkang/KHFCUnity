@@ -20,7 +20,7 @@ public class KHFCEditorMenu {
 			GameObject target = obj.FindRecursively(NAME_ASSET_LINK_OBJ);
 			if (target != null && target.TryGetComponent(out AssetLinkData comp)) {
 				comp.Awake();
-				EditorLinkData.SetAllData();
+				AssetLinkDataEditor.SetAllData();
 				return;
 			}
 		}
@@ -29,7 +29,7 @@ public class KHFCEditorMenu {
 		GameObject linkObj = new GameObject(NAME_ASSET_LINK_OBJ);
 		AssetLinkData component = linkObj.AddComponent<AssetLinkData>();
 		component.Awake();
-		EditorLinkData.SetAllData();
+		AssetLinkDataEditor.SetAllData();
 #endif
 	}
 	[MenuItem("KHFC/Fill Asset Link Data", isValidateFunction:true)]
@@ -64,6 +64,13 @@ public class KHFCEditorMenu {
 	[MenuItem("KHFC/ETC/Capture Current Screen #0")] // 단축키 : shift + 0
 	public static void CaptureCurrentScreen() {
 		KHFC.ScreenCapture.TakeScreenCapture();
+	}
+
+	[MenuItem("KHFC/Shortcut/SetActive %e")]
+	public static void SetActive() {
+		foreach (GameObject obj in Selection.objects) {
+			obj.SetActive(!obj.activeSelf);
+		}
 	}
 
 

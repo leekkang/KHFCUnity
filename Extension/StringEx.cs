@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -27,5 +28,16 @@ public static class StringEx {
 	public static string RemoveFirst(this string origin, string pattern) {
 		int startIndex = origin.IndexOf(pattern);
 		return origin[..startIndex] + origin[(startIndex + pattern.Length)..];	// c# 8.0 : Range operator
+	}
+
+
+	/// <summary> 문자열을 Enum으로 변경해주는 함수 </summary>
+	public static bool TryConvertToEnum<T>(this string str, out T value) where T : System.Enum {
+		if (!System.Enum.IsDefined(typeof(T), str)) {
+			value = default;
+			return false;
+		}
+		value = (T)System.Enum.Parse(typeof(T), str);
+		return true;
 	}
 }

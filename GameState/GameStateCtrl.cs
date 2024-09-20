@@ -23,7 +23,6 @@ namespace KHFC {
 			AbstractGameState stateBase = (AbstractGameState)state.AddComponent(System.Type.GetType(stageName));
 			state.transform.parent = transform;
 
-			//AbstractGameState stateBase = state.GetComponent<AbstractGameState>();
 			stateBase.m_StateName = stageName;
 			m_ListState.Add(stateBase);
 		}

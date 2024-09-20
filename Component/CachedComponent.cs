@@ -118,8 +118,7 @@ namespace KHFC {
 			return true;
 		}
 
-		[KHFC.InspectorButton]
-		[Tooltip("LoadCacheKeys() 에서 정의한 캐시 경로로 오브젝트를 찾아 저장")]
+		[KHFC.InspectorButton("LoadCacheKeys() 에서 정의한 캐시 경로로 오브젝트를 찾아 저장")]
 		public void UpdateCacheKey() {
 			FindCachedObject();
 

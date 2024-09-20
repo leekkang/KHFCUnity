@@ -7,8 +7,8 @@ using UnityEditor;
 using UnityEngine;
 
 namespace KHFC {
-	public class EditorLinkData {
-		const string PREFAB_ROOT_PATH = "Assets/Media/Prefab";
+	public class AssetLinkDataEditor {
+		const string PREFAB_ROOT_PATH = "Assets/02.Prefabs";
 
 		//public static Dictionary<ItemType, string> dicItem = new Dictionary<ItemType, string>() {
 		//	{ ItemType.Normal, "NormalItem" },
@@ -41,13 +41,14 @@ namespace KHFC {
 		//};
 
 
-		//public static void SetAllData() {
-		//	AssetLinkData.inst.ResetAllList();
+		public static void SetAllData() {
+			AssetLinkData.inst.ResetAllList();
 
-		//	string[] arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
-		//	for (int i = 0; i < arrGUID.Length; i++) {
-		//		string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
-		//		string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
+			string[] arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
+			for (int i = 0; i < arrGUID.Length; i++) {
+				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
+				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
+				string folderName = System.IO.Path.GetDirectoryName(prefabPath);
 		//		bool found = false;
 		//		foreach (var pair in dicItem) {
 		//			if (dicItem[pair.Key] == prefabName) {
@@ -74,9 +75,9 @@ namespace KHFC {
 		//				found = true;
 		//			}
 		//		}
-		//	}
-		//	AssetDatabase.Refresh();
-		//}
+			}
+			AssetDatabase.Refresh();
+		}
 
 		//public static void SetAllItemToData() {
 		//	AssetLinkData.inst.ResetItemList();

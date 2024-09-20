@@ -9,6 +9,14 @@ namespace KHFC {
 	/// 애셋 데이터베이스에 있는 애셋들의 링크를 관리하는 클래스
 	/// </summary>
 	public class AssetLinkData : SingleGOComponent<AssetLinkData> {
+		[Serializable]
+		class LinkList {
+			[SerializeField] public List<GameObject> m_List;
+		}
+
+		[SerializeField]
+		List<LinkList> m_ListLink = new();
+
 		//[System.Serializable]
 		//class ItemLinkData {
 		//	public ItemType m_Type;

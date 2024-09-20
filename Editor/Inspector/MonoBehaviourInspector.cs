@@ -8,6 +8,7 @@ namespace KHFC {
 	[CustomEditor(typeof(MonoBehaviour), true)]
 	public class MonoBehaviourInspector : UnityEditor.Editor {
 		[SerializeField] private List<MethodInfo> m_ListMethod;
+		[SerializeField] private List<string> m_ListInfo;
 
 		private void OnEnable() {
 			CreateInspectorButton();
@@ -21,8 +22,11 @@ namespace KHFC {
 			int methodCount = m_ListMethod.Count;
 			for (int i = 0; i < methodCount; i++) {
 				var method = m_ListMethod[i];
-				GUILayout.Space(10);
-				if (GUILayout.Button(method.Name.SpacingUpperCase())) {
+				GUILayout.Space(12);
+				if (!string.IsNullOrEmpty(m_ListInfo[i]))
+					//EditorGUILayout.LabelField(m_ListInfo[i], GUILayout.MinHeight(12));
+					EditorGUILayout.HelpBox(m_ListInfo[i], MessageType.Info);
+				if (GUILayout.Button(method.Name.SpacingUpperCase(), GUILayout.MinHeight(24))) {
 					method.Invoke(target, null);
 				}
 			}
@@ -30,6 +34,7 @@ namespace KHFC {
 
 		private void CreateInspectorButton() {
 			m_ListMethod = new List<MethodInfo>();
+			m_ListInfo = new List<string>();
 
 			Type type = target.GetType();
 			MethodInfo[] arrMethod = type.GetMethods();
@@ -42,10 +47,8 @@ namespace KHFC {
 				int len = arrAttribute.Length;
 				for (int j = 0; j < len; j++) {
 					if (arrAttribute[j] is InspectorButtonAttribute) {
-						//InspectorButtonAttribute att = (InspectorButtonAttribute)arrAttribute[j];
-						//if (!string.IsNullOrEmpty(att.m_Msg))
-						//	((InspectorButtonAttribute)arrAttribute[j]).m_Msg;
 						m_ListMethod.Add(method);
+						m_ListInfo.Add(((InspectorButtonAttribute)arrAttribute[j]).m_Msg);
 					}
 				}
 			}

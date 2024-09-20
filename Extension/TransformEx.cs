@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using UnityEngine;
 
 public static class TransformEx {
@@ -9,26 +10,24 @@ public static class TransformEx {
 			return parent;
 
 		foreach (Transform child in parent) {
-			var r = child.FindRecursively(name);
-
-			if (r != null)
-				return r;
+			Transform tr = child.FindRecursively(name);
+			if (tr != null)
+				return tr;
 		}
 		return null;
 	}
-	//public static Transform FindRecursive(this Transform t, string name) {
-	//    for (int i = 0; i < t.childCount; i++) {
-	//        Transform child = t.GetChild(i);
-	//        if (child.name == name)
-	//            return child;
-	//        else {
-	//            child = FindRecursive(child, name);
-	//            if (child != null)
-	//                return child;
-	//        }
-	//    }
-	//    return null;
-	//}
+	/// <summary> 자식들 중 해당 컴포넌트를 가진 게임 오브젝트의 컴포넌트를 반환한다. (DFS) </summary>
+	public static T FindRecursively<T>(this Transform parent) where T : Component {
+		if (parent.TryGetComponent<T>(out T comp))
+			return comp;
+
+		foreach (Transform child in parent) {
+			comp = child.FindRecursively<T>();
+			if (comp != null)
+				return comp;
+		}
+		return null;
+	}
 
 	/// <summary> 자식들 중 <paramref name="name"/> 이름을 가진 게임 오브젝트를 반환한다. (BFS) </summary>
 	public static Transform FindRecursivelyB(this Transform parent, string name) {
@@ -47,6 +46,29 @@ public static class TransformEx {
 				foreach (Transform child in arrParent[i]) {
 					if (child.name == name)
 						return child;
+					listTmp.Add(child);
+				}
+			}
+		}
+		return null;
+	}
+	/// <summary> 자식들 중 해당 컴포넌트를 가진 게임 오브젝트의 컴포넌트를 반환한다. (BFS) </summary>
+	public static T FindRecursivelyB<T>(this Transform parent) where T : Component {
+		if (parent.TryGetComponent(out T comp))
+			return comp;
+
+		List<Transform> listTmp = new() { parent }; // c# 9.0: Target-typed new expressions
+		while (listTmp.Count > 0) {
+			int count = listTmp.Count;
+			Transform[] arrParent = new Transform[count];
+			listTmp.CopyTo(arrParent, 0);
+			listTmp.Clear();
+
+			// 현재 depth의 모든 transform을 돌면서 이름 비교
+			for (int i = 0; i < count; ++i) {
+				foreach (Transform child in arrParent[i]) {
+					if (child.TryGetComponent(out comp))
+						return comp;
 					listTmp.Add(child);
 				}
 			}
@@ -123,6 +145,9 @@ public static class TransformEx {
 		return sb.ToString();
 	}
 
+	/// <summary>
+	/// Obsolete : transform.Find 사용
+	/// </summary>
 	public static Transform GetTransformByFullName(this Transform target, string fullName) {
 		int current = fullName.IndexOf(@"/");
 

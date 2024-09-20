@@ -69,7 +69,7 @@ namespace KHFC {
 #if BUILD_RESOURCES
 			m_LocationType = AssetLocation.Resources;
 #elif BUILD_LOCAL_BUNDLE
-			m_LocationType = AssetLocation.LocalAssetBundle;	
+			m_LocationType = AssetLocation.LocalAssetBundle;
 #elif BUILD_REMOTE_BUNDLE
 			m_LocationType = AssetLocation.RemoteAssetBundle;
 #endif
