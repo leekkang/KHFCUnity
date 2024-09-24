@@ -7,39 +7,9 @@ using UnityEditor;
 using UnityEngine;
 
 namespace KHFC {
+	// TODO : AssetLinkData를 제네릭하게 만들면 해당 코드 전부 AssetLinkData로 옮겨도 될 듯
 	public class AssetLinkDataEditor {
 		const string PREFAB_ROOT_PATH = "Assets/02.Prefabs";
-
-		//public static Dictionary<ItemType, string> dicItem = new Dictionary<ItemType, string>() {
-		//	{ ItemType.Normal, "NormalItem" },
-		//	{ ItemType.Line_X, "LineXItem" },
-		//	{ ItemType.Line_Y, "LineYItem" },
-		//	{ ItemType.Line_C, "LineCItem" },
-		//	{ ItemType.Butterfly, "ButterflyItem" },
-		//	{ ItemType.Bomb, "BombItem" },
-		//	{ ItemType.Rainbow, "RainbowItem" },
-		//	{ ItemType.Donut, "DonutItem" },
-		//	{ ItemType.Spiral, "SpiralItem" },
-		//	{ ItemType.JellyBear, "JellyBearItem" },
-		//	{ ItemType.TimeBomb, "TimeBombItem" },
-		//	{ ItemType.Misson_Food1, "Food1Item" },
-		//	{ ItemType.Misson_Food2, "Food2Item" },
-		//	{ ItemType.Misson_Food3, "Food3Item" },
-		//	{ ItemType.Misson_Food4, "Food4Item" },
-		//	{ ItemType.Misson_Food5, "Food5Item" },
-		//	{ ItemType.Misson_Food6, "Food6Item" },
-		//	{ ItemType.BonusCross, "BonusCrossItem" },
-		//	{ ItemType.BonusBomb, "BonusBombItem" },
-		//	{ ItemType.Mystery, "MysteryItem" },
-		//	{ ItemType.Chameleon, "ChameleonItem" },
-		//	{ ItemType.JellyMon, "JellyMonItem" },
-		//	{ ItemType.Ghost, "GhostItem" },
-		//	{ ItemType.Key, "KeyItem" },
-		//	{ ItemType.Lizard, "LizardItem" },
-		//	{ ItemType.Foot, "FootItem" },
-		//	{ ItemType.Fish, "FishItem" },
-		//};
-
 
 		public static void SetAllData() {
 			AssetLinkData.inst.ResetAllList();
@@ -49,32 +19,9 @@ namespace KHFC {
 				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
 				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
 				string folderName = System.IO.Path.GetDirectoryName(prefabPath);
-		//		bool found = false;
-		//		foreach (var pair in dicItem) {
-		//			if (dicItem[pair.Key] == prefabName) {
-		//				GameObject item = (GameObject)AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject));
-		//				AssetLinkData.inst.AddItem(pair.Key, item);
-		//				found = true;
-		//			}
-		//		}
-		//		if (found)
-		//			continue;
-		//		foreach (var pair in dicPanel) {
-		//			if (dicPanel[pair.Key] == prefabName) {
-		//				GameObject panel = (GameObject)AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject));
-		//				AssetLinkData.inst.AddPanel(pair.Key, panel);
-		//				found = true;
-		//			}
-		//		}
-		//		if (found)
-		//			continue;
-		//		foreach (var pair in dicEffect) {
-		//			if (dicEffect[pair.Key] == prefabName) {
-		//				GameObject effect = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
-		//				AssetLinkData.inst.AddEffect(pair.Key, effect);
-		//				found = true;
-		//			}
-		//		}
+
+				GameObject prefab = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
+				AssetLinkData.inst.AddLink(folderName, prefabName, prefab);
 			}
 			AssetDatabase.Refresh();
 		}
