@@ -58,5 +58,9 @@ namespace KHFC {
 		public AbstractGameState GetState(string name) {
 			return m_ListState.Find(state => state.m_StateName == name);
 		}
+
+		public T GetState<T>() where T : AbstractGameState {
+			return (T)m_ListState.Find(state => state is T);
+		}
 	}
 }

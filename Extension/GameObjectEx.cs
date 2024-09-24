@@ -38,8 +38,7 @@ public static class GameObjectEx {
 	}
 
 	public static void RemoveComponent<T>(this GameObject obj) where T : Component {
-		T component = obj.GetComponent<T> ();
-		if (component != null) {
+		if (obj.TryGetComponent<T>(out var component)) {
 #if UNITY_EDITOR
 			GameObject.DestroyImmediate(component, true);
 #else

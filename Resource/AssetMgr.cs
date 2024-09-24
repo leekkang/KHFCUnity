@@ -88,7 +88,8 @@ namespace KHFC {
 			bundleName = bundleName.ToLower();
 
 			if (m_LocationType == AssetLocation.Resources) {
-				resultObj = LoadFromResources(assetName);
+				resultObj = LoadFromAssetLink(assetName);
+				//resultObj = LoadFromResources(assetName);
 			} else {
 				string prefix = bundleName.Split('_')[0];
 				BundleProcess processor = KHFCSetting.inst.m_ListBundleProcess.Find(unit => unit.m_AssetPrefix == prefix);
@@ -122,6 +123,10 @@ namespace KHFC {
 			}
 		}
 
+
+		private Object LoadFromAssetLink(string assetName) {
+			return AssetLinkData.inst.GetLink(assetName);
+		}
 
 		private Object LoadFromResources(string assetName) {
 			return Resources.Load(assetName);

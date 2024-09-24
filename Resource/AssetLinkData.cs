@@ -13,39 +13,41 @@ namespace KHFC {
 		class LinkList {
 			[SerializeField] public List<GameObject> m_List;
 		}
+		//[SerializeField] List<LinkList> m_ListLink = new();
 
-		[SerializeField]
-		List<LinkList> m_ListLink = new();
+		// TODO : 아래 리스트, 딕셔너리는 현재 사용중이지만 serialized dictionary 도입 후 모두 제거
 
-		//[System.Serializable]
-		//class ItemLinkData {
-		//	public ItemType m_Type;
-		//	public GameObject m_Obj;
-
-		//	public ItemLinkData(ItemType type, GameObject obj) {
-		//		m_Type = type;
-		//		m_Obj = obj;
-		//	}
-		//}
-
-		//[SerializeField]
-		//List<ItemLinkData> m_ListItem;
-
-		//Dictionary<int, GameObject> m_DicItem;
+		// Awake에서 딕셔너리로 값을 옮기기 위해 에디터에서 저장하는 값
+		[SerializeField] List<GameObject> m_ListLink;
+		[SerializeField] List<string> m_ListName;
+		// O(1)의 접근시간을 위해 Awake에서 값을 만들어줌 프리팹 링크 이름, 인덱스
+		Dictionary<string, int> m_DicIndex;
 
 		public override void Awake() {
 			base.Awake();
 
-			//if (m_ListItem != null) {
-			//	m_DicItem = new Dictionary<int, GameObject>();
-			//	foreach (ItemLinkData item in m_ListItem) {
-			//		m_DicItem[(int)item.m_Type] = item.m_Obj;
-			//	}
-			//	//m_ListItem.Clear();
-			//	//m_ListItem = null;
-			//}
 		}
 
+		void MakeDictionary() {
+			// TODO : serialized dictionary 도입 후 모두 제거
+			if (m_ListLink != null) {
+				m_DicIndex = new(m_ListLink.Count);
+				for (int i = m_ListLink.Count - 1; i >= 0; --i) {
+					m_DicIndex[m_ListName[i]] = i;
+				}
+			}
+		}
+
+		public GameObject GetLink(string name) {
+			if (m_DicIndex == null) {
+				MakeDictionary();
+				if (m_DicIndex == null)
+					return null;
+			}
+			if (m_DicIndex.TryGetValue(name, out int index))
+				return m_ListLink[index];
+			return null;
+		}
 		//public GameObject GetItemObj(ItemType type) {
 		//	return m_DicItem.TryGetValue((int)type, out GameObject go) ? go : null;
 		//}
@@ -82,22 +84,24 @@ namespace KHFC {
 
 #if UNITY_EDITOR
 		public void ResetAllList() {
-			//m_ListItem ??= new();
-			//m_ListItem?.Clear();
+			m_ListLink ??= new();
+			m_ListLink?.Clear();
+			m_ListName ??= new();
+			m_ListName?.Clear();
+			
 			EditorUtility.SetDirty(gameObject);
 		}
 
-		//public void AddItem(ItemType type, GameObject obj) {
-		//	if (m_ListItem.TryGetValue(out ItemLinkData item, x => x.m_Type == type)) {
-		//		item.m_Obj = obj;
-		//		Debug.Log($"Replace Asset : {type}");
-		//	} else {
-		//		item = new ItemLinkData(type, obj);
-		//		m_ListItem.Add(item);
-		//		Debug.Log($"Create Asset : {type}");
-		//	}
-		//	EditorUtility.SetDirty(gameObject);
-		//}
+		public void AddLink(string folderName, string prefabName, GameObject obj) {
+			//if (m_ListLink.TryGetValue(out GameObject prefab, x => x.name == prefabName)) {
+			//	Debug.Log($"Replace Asset : {prefab.name}");
+			//} else {
+				m_ListLink.Add(obj);
+				m_ListName.Add(prefabName);
+				Debug.Log($"Create Link : {prefabName}");
+			//}
+			EditorUtility.SetDirty(gameObject);
+		}
 
 		//public void ResetItemList() {
 		//	m_ListItem ??= new();

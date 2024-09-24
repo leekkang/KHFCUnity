@@ -32,17 +32,34 @@ public class KHFCEditorMenu {
 		AssetLinkDataEditor.SetAllData();
 #endif
 	}
-	[MenuItem("KHFC/Fill Asset Link Data", isValidateFunction:true)]
-	static bool ValidateFillAssetLinkData() {
+	//	[MenuItem("KHFC/Fill Asset Link Data", isValidateFunction:true)]
+	//	static bool ValidateFillAssetLinkData() {
+	//#if UNITY_EDITOR
+	//		UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
+	//		bool isTarget = curScene.name == "Threematch" || curScene.name == "EditorMode";
+	//		//if (!isTarget)
+	//			//EditorUtility.DisplayDialog("Error", "현재 씬이 ThreeMatch가 아닙니다.", "close");
+
+	//		return isTarget;
+	//#else
+	//		return false;
+	//#endif
+	//	}
+
+	/// <summary> 씬 내의 모든 버튼 컴포넌트를 버튼위젯 컴포넌트로 변경한다. </summary>
+	[MenuItem("KHFC/UGUI/Change UI.Button To KHFC.ButtonWdgt")]
+	public static void ChangeButtonToButtonWdgt() {
 #if UNITY_EDITOR
 		UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
-		bool isTarget = curScene.name == "Threematch" || curScene.name == "EditorMode";
-		//if (!isTarget)
-			//EditorUtility.DisplayDialog("Error", "현재 씬이 ThreeMatch가 아닙니다.", "close");
-
-		return isTarget;
-#else
-		return false;
+		GameObject[] arrObj = curScene.GetRootGameObjects();
+		foreach (var obj in arrObj) {
+			obj.transform.DoRecursively(tr => {
+				if (tr.TryGetComponent(out UnityEngine.UI.Button comp)) {
+					GameObject.Destroy(comp);
+					tr.gameObject.SafeAddComponent<ButtonWdgt>();
+				}
+			});
+		}
 #endif
 	}
 
