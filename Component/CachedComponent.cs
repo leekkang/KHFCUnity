@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityEditor;
-using V2R.EnumDefine;
 
 namespace KHFC {
 	/// <summary>
@@ -39,7 +37,7 @@ namespace KHFC {
 				return null;
 			}
 
-			//int index = Convert.ToInt32(alias);
+			//int aliasIndex = Convert.ToInt32(alias);
 			int index = (int)((object)alias);
 
 			if (m_ListCachedObject.Count > index)
@@ -59,7 +57,7 @@ namespace KHFC {
 			}
 
 			if (m_ListCachedObject.Count > index)
-				//if (m_ListCachedObject.TryGetValue(index, out GameObject obj))
+				//if (m_ListCachedObject.TryGetValue(aliasIndex, out GameObject obj))
 				return m_ListCachedObject[index];
 			else {
 				Debug.LogError($"Cached Object is not found : {index}");
@@ -129,219 +127,99 @@ namespace KHFC {
 			UnityEditor.EditorUtility.SetDirty(gameObject);
 		}
 
-		[KHFC.InspectorButton("현재 클래스 스크립트에 모든 오브젝트의 경로를 Alias enum 으로 생성한다")]
-		public void MakeAliasEnum() {
+		/// <summary> 애셋 리스트에서 현재 오브젝트의 유효성 검사를 수행, 파일경로를 리턴 </summary>
+		bool TryGetValidateScript(ref string filePath) {
 			if (UnityEditor.Selection.activeObject == null || UnityEditor.Selection.activeGameObject == null)
-				return;
+				return false;
 
 			// 따로 컴포넌트 찾고 이런거 안하고 그냥 this로 접근해도 되는듯?
 			string type = GetType().Name;
 			string[] arrGUID = UnityEditor.AssetDatabase.FindAssets($"t:Script {type}");
 			if (arrGUID.Length > 1) {
 				Debug.Log($"왜 {type} 스크립트가 여러개..?");
-				return;
+				return false;
 			}
 
-			string filePath = UnityEditor.AssetDatabase.GUIDToAssetPath(arrGUID[0]);
-			List<string> lines = System.IO.File.ReadAllLines(filePath).ToList();
+			filePath = UnityEditor.AssetDatabase.GUIDToAssetPath(arrGUID[0]);
+			return true;
+		}
 
-			int aliasLine = lines.FindIndex(x => x.Contains("enum Alias"));
-			if (aliasLine == -1) {
+		int FindBraceIndex(List<string> lines, int startIndex) {
+			if (lines[startIndex].LastIndexOf('{') != -1)
+				return startIndex + 1;
+
+			int index = lines.FindIndex(startIndex + 1, x => x.Contains('{')) + 1;
+			if (index == 0) {
+				Debug.Log($"{startIndex}번 라인부터 뒤에 중괄호가 없음");
+				return -1;
+			}
+			return index;
+		}
+
+		[KHFC.InspectorButton("현재 클래스 스크립트에 모든 오브젝트의 경로를 Alias enum 으로 생성한다")]
+		public void MakeAliasEnum() {
+			string filePath = "";
+			if (!TryGetValidateScript(ref filePath))
+				return;
+
+			List<string> lines = System.IO.File.ReadAllLines(filePath).ToList();
+			if (lines.Exists(x => x.Contains("enum Alias"))) {
 				Debug.Log($"이미 Alias가 있기 때문에 진행하지 않는다.");
 				return;
 			}
-			int classStartLine = lines.FindIndex(x => x.Contains($"public class {type}"));
-			if (classStartLine == -1) {
+			if (lines.Exists(x => x.Contains("public override void LoadCacheKeys()"))) {
+				Debug.Log($"이미 LoadCacheKeys()가 있기 때문에 진행하지 않는다.");
+				return;
+			}
+
+			int insertIndex = lines.FindIndex(x => x.Contains($"public class {GetType().Name}"));
+			if (insertIndex == -1) {
 				Debug.Log($"클래스 이름 검색 실패? 말이되나");
 				return;
 			}
 			// 중괄호가 같은 라인에 있으면 다음 라인에 생성, 없으면 중괄호 시작지점을 찾고 그 아래줄에 생성
-			if (lines[classStartLine].LastIndexOf('{') != -1)
-				classStartLine += 1;
-			else {
-				classStartLine = lines.FindIndex(classStartLine + 1, x => x.Contains("{")) + 1;
-				if (classStartLine == 0) {
-					Debug.Log($"클래스 이름 뒤 중괄호 검색 실패? 말이되나");
-					return;
-				}
-			}
+			insertIndex = FindBraceIndex(lines, insertIndex);
+			if (insertIndex == -1)
+				return;
 
-			List<string> insertList = new();
-			insertList.Add("\tenum Alias {");
-			int count = -1;
+			List<string> insertList = new() { "\tenum Alias {" };
+			List<string> cacheKeyList = new();
+			//int count = -1;
+			// 캐시 키 생성 후 enum 이름으로 만든다
 			transform.DoRecursively(tr => {
-				// 캐시 키 생성 후 enum 이름으로 만든다
-				string str = "";
-				while (tr.GetComponent<CachedComponent>() == null) {
-					if (tr.parent == null) {
-						Debug.Log("copy failed : CachedComponent is not exist in parent objects");
-						return;
-					}
-
-					str = $"/{go.name}{str}";
-					go = go.transform.parent.gameObject;
-				}
-				if (str == "") {
-					Debug.Log("copy failed : CachedComponent is exist in current object");
+				if (tr == transform)
 					return;
-				}
 
-				str = '\"' + str[1..] + '\"';   // c# 8.0 ranges operator
-				GUIUtility.systemCopyBuffer = str;
+				string str = "";
+				Transform root = tr;
+				while (root.GetComponent<CachedComponent>() == null) {
+					str = $"/{root.name}{str}";
+					root = root.parent;
+				}
+				str = str[1..]; // c# 8.0 ranges operator
+
+				// 별명은 현재 이름 + 부모 이름으로 표시 (너무 길 수도 있어서, 어차피 딕셔너리에 들어감)
+				string alias = tr.parent != null ? $"{tr.parent.name}_{tr.name}" : $"{tr.name}";
+
+				insertList.Add($"\t\t{alias},");
+				//insertList.Add($"\t\t{alias} = {++count},");
+				cacheKeyList.Add($"\t\t\t{{\"{str}\", (int)Alias.{alias}}},");
 			});
+			insertList.Add("\t}\n");
 
-			var startPosition = allLines.FindIndex(f => f.Contains($"enum {typeName}s"));
-			var endPosition = 0;
-			//이미 있는 경우 지워주기
-			if (startPosition >= 0) {
-				endPosition = allLines.FindIndex(startPosition, f => f.Contains("}"));
-				allLines.RemoveRange(startPosition, endPosition - startPosition + 1);
-			}
-			//없는경우 startposition 잡아주기
-			else {
-				startPosition = allLines.FindIndex(f => f.Contains($"public class {target.name}")) + 2;
-			}
+			insertList.Add("#if UNITY_EDITOR");
+			insertList.Add("\t// 1대1 매칭하기 때문에 alias의 개수와 항상 동일해야 한다");
+			insertList.Add("\tpublic override void LoadCacheKeys() {");
+			insertList.Add($"\t\t{nameof(m_DicCacheKey)} = new System.Collections.Generic.Dictionary<string, int> {{");
+			insertList.AddRange(cacheKeyList);
+			insertList.Add("\t\t};\n\t}\n#endif");
 
-			//모든 애들 돌면서 타입이랑 같으면 insertlist 넣어주기
-			for (int j = 0; j < objectType.Length; j++) {
-				//타입이랑 겹치면
-				if (typeName == objectType[j].ToString()) {
-					insertList.Add($"        {objectName[j]},");
-				}
-			}
+			lines.InsertRange(insertIndex, insertList);
 
-			insertList.Add("    }");
+			System.IO.File.WriteAllLines(filePath, lines, System.Text.Encoding.UTF8);
+			UnityEditor.AssetDatabase.ImportAsset(filePath);
 
-			//뭔가 있으면 넣어주기
-			if (insertList.Count > 3) {
-				allLines.InsertRange(startPosition, insertList);
-			}
-
-			lines.InsertRange
-
-			for (int i = 1; i < Enum.GetValues(typeof(ObjectType)).Length; i++) {
-				string typeName = Enum.GetNames(typeof(ObjectType))[i];
-				var startPosition = allLines.FindIndex(f => f.Contains($"enum {typeName}s"));
-				if (startPosition >= 0) {
-					var endPosition = allLines.FindIndex(startPosition, f => f.Contains("}"));
-
-					for (int j = startPosition + 2; j < endPosition; j++) {
-						string objectName = allLines[j].Replace(',', ' ').Trim();
-						if (nameToIndex.TryGetValue(objectName, out int index)) {
-							objectType[index] = (ObjectType)i;
-						} else {
-							Debug.Log($"{target.name} 스크립트에는 {objectName}가 있지만 하이어라키에는 없어요");
-						}
-					}
-				}
-			}
-
-			System.IO.File.WriteAllLines(AssetDatabase.GUIDToAssetPath(currentScript[0]), allLines, System.Text.Encoding.UTF8);
-			UnityEditor.AssetDatabase.ImportAsset(AssetDatabase.GUIDToAssetPath(currentScript[0]));
-			return;
-			for (int i = 0; i < arrGUID.Length; i++) {
-				string prefabPath = UnityEditor.AssetDatabase.GUIDToAssetPath(arrGUID[i]);
-				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
-				string folderName = System.IO.Path.GetDirectoryName(prefabPath);
-
-				GameObject prefab = UnityEditor.AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
-				AssetLinkData.inst.AddLink(folderName, prefabName, prefab);
-			}
-			UnityEditor.AssetDatabase.Refresh();
-			FindCachedObject();
-
-			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
-			UnityEditor.EditorUtility.SetDirty(gameObject);
-		}
-		private void RefreshScript() {
-			var allLines = File.ReadAllLines(AssetDatabase.GUIDToAssetPath(currentScript[0])).ToList();
-
-			var awakePosition = allLines.FindIndex(f => f.Contains("Awake()"));
-
-			var insertList = new List<string>();
-
-			//만약 Awake 없으면 만들어줌
-			if (awakePosition < 0) {
-				awakePosition = allLines.FindIndex(f => f.Contains($"public class {target.name}")) + 2;
-				insertList.Add("    private void Awake()");
-				insertList.Add("    {");
-				insertList.Add("    }");
-			}
-			allLines.InsertRange(awakePosition, insertList);
-
-			//모든 타입마다 enum 만들기 none 제외
-			for (int i = 1; i < Enum.GetValues(typeof(ObjectType)).Length; i++) {
-
-				string typeName = Enum.GetNames(typeof(ObjectType))[i];
-				insertList.Clear();
-				insertList.Add($"    enum {typeName}s");
-				insertList.Add("    {");
-
-				var startPosition = allLines.FindIndex(f => f.Contains($"enum {typeName}s"));
-				var endPosition = 0;
-				//이미 있는 경우 지워주기
-				if (startPosition >= 0) {
-					endPosition = allLines.FindIndex(startPosition, f => f.Contains("}"));
-					allLines.RemoveRange(startPosition, endPosition - startPosition + 1);
-				}
-				//없는경우 startposition 잡아주기
-				else {
-					startPosition = allLines.FindIndex(f => f.Contains($"public class {target.name}")) + 2;
-				}
-
-				//모든 애들 돌면서 타입이랑 같으면 insertlist 넣어주기
-				for (int j = 0; j < objectType.Length; j++) {
-					//타입이랑 겹치면
-					if (typeName == objectType[j].ToString()) {
-						insertList.Add($"        {objectName[j]},");
-					}
-				}
-
-				insertList.Add("    }");
-
-				//뭔가 있으면 넣어주기
-				if (insertList.Count > 3) {
-					allLines.InsertRange(startPosition, insertList);
-				}
-
-
-				//바인드
-				int bindPosition;
-				string bindString;
-				if (typeName == ObjectType.GameObject.ToString()) {
-					bindString = $"        Bind<GameObject>(typeof({typeName}s));";
-					bindPosition = allLines.FindIndex(f => f.Contains($"Bind<GameObject>(typeof({typeName}s));"));
-				} else if (typeName == ObjectType.TextMesh.ToString()) {
-					bindString = $"        Bind<TMPro.TextMeshProUGUI>(typeof({typeName}s));";
-					bindPosition = allLines.FindIndex(f => f.Contains($"Bind<TMPro.TextMeshProUGUI>(typeof({typeName}s));"));
-				} else {
-					bindString = $"        Bind<UnityEngine.UI.{typeName}>(typeof({typeName}s));";
-					bindPosition = allLines.FindIndex(f => f.Contains($"Bind<UnityEngine.UI.{typeName}>(typeof({typeName}s));"));
-				}
-
-				//먼저 삭제
-				if (bindPosition >= 0)
-					allLines.RemoveAt(bindPosition);
-
-				//뭔가 있으면 바인드 해주기
-				if (insertList.Count > 3) {
-					startPosition = allLines.FindIndex(f => f.Contains("Awake()"));
-					if (startPosition > 0) {
-						startPosition += 2;
-					}
-					allLines.Insert(startPosition, bindString);
-				}
-			}
-			File.WriteAllLines(AssetDatabase.GUIDToAssetPath(currentScript[0]), allLines, System.Text.Encoding.UTF8);
-			AssetDatabase.ImportAsset(AssetDatabase.GUIDToAssetPath(currentScript[0]));
-		}
-
-		[KHFC.InspectorButton("스크립트에 있는 Enum들만 남도록 리스트와 이름을 정리한다. Enum 번호도 제거함")]
-		public void TrimBasedOnAliasEnum() {
-			FindCachedObject();
-
-			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
-			UnityEditor.EditorUtility.SetDirty(gameObject);
+			UpdateCacheKey();
 		}
 #endif
 	}
