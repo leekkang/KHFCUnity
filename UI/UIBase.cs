@@ -8,15 +8,15 @@ namespace KHFC {
 		/// <summary> 모든 UI의 <see cref="Graphics"/>가 사용하는 아틀라스들의 리스트 </summary>
 		static RefList<UnityEngine.U2D.SpriteAtlas> mListLoadedAtlas;
 
-		static readonly object LockTouch = new();
-		static int m_LockTouch = 0;
+		static readonly object LockTouchObj = new();
+		static int LockTouch = 0;
 		public static bool lockTouch {
-			get { lock (LockTouch) { return m_LockTouch > 0; } }
+			get { lock (LockTouchObj) { return LockTouch > 0; } }
 			set {
-				lock (LockTouch) {
-					m_LockTouch += value ? 1 : -1;
-					if (m_LockTouch < 0)
-						m_LockTouch = 0;
+				lock (LockTouchObj) {
+					LockTouch += value ? 1 : -1;
+					if (LockTouch < 0)
+						LockTouch = 0;
 				}
 			}
 		}
@@ -37,8 +37,6 @@ namespace KHFC {
 		/// <summary> 해당 UI의 초기화에 필요한 정보를 로드하는 함수 </summary>
 		public virtual void Init() {
 			m_ListCachedObject = new List<GameObject>();
-			// TODO: 에디터에서 하도록 위치 이동!
-			//FindCachedObject();
 
 			m_OnInitialized = true;
 		}
