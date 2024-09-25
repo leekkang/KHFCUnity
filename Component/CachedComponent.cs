@@ -218,8 +218,6 @@ namespace KHFC {
 
 			System.IO.File.WriteAllLines(filePath, lines, System.Text.Encoding.UTF8);
 			UnityEditor.AssetDatabase.ImportAsset(filePath);
-
-			UpdateCacheKey();
 		}
 #endif
 	}
