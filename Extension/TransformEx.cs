@@ -209,6 +209,37 @@ public static class TransformEx {
 		pos.z = z;
 		tr.localPosition = pos;
 	}
+	public static void AddPosX(this Transform tr, float x) {
+		Vector3 pos = tr.position;
+		pos.x += x;
+		tr.position = pos;
+	}
+
+	public static void AddPosY(this Transform tr, float y) {
+		Vector3 pos = tr.position;
+		pos.y += y;
+		tr.position = pos;
+	}
+	public static void AddPosZ(this Transform tr, float z) {
+		Vector3 pos = tr.position;
+		pos.z += z;
+		tr.position = pos;
+	}
+	public static void AddLocalPosX(this Transform tr, float x) {
+		Vector3 pos = tr.localPosition;
+		pos.x += x;
+		tr.localPosition = pos;
+	}
+	public static void AddLocalPosY(this Transform tr, float y) {
+		Vector3 pos = tr.localPosition;
+		pos.y += y;
+		tr.localPosition = pos;
+	}
+	public static void AddLocalPosZ(this Transform tr, float z) {
+		Vector3 pos = tr.localPosition;
+		pos.z += z;
+		tr.localPosition = pos;
+	}
 
 	public static void SetPosX(this RectTransform tr, float x) {
 		Vector3 pos = tr.anchoredPosition3D;
