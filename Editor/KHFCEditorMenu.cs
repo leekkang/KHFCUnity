@@ -55,7 +55,7 @@ public class KHFCEditorMenu {
 		foreach (var obj in arrObj) {
 			obj.transform.DoRecursively(tr => {
 				if (tr.TryGetComponent(out UnityEngine.UI.Button comp)) {
-					GameObject.Destroy(comp);
+					tr.gameObject.RemoveComponent<UnityEngine.UI.Button>();
 					tr.gameObject.SafeAddComponent<ButtonWdgt>();
 				}
 			});

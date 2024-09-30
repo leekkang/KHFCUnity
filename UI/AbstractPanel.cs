@@ -2,8 +2,8 @@
 using UnityEngine;
 
 namespace KHFC {
-	public abstract class AbstractPanel : MonoBehaviour {
-		public Transform m_TR;
+	public abstract class AbstractPanel : CachedComponent {
+		[HideInInspector] public Transform m_TR;
 
 		public virtual void Awake() {
 			m_TR = transform;

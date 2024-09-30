@@ -9,14 +9,14 @@ namespace KHFC {
 	public class ButtonWdgt : Button {
 		// TODO : 해당 버튼을 사용하는 부모 패널을 특정지을 방법이 없을까? 현재는 클라이언트에 맞게 수정중임
 		AbstractPanel m_Parent;
-		DelClick m_Click;   // 얘네들 에디터 타임에 저장할 수 있는 방법은 UnityEvent 말고 없음. NGUI도 뜯어보면 런타임에 델리게이트 찾더라.
+		DelClick m_Click;	// 얘네들 에디터 타임에 저장할 수 있는 방법은 UnityEvent 말고 없음. NGUI도 뜯어보면 런타임에 델리게이트 찾더라.
 		DelHover m_Enter;
 		DelHover m_Exit;
 
-		[SerializeField] public bool m_OnClickSound = true;
-		[SerializeField] public bool m_OnHoverSound = true;
+		public bool m_OnClickSound = true;
+		public bool m_OnHoverSound = true;
 
-		protected override void Start() {
+		protected override void Awake() {
 			Transform parent = transform.parent;
 
 			while (parent != null && !parent.TryGetComponent(out m_Parent)) {
@@ -26,26 +26,27 @@ namespace KHFC {
 													System.Reflection.BindingFlags.Public |
 													System.Reflection.BindingFlags.NonPublic;
 
-			string delName = "OnClick" + gameObject.name;
+			string postfix = gameObject.name.Replace("btn_", "");
+			string delName = "OnClick" + postfix;
 			System.Reflection.MethodInfo info = m_Parent.GetType().GetMethod(delName, flag);
 			if (info != null)
 				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info);
 			else
 				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, "OnClickDefault", false, false);
 
-			delName = "OnEnter" + gameObject.name;
+			delName = "OnEnter" + postfix;
 			info = m_Parent.GetType().GetMethod(delName, flag);
 			if (info != null)
 				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
 			else
 				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
 
-			//delName = "OnExit_" + gameObject.name;
+			//delName = "OnExit" + postfix;
 			//info = m_Parent.GetType().GetMethod(delName, flag);
 			//if (info != null)
 			//	m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
 			//else
-			//	m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnExit_Default");
+			//	m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnExitDefault");
 		}
 
 

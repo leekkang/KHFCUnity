@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -108,11 +110,12 @@ namespace KHFC {
 		}
 
 		public void GetAssetAsync(string assetName, string bundleName, System.Action<Object> actOnAfter) {
-			bundleName = bundleName.ToLower();
-
 			if (m_LocationType == AssetLocation.Resources) {
-				LoadFromResourcesAsync(assetName, asset => actOnAfter(asset));
+				Object resultObj = LoadFromAssetLink(assetName);
+				actOnAfter(resultObj);
+				//LoadFromResourcesAsync(assetName, asset => actOnAfter(asset));
 			} else {
+				bundleName = bundleName.ToLower();
 				string prefix = bundleName.Split('_')[0];
 				BundleProcess processor = KHFCSetting.inst.m_ListBundleProcess.Find(unit => unit.m_AssetPrefix == prefix);
 				if (processor == null || !processor.m_DontZipAssetbundle) {
@@ -121,6 +124,23 @@ namespace KHFC {
 					LoadFromFileAsync(assetName, bundleName, processor, (asset) => actOnAfter(asset));
 				}
 			}
+		}
+
+		public async Task<Object> GetAssetAsync(string assetName, string bundleName) {
+			if (m_LocationType == AssetLocation.Resources) {
+				return LoadFromAssetLink(assetName);
+				//LoadFromResourcesAsync(assetName, asset => actOnAfter(asset));
+			} else {
+				//bundleName = bundleName.ToLower();
+				//string prefix = bundleName.Split('_')[0];
+				//BundleProcess processor = KHFCSetting.inst.m_ListBundleProcess.Find(unit => unit.m_AssetPrefix == prefix);
+				//if (processor == null || !processor.m_DontZipAssetbundle) {
+				//	LoadFromAssetBundleAsync(assetName, bundleName, (asset) => actOnAfter(asset), processor.m_UseSingly);
+				//} else {
+				//	LoadFromFileAsync(assetName, bundleName, processor, (asset) => actOnAfter(asset));
+				//}
+			}
+			return null;
 		}
 
 
@@ -140,6 +160,12 @@ namespace KHFC {
 			yield return req;
 
 			actOnAfter(req.asset);
+		}
+
+		private async Task<Object> LoadFromResourcesAsync(string assetName) {
+			ResourceRequest req = Resources.LoadAsync(assetName);
+			await req;
+			return req.asset;
 		}
 
 
