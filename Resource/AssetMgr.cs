@@ -145,7 +145,7 @@ namespace KHFC {
 
 
 		private Object LoadFromAssetLink(string assetName) {
-			return AssetLinkData.inst.GetLink(assetName);
+			return AssetLinkData.inst.GetLink<Object>(assetName);
 		}
 
 		private Object LoadFromResources(string assetName) {

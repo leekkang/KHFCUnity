@@ -5,36 +5,23 @@ using UnityEngine;
 
 public static class TransformEx {
 	/// <summary> 자식들 중 <paramref name="name"/> 이름을 가진 게임 오브젝트를 반환한다. (DFS) </summary>
-	public static Transform FindRecursively(this Transform parent, string name) {
-		if (parent.name == name)
-			return parent;
+	public static Transform FindRecursively(this Transform target, string name) {
+		if (target.name == name)
+			return target;
 
-		foreach (Transform child in parent) {
+		foreach (Transform child in target) {
 			Transform tr = child.FindRecursively(name);
 			if (tr != null)
 				return tr;
 		}
 		return null;
 	}
-	/// <summary> 자식들 중 해당 컴포넌트를 가진 게임 오브젝트의 컴포넌트를 반환한다. (DFS) </summary>
-	public static T FindRecursively<T>(this Transform parent) where T : Component {
-		if (parent.TryGetComponent<T>(out T comp))
-			return comp;
-
-		foreach (Transform child in parent) {
-			comp = child.FindRecursively<T>();
-			if (comp != null)
-				return comp;
-		}
-		return null;
-	}
-
 	/// <summary> 자식들 중 <paramref name="name"/> 이름을 가진 게임 오브젝트를 반환한다. (BFS) </summary>
-	public static Transform FindRecursivelyB(this Transform parent, string name) {
-		if (parent.name == name)
-			return parent;
+	public static Transform FindRecursivelyB(this Transform target, string name) {
+		if (target.name == name)
+			return target;
 
-		List<Transform> listTmp = new() { parent }; // c# 9.0: Target-typed new expressions
+		List<Transform> listTmp = new() { target }; // c# 9.0: Target-typed new expressions
 		while (listTmp.Count > 0) {
 			int count = listTmp.Count;
 			Transform[] arrParent = new Transform[count];
@@ -49,6 +36,19 @@ public static class TransformEx {
 					listTmp.Add(child);
 				}
 			}
+		}
+		return null;
+	}
+
+	/// <summary> 자식들 중 해당 컴포넌트를 가진 게임 오브젝트의 컴포넌트를 반환한다. (DFS) </summary>
+	public static T FindRecursively<T>(this Transform target) where T : Component {
+		if (target.TryGetComponent<T>(out T comp))
+			return comp;
+
+		foreach (Transform child in target) {
+			comp = child.FindRecursively<T>();
+			if (comp != null)
+				return comp;
 		}
 		return null;
 	}
@@ -78,7 +78,7 @@ public static class TransformEx {
 
 	/// <summary> 자식들 중 <paramref name="name"/> 으로 시작하는 게임 오브젝트 어레이를 반환한다. </summary>
 	public static Transform[] FindChildren(this Transform parent, string name) {
-		List<Transform> listChild = new List<Transform>();
+		List<Transform> listChild = new();
 
 		foreach (Transform child in parent) {
 			if (child.gameObject.name.StartsWith(name))

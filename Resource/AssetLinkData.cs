@@ -18,7 +18,7 @@ namespace KHFC {
 		// TODO : 아래 리스트, 딕셔너리는 현재 사용중이지만 serialized dictionary 도입 후 모두 제거
 
 		// Awake에서 딕셔너리로 값을 옮기기 위해 에디터에서 저장하는 값
-		[SerializeField] List<GameObject> m_ListLink;
+		[SerializeField] List<UnityEngine.Object> m_ListLink;
 		[SerializeField] List<string> m_ListName;
 		// O(1)의 접근시간을 위해 Awake에서 값을 만들어줌 프리팹 링크 이름, 인덱스
 		Dictionary<string, int> m_DicIndex;
@@ -38,14 +38,14 @@ namespace KHFC {
 			}
 		}
 
-		public GameObject GetLink(string name) {
+		public T GetLink<T>(string name) where T : UnityEngine.Object {
 			if (m_DicIndex == null) {
 				MakeDictionary();
 				if (m_DicIndex == null)
 					return null;
 			}
 			if (m_DicIndex.TryGetValue(name, out int index))
-				return m_ListLink[index];
+				return (T)m_ListLink[index];
 			return null;
 		}
 		//public GameObject GetItemObj(ItemType type) {
@@ -92,7 +92,7 @@ namespace KHFC {
 			EditorUtility.SetDirty(gameObject);
 		}
 
-		public void AddLink(string folderName, string prefabName, GameObject obj) {
+		public void AddLink<T>(string folderName, string prefabName, T obj) where T : UnityEngine.Object {
 			//if (m_ListLink.TryGetValue(out GameObject prefab, x => x.name == prefabName)) {
 			//	Debug.Log($"Replace Asset : {prefab.name}");
 			//} else {
