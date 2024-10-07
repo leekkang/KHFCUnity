@@ -13,8 +13,9 @@ namespace KHFC {
 		DelHover m_Enter;
 		DelHover m_Exit;
 
+		public bool m_EnableHover = false;
 		public bool m_OnClickSound = true;
-		public bool m_OnHoverSound = true;
+		public bool m_OnHoverSound = false;
 
 		protected override void Awake() {
 			Transform parent = transform.parent;
@@ -34,12 +35,14 @@ namespace KHFC {
 			else
 				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, "OnClickDefault", false, false);
 
-			delName = "OnEnter" + postfix;
-			info = m_Parent.GetType().GetMethod(delName, flag);
-			if (info != null)
-				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
-			else
-				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
+			if (m_EnableHover) {
+				delName = "OnEnter" + postfix;
+				info = m_Parent.GetType().GetMethod(delName, flag);
+				if (info != null)
+					m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
+				else
+					m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
+			}
 
 			//delName = "OnExit" + postfix;
 			//info = m_Parent.GetType().GetMethod(delName, flag);
@@ -68,6 +71,8 @@ namespace KHFC {
 
 		public override void OnPointerEnter(PointerEventData eventData) {
 			base.OnPointerEnter(eventData);
+			if (!m_EnableHover)
+				return;
 
 			if (m_OnHoverSound) {
 				SoundMgr.inst.PlayEfx(GlobalConst.SOUND_EFX_BUTTON_HOVER, GlobalConst.SOUND_BUTTON_VOLUME);
