@@ -17,7 +17,7 @@ namespace KHFC {
 		public bool m_OnClickSound = true;
 		public bool m_OnHoverSound = false;
 
-		protected override void Awake() {
+		protected override void Start() {
 			Transform parent = transform.parent;
 
 			while (parent != null && !parent.TryGetComponent(out m_Parent)) {
