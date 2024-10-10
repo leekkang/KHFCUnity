@@ -9,6 +9,28 @@ namespace KHFC {
 			m_TR = transform;
 		}
 
+		/// <summary> Reference Resolution의 높이를 기준으로 정확한 화면 넓이를 구한다. 실제 해상도 비율이 16/9보다 작은 경우에만 해당됨 </summary>
+		/// <remarks> Canvas Scaler의 영향을 받아 실제 해상도와 다른 경우가 발생한다. </remarks>
+		protected float GetProperScreenWidth() {
+			float width = 1080f;
+			float ratio = (float)Screen.width / Screen.height;
+			if (ratio > (9f / 16f))
+				width = 1920f * ratio;
+
+			return width;
+		}
+
+		/// <summary> Reference Resolution의 넓를 기준으로 정확한 화면 높이를 구한다. 실제 해상도 비율이 16/9보다 큰 경우에만 해당됨 </summary>
+		/// <remarks> Canvas Scaler의 영향을 받아 실제 해상도와 다른 경우가 발생한다. </remarks>
+		protected float GetProperScreenHeight() {
+			float height = 1920f;
+			float ratio = (float)Screen.height / Screen.width;
+			if (ratio > (16f / 9f))
+				height = 1080f * ratio;
+
+			return height;
+		}
+
 
 		public virtual void OnEnterDefault(GameObject obj) {
 #if UNITY_EDITOR
