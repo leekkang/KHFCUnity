@@ -59,11 +59,11 @@ namespace KHFC {
 			if (UIBase.lockTouch)
 				return;
 
-			UIBase.lockTouch = true;
+			m_Parent.OnPreClickDefault();
 
-			if (m_OnClickSound) {
+			if (m_OnClickSound)
 				SoundMgr.inst.PlayEfx(GlobalConst.SOUND_EFX_BUTTON_OK, GlobalConst.SOUND_BUTTON_VOLUME);
-			}
+
 			m_Click(this.gameObject);
 
 			UIBase.lockTouch = false;
@@ -74,9 +74,9 @@ namespace KHFC {
 			if (!m_EnableHover)
 				return;
 
-			if (m_OnHoverSound) {
+			if (m_OnHoverSound)
 				SoundMgr.inst.PlayEfx(GlobalConst.SOUND_EFX_BUTTON_HOVER, GlobalConst.SOUND_BUTTON_VOLUME);
-			}
+
 			m_Enter(this.gameObject);
 		}
 

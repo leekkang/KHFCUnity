@@ -242,14 +242,14 @@ public static class TransformEx {
 	}
 
 	public static void SetPosX(this RectTransform tr, float x) {
-		Vector3 pos = tr.anchoredPosition3D;
+		Vector2 pos = tr.anchoredPosition;
 		pos.x = x;
-		tr.anchoredPosition3D = pos;
+		tr.anchoredPosition = pos;
 	}
 	public static void SetPosY(this RectTransform tr, float y) {
-		Vector3 pos = tr.anchoredPosition3D;
+		Vector2 pos = tr.anchoredPosition;
 		pos.y = y;
-		tr.anchoredPosition3D = pos;
+		tr.anchoredPosition = pos;
 	}
 	public static void SetPosZ(this RectTransform tr, float z) {
 		Vector3 pos = tr.anchoredPosition3D;

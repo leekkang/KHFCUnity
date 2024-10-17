@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using KHFC;
+using UnityEngine.UI;
 
 // priority 순서 : 상단 메뉴바는 값이 클수록 위쪽에 배치, 나머지 오브젝트, 애셋 우클릭 메뉴는 값이 작을수록 위쪽에 배치
 public class KHFCEditorMenu {
@@ -119,5 +120,40 @@ public class KHFCEditorMenu {
 		//if (changed)
 		//	EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
 #endif
+	}
+
+
+	/// <summary> 캔버스 아래의 모든 <see cref="MaskableGraphic"/>의 RaycastTarget 옵션을 끈다. </summary>
+	[MenuItem("GameObject/KHFC/Disable Raycast Under Canvas", false, -99)]
+	public static void DisableRaycast() {
+		GameObject go = Selection.activeGameObject;
+
+		if (go == null)
+			return;
+		if (!(go.TryGetComponent(out Canvas canvas)
+			|| go.TryGetComponent(out CanvasGroup group)
+			|| go.TryGetComponent(out CanvasRenderer renderer)))
+			return;
+
+		go.transform.DoRecursively(tr => {
+			if (tr.GetComponent<Button>())
+				return;
+
+			if (tr.TryGetComponent(out MaskableGraphic graphic)) {
+				graphic.raycastTarget = false;
+				graphic.maskable = true;
+			}
+		});
+
+		Debug.Log($"raycast disable complete");
+	}
+
+	[MenuItem("GameObject/KHFC/Disable Raycast Under Canvas", true)]
+	static bool DisableRaycastValidation() {
+		// We can only copy the path in case 1 object is selected
+		return Selection.gameObjects.Length == 1 &&
+				(Selection.activeGameObject.TryGetComponent(out Canvas canvas) ||
+				Selection.activeGameObject.TryGetComponent(out CanvasGroup group) ||
+				Selection.activeGameObject.TryGetComponent(out CanvasRenderer renderer));
 	}
 }
