@@ -141,7 +141,7 @@ public class KHFCEditorMenu {
 
 			if (tr.TryGetComponent(out MaskableGraphic graphic)) {
 				graphic.raycastTarget = false;
-				graphic.maskable = true;
+				graphic.maskable = false;
 			}
 		});
 
