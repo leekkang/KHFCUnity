@@ -288,7 +288,7 @@ namespace KHFC {
 			newSource.PlayDelayed(delay);
 
 			if (delay > 0) {
-				yield return CachedYield.GetWaitForSeconds(delay);
+				yield return CachedYield.GetWFS(delay);
 			}
 
 			sound.m_CoEnd = StartCoroutine(CoWaitForEnd(sound));
@@ -303,7 +303,7 @@ namespace KHFC {
 			if (sound.m_IgnoreTimescale)
 				duration *= Time.timeScale;
 
-			yield return CachedYield.GetWaitForSeconds(duration);
+			yield return CachedYield.GetWFS(duration);
 
 			StopEfx(sound);
 		}

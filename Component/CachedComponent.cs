@@ -196,6 +196,11 @@ namespace KHFC {
 					str = $"/{root.name}{str}";
 					root = root.parent;
 				}
+
+				// 자식 중 CachedComponent가 존재하는 경우 해당 자식은 무시한다
+				if (root != transform)
+					return;
+
 				str = str[1..]; // c# 8.0 ranges operator
 
 				// 별명은 현재 이름 + 부모 이름으로 표시 (너무 길 수도 있어서, 어차피 딕셔너리에 들어감)

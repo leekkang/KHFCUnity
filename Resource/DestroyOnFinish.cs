@@ -38,7 +38,7 @@ namespace KHFC {
 			if (m_IgnoreTimescale)
 				yield return new WaitForSecondsRealtime(m_DestroyTime);
 			else
-				yield return CachedYield.GetWaitForSeconds(m_DestroyTime);
+				yield return CachedYield.GetWFS(m_DestroyTime);
 
 			m_OnComplete?.Invoke();
 

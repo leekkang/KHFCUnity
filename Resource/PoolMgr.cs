@@ -744,7 +744,7 @@ namespace KHFC {
 		/// <param name="obj"> l_active에서 내릴 Object명 </param>
 		/// <param name="delay"> 지연 시킬 시간 </param>
 		private IEnumerator _CoDespawn(GameObject obj, float delay) {
-			yield return CachedYield.GetWaitForSeconds(delay);
+			yield return CachedYield.GetWFS(delay);
 
 			_Despawn(obj);
 		}
