@@ -10,6 +10,7 @@ namespace KHFC {
 	// TODO : AssetLinkData를 제네릭하게 만들면 해당 코드 전부 AssetLinkData로 옮겨도 될 듯
 	public class AssetLinkDataEditor {
 		const string PREFAB_ROOT_PATH = "Assets/Media/Prefab";
+		const string SOUND_ROOT_PATH = "Assets/Media/Sound";
 		const string SPRITE_ITEM_ROOT_PATH = "Assets/Media/Texture/UI/Item";
 
 		public static void SetAllData() {
@@ -17,27 +18,28 @@ namespace KHFC {
 
 			// Prefab
 			string[] arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
-			for (int i = 0; i < arrGUID.Length; i++) {
-				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
-				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
-				string folderName = System.IO.Path.GetDirectoryName(prefabPath);
-
-				GameObject prefab = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
-				AssetLinkData.inst.AddLink(folderName, prefabName, prefab);
-			}
+			LoadAssetFromGUID<GameObject>(arrGUID);
 
 			// Sprite
 			arrGUID = AssetDatabase.FindAssets("t:Sprite", new string[] { SPRITE_ITEM_ROOT_PATH });
-			for (int i = 0; i < arrGUID.Length; i++) {
-				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
-				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
-				string folderName = System.IO.Path.GetDirectoryName(prefabPath);
+			LoadAssetFromGUID<Sprite>(arrGUID);
 
-				Sprite sprite = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(Sprite)) as Sprite;
-				AssetLinkData.inst.AddLink(folderName, prefabName, sprite);
-			}
+			// Sound
+			arrGUID = AssetDatabase.FindAssets("t:AudioClip", new string[] { SOUND_ROOT_PATH });
+			LoadAssetFromGUID<AudioClip>(arrGUID);
 
 			AssetDatabase.Refresh();
+
+			void LoadAssetFromGUID<T>(string[] arrGUID) where T : UnityEngine.Object {
+				for (int i = 0; i < arrGUID.Length; i++) {
+					string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
+					string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
+					string folderName = System.IO.Path.GetDirectoryName(prefabPath);
+
+					T prefab = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(T)) as T;
+					AssetLinkData.inst.AddLink(folderName, prefabName, prefab);
+				}
+			}
 		}
 
 		//public static void SetAllItemToData() {

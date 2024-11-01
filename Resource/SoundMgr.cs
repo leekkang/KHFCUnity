@@ -47,9 +47,7 @@ namespace KHFC {
 		bool m_MuteEfx;
 		public bool muteEfx {
 			get => m_MuteEfx;
-			set {
-				m_MuteEfx = value;
-			}
+			set => m_MuteEfx = value;
 		}
 		float m_MasterEfxVolume = 0.4f;
 		public float efxVolume {

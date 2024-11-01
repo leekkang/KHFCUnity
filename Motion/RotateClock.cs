@@ -101,6 +101,7 @@ public class RotateClock : MonoBehaviour {
 		if (m_Count > 0)
 			return;
 
+		// 각도 변경시간이 너무 짧으면 일반 회전과 동일하게 처리한다.
 		if (m_AngleChangeTime > 0.01f) {
 			m_ChangeAngle = true;
 			m_TmpAngle = m_TR.localEulerAngles.z;
