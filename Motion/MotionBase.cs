@@ -15,10 +15,9 @@ public class MotionBase : MonoBehaviour {
 	/// 현재 렌더링 대상 오브젝트가 사용하는 모든 스프라이트들을 모아놓은 리스트
 	/// </summary>
 	/// <remarks> 리스트의 인덱스는 <see cref="ColorType"/> 의 값과 동일하다 </remarks>
-	[SerializeField]
-	protected List<MotionSprite> m_ListSprite;
+	//[SerializeField] protected List<MotionSprite> m_ListSprite;
 
-	public float m_Test;
+	//public float m_Test;
 
 #if UNITY_EDITOR
 	public virtual void UpdateSpriteList() {
