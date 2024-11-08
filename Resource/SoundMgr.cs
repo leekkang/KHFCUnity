@@ -34,7 +34,7 @@ namespace KHFC {
 					m_CurBgm.mute = value;
 			}
 		}
-		float m_MasterBgmVolume = 0.15f;
+		float m_MasterBgmVolume = 0.6f;
 		public float bgmVolume {
 			get => m_MasterBgmVolume;
 			set {
@@ -49,7 +49,7 @@ namespace KHFC {
 			get => m_MuteEfx;
 			set => m_MuteEfx = value;
 		}
-		float m_MasterEfxVolume = 0.4f;
+		float m_MasterEfxVolume = 1f;
 		public float efxVolume {
 			get => m_MasterEfxVolume;
 			set {
@@ -77,7 +77,7 @@ namespace KHFC {
 		/// 모든 사운드 실행을 종료하고, 리스트화된 정보들을 지우는 함수
 		/// </summary>
 		public void Close() {
-			this.StopAllCoroutines();
+			StopAllCoroutines();
 
 			int count = m_ListEfx.Count;
 			for (int i = 0; i < count; i++) {

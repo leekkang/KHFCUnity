@@ -197,10 +197,7 @@ namespace KHFC {
 			}
 
 			AssetBundleInfo bundleInfo = m_DicAssetbundle[finalBundleName];
-			AssetBundle loadedBundle = bundleInfo.m_Bundle;
-
-			if (loadedBundle == null)
-				loadedBundle = AssetBundle.LoadFromFile(m_LocationPath + bundleName);
+			AssetBundle loadedBundle = bundleInfo.m_Bundle != null ? bundleInfo.m_Bundle : AssetBundle.LoadFromFile(m_LocationPath + bundleName);
 
 			if (loadedBundle == null)
 				return null;
