@@ -283,7 +283,11 @@ namespace KHFC {
 			newSource.volume = volume < 0f ? m_MasterEfxVolume : m_MasterEfxVolume * volume;
 			newSource.pitch = ignoreScale ? 1 : m_EfxSpeed;
 			newSource.time = startTime;
-			newSource.PlayDelayed(delay);
+
+			if (delay >= 0f)
+				newSource.PlayDelayed(delay);
+			else
+				newSource.PlayOneShot(newSource.clip);
 
 			if (delay > 0) {
 				yield return CachedYield.GetWFS(delay);
@@ -325,7 +329,10 @@ namespace KHFC {
 			m_CurBgm.loop = true;
 			m_CurBgm.mute = m_MuteBgm;
 
-			m_CurBgm.PlayDelayed(delay);
+			if (delay >= 0f)
+				m_CurBgm.PlayDelayed(delay);
+			else
+				m_CurBgm.Play();
 		}
 
 		IEnumerator CoFadeOutBgm(bool unloadPrev) {

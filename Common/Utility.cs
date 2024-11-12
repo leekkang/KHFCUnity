@@ -30,8 +30,13 @@ namespace KHFC {
 			return angle;
 		}
 
-		///<summary> 분산랜덤 </summary>
+
+		/// <summary> 분산랜덤 </summary>
 		/// <param name="variance">클수록 뾰족해짐! 최소값 기본값이 1</param>
+		/// <param name="middleValue"> 중간값 </param>
+		/// <param name="range"> 값 표현 범위, 그래프의 절반 범위 </param>
+		/// <param name="variance"> 분산에 사용하는 로그의 밑(base) </param>
+		/// <returns></returns>
 		public static int DistributionRandom(int middleValue, float range, int variance = 1) {
 			variance = Mathf.Max(1, variance);
 			variance = (int)Math.Pow(10, variance);
