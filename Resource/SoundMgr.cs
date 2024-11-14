@@ -284,7 +284,7 @@ namespace KHFC {
 			newSource.pitch = ignoreScale ? 1 : m_EfxSpeed;
 			newSource.time = startTime;
 
-			if (delay >= 0f)
+			if (delay > 0f)
 				newSource.PlayDelayed(delay);
 			else
 				newSource.PlayOneShot(newSource.clip);
@@ -329,7 +329,7 @@ namespace KHFC {
 			m_CurBgm.loop = true;
 			m_CurBgm.mute = m_MuteBgm;
 
-			if (delay >= 0f)
+			if (delay > 0f)
 				m_CurBgm.PlayDelayed(delay);
 			else
 				m_CurBgm.Play();

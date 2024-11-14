@@ -22,10 +22,12 @@ namespace KHFC {
 		[SerializeField] List<string> m_ListName;
 		// O(1)의 접근시간을 위해 Awake에서 값을 만들어줌 프리팹 링크 이름, 인덱스
 		Dictionary<string, int> m_DicIndex;
+		public Dictionary<string, int> dictionary => m_DicIndex;
 
 		public override void Awake() {
 			base.Awake();
 
+			MakeDictionary();
 		}
 
 		void MakeDictionary() {
@@ -48,6 +50,7 @@ namespace KHFC {
 				return (T)m_ListLink[index];
 			return null;
 		}
+
 		//public GameObject GetItemObj(ItemType type) {
 		//	return m_DicItem.TryGetValue((int)type, out GameObject go) ? go : null;
 		//}
