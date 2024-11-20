@@ -225,10 +225,10 @@ namespace KHFC {
 		}
 
 		GameObject SpawnSound(string name, Vector3 pos = default, Transform parent = null) {
-			return PoolMgr.inst.SpawnGameObject(name, pos, parent, AssetType.Audio);
+			return PoolMgr.inst.SpawnGameObject(name, parent, pos, type:AssetType.Audio);
 		}
 		void SpawnSoundAsync(string name, System.Action<GameObject> actOnAfter, Vector3 pos = default, Transform parent = null) {
-			PoolMgr.inst.SpawnGameObjectAsync(name, actOnAfter, pos, parent, AssetType.Audio);
+			PoolMgr.inst.SpawnGameObjectAsync(name, actOnAfter, parent, pos, type: AssetType.Audio);
 		}
 
 		void AfterSpawn(GameObject obj, bool isEfx = true) {

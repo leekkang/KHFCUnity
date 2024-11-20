@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using KHFC;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 // priority 순서 : 상단 메뉴바는 값이 클수록 위쪽에 배치, 나머지 오브젝트, 애셋 우클릭 메뉴는 값이 작을수록 위쪽에 배치
 public class KHFCEditorMenu {
@@ -122,7 +123,6 @@ public class KHFCEditorMenu {
 #endif
 	}
 
-
 	/// <summary> 캔버스 아래의 모든 <see cref="MaskableGraphic"/>의 RaycastTarget 옵션을 끈다. </summary>
 	[MenuItem("GameObject/KHFC/Disable Raycast Under Canvas", false, -99)]
 	public static void DisableRaycast() {
@@ -155,5 +155,23 @@ public class KHFCEditorMenu {
 				(Selection.activeGameObject.TryGetComponent(out Canvas canvas) ||
 				Selection.activeGameObject.TryGetComponent(out CanvasGroup group) ||
 				Selection.activeGameObject.TryGetComponent(out CanvasRenderer renderer));
+	}
+
+	[MenuItem("Assets/KHFC/Create KHFCSetting Scriptable Object")]
+	public static void CreateMyAsset() {
+		KHFCSetting asset = ScriptableObject.CreateInstance<KHFCSetting>();
+		string[] arrGUID = AssetDatabase.FindAssets(string.Format("{0} t:script", "KHFCSetting"));
+		if (arrGUID == null || arrGUID.Length <= 0) {
+			Debug.Log("KHFCSetting script is not found");
+			return;
+		}
+		string assetPath = AssetDatabase.GUIDToAssetPath(arrGUID[0]).Replace("KHFCSetting.cs", "Resources/KHFCSetting.asset");
+		KHFC.Utility.CreateDir(System.IO.Path.GetDirectoryName(assetPath));
+		AssetDatabase.CreateAsset(asset, assetPath);
+		AssetDatabase.SaveAssets();
+
+		EditorUtility.FocusProjectWindow();
+
+		Selection.activeObject = asset;
 	}
 }
