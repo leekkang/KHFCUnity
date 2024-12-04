@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using Cysharp.Threading.Tasks;
+using System.Threading;
+
 namespace KHFC {
 	public class SoundMgr : Singleton<SoundMgr> {
 		public const string EFX_ASSET_PREFIX = "efx_";
@@ -12,8 +15,9 @@ namespace KHFC {
 			public string m_Name;
 			public AudioSource m_Source;
 			public Coroutine m_CoEnd;
+			public CancellationTokenSource m_Token;
 
-			public bool m_IgnoreTimescale;	// 타임스케일과 무관하게 플레이
+			public bool m_IgnoreTimescale;  // 타임스케일과 무관하게 플레이
 
 			public void Reset() {
 				m_Name = string.Empty;
@@ -22,6 +26,11 @@ namespace KHFC {
 				if (m_CoEnd != null)
 					SoundMgr.inst.StopCoroutine(m_CoEnd);
 				m_CoEnd = null;
+				if (m_Token != null) {
+					m_Token.Cancel();
+					m_Token.Dispose();
+					m_Token = null;
+				}
 			}
 		}
 		[SerializeField]
@@ -29,7 +38,7 @@ namespace KHFC {
 		public bool muteBgm {
 			get => m_MuteBgm;
 			set {
-				m_MuteEfx = value;
+				m_MuteBgm = value;
 				if (m_CurBgm != null)
 					m_CurBgm.mute = value;
 			}
@@ -178,7 +187,8 @@ namespace KHFC {
 			if (CheckExistBGM(name))
 				return;
 
-			StartCoroutine(CoPlayBgmSound(name, delay, unloadPrev));
+			PlayBgmAsync(name, delay, unloadPrev).Forget();
+			//StartCoroutine(CoPlayBgmSound(name, delay, unloadPrev));
 		}
 
 		public void StopBgm(bool unload = false) {
@@ -225,7 +235,7 @@ namespace KHFC {
 		}
 
 		GameObject SpawnSound(string name, Vector3 pos = default, Transform parent = null) {
-			return PoolMgr.inst.SpawnGameObject(name, parent, pos, type:AssetType.Audio);
+			return PoolMgr.inst.SpawnGameObject(name, parent, pos, type: AssetType.Audio);
 		}
 		void SpawnSoundAsync(string name, System.Action<GameObject> actOnAfter, Vector3 pos = default, Transform parent = null) {
 			PoolMgr.inst.SpawnGameObjectAsync(name, actOnAfter, parent, pos, type: AssetType.Audio);
@@ -245,7 +255,8 @@ namespace KHFC {
 		void PlayEfx(string name, float delay, float volume, Vector3 pos, Transform parent, float startTime, bool ignoreScale) {
 			if (m_MuteEfx || string.IsNullOrEmpty(name))
 				return;
-			StartCoroutine(CoPlayEfxSound(name, delay, volume, pos, parent, startTime, ignoreScale));
+			PlayEfxAsync(name, delay, volume, pos, parent, startTime, ignoreScale).Forget();
+			//StartCoroutine(CoPlayEfxSound(name, delay, volume, pos, parent, startTime, ignoreScale));
 		}
 		void StopEfx(SoundSource targetSource, bool unloadObject = false) {
 			if (targetSource == null)
@@ -256,6 +267,92 @@ namespace KHFC {
 
 			targetSource.Reset();
 			m_PoolSource.Push(targetSource);
+		}
+		async UniTaskVoid PlayEfxAsync(string name, float delay, float volume = -1f, Vector3 pos = default, Transform parent = null, float startTime = 0f, bool ignoreScale = false) {
+			GameObject sounObj = SpawnSound(name, pos, parent);
+			if (sounObj == null) {
+				Debug.LogWarning("Can't LoadSound : " + name);
+				return;
+			}
+			AudioSource newSource = sounObj.GetComponent<AudioSource>();
+
+			SoundSource sound = GetSoundSource();
+			sound.m_Source = newSource;
+			sound.m_IgnoreTimescale = ignoreScale;
+			sound.m_Name = name;
+			sound.m_Source.mute = m_MuteEfx;
+
+			if (sound.m_Token != null) {
+				sound.m_Token?.Cancel();
+			}
+			sound.m_Token = new CancellationTokenSource();
+
+			m_ListEfx.Add(sound);
+
+			newSource.volume = volume < 0f ? m_MasterEfxVolume : m_MasterEfxVolume * volume;
+			newSource.pitch = ignoreScale ? 1 : m_EfxSpeed;
+			newSource.time = startTime;
+
+			if (delay > 0f)
+				newSource.PlayDelayed(delay);
+			else
+				newSource.PlayOneShot(newSource.clip);
+
+			if (delay > 0) {
+				await UniTask.Delay((int)(delay * 1000), cancellationToken: sound.m_Token.Token);
+			}
+
+			float duration = sound.m_Source.clip.length;
+			if (sound.m_IgnoreTimescale)
+				duration *= Time.timeScale;
+
+			await UniTask.Delay((int)(duration * 1000), cancellationToken: sound.m_Token.Token);
+
+			StopEfx(sound);
+		}
+
+		async UniTaskVoid PlayBgmAsync(string name, float delay, bool unloadPrev) {
+			if (string.IsNullOrEmpty(name))
+				return;
+
+			GameObject soundObj = SpawnSound(name);
+			if (soundObj == null) {
+				Debug.LogWarning("Can't Load Sound : " + name);
+				return;
+			}
+
+			if (m_CurBgm != null)
+				await FadeOutBgmAsync(unloadPrev);
+
+			AudioSource newSource = soundObj.GetComponent<AudioSource>();
+			m_CurBgm = newSource;
+			m_CurBgm.volume = m_MasterBgmVolume;
+			m_CurBgm.loop = true;
+			m_CurBgm.mute = m_MuteBgm;
+
+			if (delay > 0f)
+				m_CurBgm.PlayDelayed(delay);
+			else
+				m_CurBgm.Play();
+		}
+
+		async UniTask FadeOutBgmAsync(bool unloadPrev) {
+			if (m_CurBgm == null)
+				return;
+
+			float curVolume = m_CurBgm.volume;
+
+			float t = 0f;
+			while (t < m_FadeoutTime) {
+				t += Time.deltaTime / m_FadeoutTime;
+				if (m_CurBgm == null)
+					return;
+
+				m_CurBgm.volume = Mathf.Lerp(curVolume, 0, t);
+				await UniTask.Yield();
+			}
+
+			StopBgm(unloadPrev);
 		}
 
 		/// <summary> 사운드 게임 오브젝트를 생성하고 출력하는 함수 </summary>

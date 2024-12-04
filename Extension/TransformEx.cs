@@ -240,6 +240,21 @@ public static class TransformEx {
 		pos.z += z;
 		tr.localPosition = pos;
 	}
+	public static void SetScaleX(this Transform tr, float x) {
+		Vector3 scale = tr.localScale;
+		scale.x = x;
+		tr.localScale = scale;
+	}
+	public static void SetScaleY(this Transform tr, float y) {
+		Vector3 scale = tr.localScale;
+		scale.y = y;
+		tr.localScale = scale;
+	}
+	public static void SetScaleZ(this Transform tr, float z) {
+		Vector3 scale = tr.localScale;
+		scale.z = z;
+		tr.localScale = scale;
+	}
 
 	public static void SetPosX(this RectTransform tr, float x) {
 		Vector2 pos = tr.anchoredPosition;
@@ -254,6 +269,22 @@ public static class TransformEx {
 	public static void SetPosZ(this RectTransform tr, float z) {
 		Vector3 pos = tr.anchoredPosition3D;
 		pos.z = z;
+		tr.anchoredPosition3D = pos;
+	}
+
+	public static void AddPosX(this RectTransform tr, float x) {
+		Vector2 pos = tr.anchoredPosition;
+		pos.x += x;
+		tr.anchoredPosition = pos;
+	}
+	public static void AddPosY(this RectTransform tr, float y) {
+		Vector2 pos = tr.anchoredPosition;
+		pos.y += y;
+		tr.anchoredPosition = pos;
+	}
+	public static void AddPosZ(this RectTransform tr, float z) {
+		Vector3 pos = tr.anchoredPosition3D;
+		pos.z += z;
 		tr.anchoredPosition3D = pos;
 	}
 }

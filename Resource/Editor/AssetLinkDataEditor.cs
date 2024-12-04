@@ -9,24 +9,25 @@ using UnityEngine;
 namespace KHFC {
 	// TODO : AssetLinkData를 제네릭하게 만들면 해당 코드 전부 AssetLinkData로 옮겨도 될 듯
 	public class AssetLinkDataEditor {
-		const string PREFAB_ROOT_PATH = "Assets/Media/Prefab";
-		const string SOUND_ROOT_PATH = "Assets/Media/Sound";
+		// TODO : Addressable 도입으로 전부 번들로 빠짐, 스프라이트는 아틀라스에서 복사하기 때문에 강한 참조 사용 제외
+		//const string PREFAB_ROOT_PATH = "Assets/Media/Prefab";
+		//const string SOUND_ROOT_PATH = "Assets/Media/Sound";
 		const string SPRITE_ITEM_ROOT_PATH = "Assets/Media/Texture/UI/Item";
 
 		public static void SetAllData() {
 			AssetLinkData.inst.ResetAllList();
 
-			// Prefab
-			string[] arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
-			LoadAssetFromGUID<GameObject>(arrGUID);
-
 			// Sprite
-			arrGUID = AssetDatabase.FindAssets("t:Sprite", new string[] { SPRITE_ITEM_ROOT_PATH });
+			string[] arrGUID = AssetDatabase.FindAssets("t:Sprite", new string[] { SPRITE_ITEM_ROOT_PATH });
 			LoadAssetFromGUID<Sprite>(arrGUID);
 
+			// Prefab
+			//arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
+			//LoadAssetFromGUID<GameObject>(arrGUID);
+
 			// Sound
-			arrGUID = AssetDatabase.FindAssets("t:AudioClip", new string[] { SOUND_ROOT_PATH });
-			LoadAssetFromGUID<AudioClip>(arrGUID);
+			//arrGUID = AssetDatabase.FindAssets("t:AudioClip", new string[] { SOUND_ROOT_PATH });
+			//LoadAssetFromGUID<AudioClip>(arrGUID);
 
 			AssetDatabase.Refresh();
 

@@ -125,10 +125,10 @@
 //				location = m_LocationType;
 
 //			if (location == AssetLocation.Resources) {
-//				LoadFromAddressable(assetName, actOnAfter);
+//				_LoadFromAddressable(assetName, actOnAfter);
 //				//LoadFromResourcesAsync(assetName, asset => actOnAfter(asset));
 //			} else if (location == AssetLocation.LocalAssetBundle) {
-//				LoadFromAddressable(assetName, actOnAfter);
+//				_LoadFromAddressable(assetName, actOnAfter);
 //			} else {
 //				bundleName = bundleName.ToLower();
 //				string prefix = bundleName.Split('_')[0];
@@ -174,7 +174,7 @@
 //				m_DicAddressable.Remove(assetName);
 //			}
 //		}
-//		void LoadFromAddressable(string assetName, System.Action<Object> onAfter) {
+//		void _LoadFromAddressable(string assetName, System.Action<Object> onAfter) {
 //			//AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(assetName);
 //			if (m_DicAddressable.TryGetValue(assetName, out AsyncOperationHandle<Object> handle)) {
 //				onAfter(handle.Result);
@@ -214,7 +214,7 @@
 //			handle.Completed += (operation) => {
 //				m_DicAddressable.Add(assetName, handle);
 //				onAfter(operation.Result);
-//				Debug.Log($"LoadFromAddressable Complete : {operation.Result.name}");
+//				Debug.Log($"_LoadFromAddressable Complete : {operation.Result.name}");
 //				//Addressables.Release(operation);
 //			};
 //		}

@@ -5,6 +5,7 @@ using UnityEngine;
 
 /// <summary> 속도를 랜덤으로 받는 회전 컴포넌트 </summary>
 [DisallowMultipleComponent]
+[ExecuteInEditMode]
 //[UnityEditor.CanEditMultipleObjects]
 public class RotateRandom : MonoBehaviour {
 	/// <summary> 현재 회전을 하고 있는지 확인, 주의 : 부드러운 정지 시 속력이 있으면 true임 </summary>
@@ -64,6 +65,12 @@ public class RotateRandom : MonoBehaviour {
 		SetSpeedInternal(speed, 0f, EasingFunction.Ease.Linear);
 	}
 
+//#if UNITY_EDITOR
+//	private void OnGUI() {
+//		UnityEditor.EditorUtility.SetDirty(gameObject);
+//		UnityEditor.SceneView.RepaintAll();
+//	}
+//#endif
 
 	void Awake() {
 		m_Speed = GetRandomSpeed();

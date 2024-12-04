@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using KHFC;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 // priority 순서 : 상단 메뉴바는 값이 클수록 위쪽에 배치, 나머지 오브젝트, 애셋 우클릭 메뉴는 값이 작을수록 위쪽에 배치
 public class KHFCEditorMenu {
@@ -48,6 +47,80 @@ public class KHFCEditorMenu {
 	//#endif
 	//	}
 
+	/// <summary>
+	/// 배치 제작용. 3DMerge 프로젝트에서만 사용
+	/// </summary>
+	[MenuItem("KHFC/Make Model To Object")]
+	static public void MakeModelToObject() {
+#if UNITY_EDITOR
+		// base gameobject
+		GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Media/Prefab/Empty.prefab");
+		//string folderPath = "Assets/3D Props - Adorable Items/Adorable 3D Items";
+		string folderPath = "Assets/Media/Mesh/LowpolyHats";
+		string[] arrGUID = AssetDatabase.FindAssets("t:Prefab", new string[] { folderPath });
+		CreateAssetFromGUID(arrGUID, 15f);	// 1 / 모델 스케일 팩터 -> 0.01이면 100
+
+		void CreateAssetFromGUID(string[] arrGUID, float scale) {
+			for (int i = 0; i < arrGUID.Length; i++) {
+				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
+				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
+
+				//AssetDatabase.CopyAsset( )
+				GameObject go = PrefabUtility.InstantiatePrefab(basePrefab) as GameObject;
+				PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
+
+				GameObject prefab = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
+				prefab = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+				PrefabUtility.UnpackPrefabInstance(prefab, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
+				prefab.RemoveComponent<Animator>();
+				prefab.SafeAddComponent<cakeslice.Outline>();
+
+				MeshCollider col = prefab.SafeAddComponent<MeshCollider>();
+				col.convex = true;
+				col.isTrigger = false;
+				col.cookingOptions = MeshColliderCookingOptions.CookForFasterSimulation
+									| MeshColliderCookingOptions.EnableMeshCleaning
+									| MeshColliderCookingOptions.WeldColocatedVertices
+									| MeshColliderCookingOptions.UseFastMidphase;
+
+				Transform parent = go.transform.GetChild(0).GetChild(0);
+				prefab.transform.position = Vector3.zero;
+				//prefab.transform.rotation = Quaternion.identity;
+				prefab.transform.localEulerAngles = new Vector3(0f, 180, 0f);
+				prefab.transform.localScale *= scale;
+				prefab.transform.SetParent(parent, false);
+
+				go.ChangeLayerRecursivley(LayerMask.NameToLayer("Object"));
+				PrefabUtility.SaveAsPrefabAsset(go, $"Assets/Media/Prefab/CreatedByEditor/{prefab.name}.prefab");
+				GameObject.DestroyImmediate(go);
+
+				//AssetDatabase.CreateAsset
+			}
+		}
+		AssetDatabase.Refresh();
+#endif
+	}
+
+	[MenuItem("KHFC/Add X 90 degree")]
+	static public void AddXdegree() {
+#if UNITY_EDITOR
+		GameObject root = GameObject.Find("TestPlane");
+		if (root == null) {
+			Debug.LogError("testplane is not exist");
+			return;
+		}
+
+		Transform tr = root.transform;
+		for (int i = 1, count = tr.childCount; i < count; ++i) {
+			Transform target = tr.GetChild(i).GetChild(0).GetChild(0).GetChild(0);
+			Vector3 angle = target.localEulerAngles;
+			target.localScale *= .2f;
+			angle.y = 180f;
+			target.localEulerAngles = angle;
+		}
+#endif
+	}
+
 	/// <summary> 씬 내의 모든 버튼 컴포넌트를 버튼위젯 컴포넌트로 변경한다. </summary>
 	[MenuItem("KHFC/UGUI/Change UI.Button To KHFC.ButtonWdgt")]
 	public static void ChangeButtonToButtonWdgt() {
@@ -89,6 +162,7 @@ public class KHFCEditorMenu {
 	public static void SetActive() {
 		foreach (GameObject obj in Selection.objects) {
 			obj.SetActive(!obj.activeSelf);
+			EditorUtility.SetDirty(obj);
 		}
 	}
 

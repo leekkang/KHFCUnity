@@ -8,6 +8,7 @@ namespace KHFC {
 	/// <summary>
 	/// 애셋 데이터베이스에 있는 애셋들의 링크를 관리하는 클래스
 	/// </summary>
+	/// <remarks> 강한 참조를 사용해아 할 경우 해당 클래스의 에디터에 경로를 넣는다. </remarks>
 	public class AssetLinkData : SingleGOComponent<AssetLinkData> {
 		[Serializable]
 		class LinkList {

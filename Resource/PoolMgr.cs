@@ -10,7 +10,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 using Object = UnityEngine.Object;
-using System.ComponentModel;
 
 namespace KHFC {
 	public enum AssetType {
@@ -351,8 +350,17 @@ namespace KHFC {
 		}
 
 		/// <summary> 개별적으로 관리할 애셋을 생성하는 함수 </summary>
-		public Object CreateAsset(string assetName) {
-			Object asset = LoadFromAddressable(assetName);
+		public T CreateAsset<T>(string assetName) where T : Object {
+			Object asset = _LoadFromAddressable(assetName);
+			if (asset == null)
+				Debug.LogWarning("There is no resource, name : " + assetName);
+
+			return (T)asset;
+		}
+
+		/// <summary> 개별적으로 관리할 애셋을 생성하는 함수 </summary>
+		Object CreateAsset(string assetName) {
+			Object asset = _LoadFromAddressable(assetName);
 			if (asset == null)
 				Debug.LogWarning("There is no resource, name : " + assetName);
 
@@ -369,11 +377,11 @@ namespace KHFC {
 					m_DicAssetAfterAction[assetName].Add(onAfter);
 					return;
 				} else {
-					m_DicAssetAfterAction.Add(assetName, new List<Action<Object>>());
+					m_DicAssetAfterAction.Add(assetName, new List<Action<Object>>() { onAfter });
 				}
 			}
 
-			LoadFromAddressableAsync(assetName, (asset) => {
+			_LoadFromAddressableAsync(assetName, (asset) => {
 				if (asset == null) {
 					Debug.LogWarning("There is no resource, name : " + assetName);
 					onAfter?.Invoke(null);
@@ -390,8 +398,6 @@ namespace KHFC {
 						m_DicAssetAfterAction.Remove(assetName);
 					}
 				}
-
-				onAfter?.Invoke(asset);
 			});
 		}
 
@@ -403,7 +409,7 @@ namespace KHFC {
 				return;
 
 			m_DicAsset.Remove(assetName);
-			ReleaseAddressable(assetName);
+			ReleaseAddressable(obj);
 
 #if UNITY_EDITOR
 			m_ListLoadedAsset.RemoveBySwap(obj);
@@ -442,33 +448,36 @@ namespace KHFC {
 
 
 
-		void ClearAddressable() {
+		public void ClearAddressable() {
 			foreach (var pair in m_DicAsset) {
 				Addressables.Release(pair.Value);
 			}
 			m_DicAsset.Clear();
 		}
 
-		void ReleaseAddressable(string assetName) {
+		public void ReleaseAddressable(Object asset) {
+			Addressables.Release(asset);
+		}
+		public void ReleaseAddressable(string assetName) {
 			if (m_DicAsset.TryGetValue(assetName, out Object asset)) {
 				Addressables.Release(asset);
 				m_DicAsset.Remove(assetName);
 			}
 		}
 
+
 		void LoadAssetPostProcess(ref AsyncOperationHandle<Object> handle, ref string assetName, System.Action<Object> onAfter) {
 			if (handle.Status == AsyncOperationStatus.Succeeded) {
-				Debug.Log($"Async operation succeeded : {assetName}");
-				m_DicAsset.Add(assetName, handle.Result);
+				//Debug.Log($"Async operation succeeded : {assetName}");
 				onAfter?.Invoke(handle.Result);
 			} else if (handle.Status == AsyncOperationStatus.Failed) {
-				Debug.LogError("Async operation failed");
+				//Debug.LogError("Async operation failed");
 				Addressables.Release(handle);
 				onAfter?.Invoke(null);
 			}
 		}
 
-		Object LoadFromAddressable(string assetName) {
+		Object _LoadFromAddressable(string assetName) {
 			if (m_DicAsset.TryGetValue(assetName, out Object asset))
 				return asset;
 
@@ -483,7 +492,7 @@ namespace KHFC {
 			LoadAssetPostProcess(ref handle, ref assetName, (obj) => asset = obj);
 			return asset;
 		}
-		async UniTask<Object> LoadFromAddressableAsync(string assetName) {
+		async UniTask<Object> _LoadFromAddressableAsync(string assetName) {
 			if (m_DicAsset.TryGetValue(assetName, out Object asset)) {
 				return asset;
 			}
@@ -506,7 +515,7 @@ namespace KHFC {
 			return obj;
 		}
 
-		void LoadFromAddressableAsync(string assetName, System.Action<Object> onAfter) {
+		void _LoadFromAddressableAsync(string assetName, System.Action<Object> onAfter) {
 			//AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(assetName);
 			if (m_DicAsset.TryGetValue(assetName, out Object asset)) {
 				onAfter(asset);
@@ -527,12 +536,12 @@ namespace KHFC {
 
 			if (handle.IsDone)
 				LoadAssetPostProcess(ref handle, ref assetName, onAfter);
-			else
-				Debug.Log("Async operation still in progress");
+			//else
+			//	Debug.Log("Async operation still in progress");
 
 			handle.Completed += (operation) => {
 				LoadAssetPostProcess(ref operation, ref assetName, onAfter);
-				Debug.Log($"LoadFromAddressable Complete : {operation.Result.name}");
+				//Debug.Log($"_LoadFromAddressable Complete : {operation.Result.name}");
 			};
 		}
 
