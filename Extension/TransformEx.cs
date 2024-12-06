@@ -287,4 +287,26 @@ public static class TransformEx {
 		pos.z += z;
 		tr.anchoredPosition3D = pos;
 	}
+
+	public static void SetWidth(this RectTransform tr, float width) {
+		Vector2 size = tr.sizeDelta;
+		size.x = width;
+		tr.sizeDelta = size;
+	}
+	public static void SetHeight(this RectTransform tr, float height) {
+		Vector2 size = tr.sizeDelta;
+		size.y = height;
+		tr.sizeDelta = size;
+	}
+
+	public static void AddWidth(this RectTransform tr, float width) {
+		Vector2 size = tr.sizeDelta;
+		size.x += width;
+		tr.sizeDelta = size;
+	}
+	public static void AddHeight(this RectTransform tr, float height) {
+		Vector2 size = tr.sizeDelta;
+		size.y += height;
+		tr.sizeDelta = size;
+	}
 }

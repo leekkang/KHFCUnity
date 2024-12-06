@@ -20,6 +20,11 @@ namespace KHFC {
 				}
 			}
 		}
+		public static void ClearLock() {
+			lock (LockTouchObj) {
+				LockTouch = 0;
+			}
+		}
 
 		protected Transform m_CachedTransform;
 		public RectTransform rectTransform {
