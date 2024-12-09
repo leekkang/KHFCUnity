@@ -239,13 +239,13 @@ namespace KHFC {
 		}
 
 		/// <summary> 이름에 <paramref name="pattern"/>을 포함하는 애셋과 게임 오브젝트들을 모든 풀에서 제거하는 함수 </summary>
-		/// <param name="pattern"> 제거할 애셋 이름의 패턴 </param>
-		public void UnLoadPattern(string pattern) {
+		/// <param name="prefix"> 제거할 애셋 이름의 패턴 </param>
+		public void UnLoadPattern(string prefix) {
 			List<string> listKey = new();
 
 			// 해당 패턴의 이름을 m_ListActivated에서 찾아서 제거
 			m_ListActivated.RemoveAll(item => {
-				bool result = item.m_Name.StartsWith(pattern);
+				bool result = item.m_Name.StartsWith(prefix);
 				if (result) {
 					listKey.Add(item.m_Name);
 					Destroy(item.m_Obj);
@@ -255,7 +255,7 @@ namespace KHFC {
 			});
 			// 해당 패턴의 이름을 m_ListDeactivated에서 찾아서 제거
 			m_ListDeactivated.RemoveAll(item => {
-				bool result = item.m_Name.StartsWith(pattern);
+				bool result = item.m_Name.StartsWith(prefix);
 				if (result) {
 					listKey.Add(item.m_Name);
 					Destroy(item.m_Obj);
@@ -266,7 +266,7 @@ namespace KHFC {
 
 			// 해당 패턴의 이름을 애셋 풀에서 찾아서 리소스 해제
 			foreach (var item in m_DicAsset) {
-				if (item.Key.StartsWith(pattern)) {
+				if (item.Key.StartsWith(prefix)) {
 					Resources.UnloadAsset(item.Value);  // 리소스만 제거, 키 값은 존재함
 					listKey.Add(item.Key);
 				}
@@ -297,6 +297,27 @@ namespace KHFC {
 
 				UnLoadAsset(item.m_Name);
 				Destroy(item.m_Obj);
+
+				return result;
+			});
+
+			Resources.UnloadUnusedAssets();
+		}
+
+		/// <summary> <paramref name="prefix"/>로 시작하는 오브젝트를 제외한 모든 deactive 오브젝트를 풀에서 제거한다 </summary>
+		/// <param name="prefix"> 제거하지 않을 오브젝트의 이름 prefix </param>
+		public void UnloadDeactivesExcept(string prefix) {
+			int count = m_ListDeactivated.Count;
+			m_ListDeactivated.RemoveAll(item => {
+				bool result = item != null;
+				if (item.m_IsGui) // NGUI를 사용하는 GUI의 경우, Destroy하고 Instantiate할때 메모리릭이 발생한다.
+					return false;
+
+				result = item.m_Name.StartsWith(prefix);
+				if (result) {
+					UnLoadAsset(item.m_Name);
+					Destroy(item.m_Obj);
+				}
 
 				return result;
 			});
