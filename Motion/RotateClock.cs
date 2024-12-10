@@ -1,11 +1,9 @@
 ﻿
-using System.Collections;
-using System.Data;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 /// <summary> 시계바늘처럼 움직이고 싶을 때 사용하는 회전 컴포넌트 </summary>
 [DisallowMultipleComponent]
+[ExecuteInEditMode]
 //[UnityEditor.CanEditMultipleObjects]
 public class RotateClock : MonoBehaviour {
 	/// <summary> 현재 회전을 하고 있는지 확인 </summary>

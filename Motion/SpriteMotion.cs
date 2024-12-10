@@ -79,7 +79,7 @@ public class SpriteMotion : MotionBase {
 	[KHFC.FieldName("스프라이트들")] public UnityEngine.Sprite[] m_ArrSprite;
 
 	/// <summary> 스프라이트 애니메이션을 사용하는 오브젝트 </summary>
-	[SerializeField] List<SpriteSequence> m_ListSeq;
+	[SerializeField] List<SpriteSequence> m_ListSeq = new();
 
 	/// <summary> 현재 재생에 사용하는 시퀀스 인덱스 </summary>
 	[ReadOnly] public int m_CurSeqIndex = 0;
@@ -106,10 +106,6 @@ public class SpriteMotion : MotionBase {
 		}
 	}
 #endif
-
-	public void Awake() {
-		m_ListSeq = new List<SpriteSequence>();
-	}
 
 	void Start() {
 		Play();

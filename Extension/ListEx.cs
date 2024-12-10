@@ -28,17 +28,38 @@ public static class ListExt {
 	}
 
 	/// <summary> 리스트를 <paramref name="size"/> 크기로 변경하고 값을 넣어준다 </summary>
-	public static void Resize<T>(this List<T> list, int size) where T : class {
+	public static void Resize<T>(this List<T> list, int size) {
 		list.Clear();
 		list.Capacity = size;
 		for (int i = 0; i < size; ++i) {
-			list.Add(null);
+			list.Add(default);
 		}
 	}
 
 	/// <summary> 리스트 내 값이 있으면 true, 없으면 false를 리턴 </summary>
-	public static bool TryGetValue<T>(this List<T> list, out T value, Predicate<T> predicate) where T : class {
-		value = list.Find(predicate);
-		return value != null;
+	public static bool TryGetValue<T>(this List<T> list, out T value, Predicate<T> predicate) {
+		int index = list.FindIndex(predicate);
+		value = list[index];
+		return index != -1;
 	}
+
+	/// <summary> 리스트를 섞는다. Fisher-Yates shuffle 방식 사용 </summary>
+	public static void Shuffle<T>(this List<T> list, Random rnd = null) {
+		rnd ??= new();
+		for (int i = list.Count - 1; i > 1; --i) {
+			int k = rnd.Next(i + 1);
+			(list[k], list[i]) = (list[i], list[k]);
+		}
+	}
+
+
+
+	/// <summary> 리스트를 <paramref name="size"/> 크기로 변경하고 값을 넣어준다 </summary>
+	//public static void Resize<T>(this List<T> list, int size) where T : class {
+	//	list.Clear();
+	//	list.Capacity = size;
+	//	for (int i = 0; i < size; ++i) {
+	//		list.Add(null);
+	//	}
+	//}
 }

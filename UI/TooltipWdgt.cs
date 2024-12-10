@@ -12,7 +12,7 @@ namespace KHFC {
 		DelHover m_Enter;
 		DelHover m_Exit;
 
-		protected override void Awake() {
+		protected override void Start() {
 			base.Awake();
 
 			Transform parent = transform.parent;

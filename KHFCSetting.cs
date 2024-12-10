@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using UnityEditor;
 //using System.Reflection;
 
 namespace KHFC {
@@ -57,6 +58,38 @@ namespace KHFC {
 				return m_Instance;
 			}
 		}
+		//public static KHFCSetting Instance {
+		//	get {
+		//		m_Instance = NullableInstance;
+
+		//		if (m_Instance == null) {
+		//			// Create KHFCSetting.asset inside the folder in which KHFCSetting.cs reside.
+		//			m_Instance = ScriptableObject.CreateInstance<KHFCSetting>();
+		//			var guids = AssetDatabase.FindAssets(string.Format("{0} t:script", "KHFCSetting"));
+		//			if (guids == null || guids.Length <= 0) {
+		//				return m_Instance;
+		//			}
+		//			var assetPath = AssetDatabase.GUIDToAssetPath(guids[0]).Replace("KHFCSetting.cs", "KHFCSetting.asset");
+		//			AssetDatabase.CreateAsset(m_Instance, assetPath);
+		//		}
+
+		//		return m_Instance;
+		//	}
+		//}
+		//public static KHFCSetting NullableInstance {
+		//	get {
+		//		if (m_Instance == null) {
+		//			var guids = AssetDatabase.FindAssets(string.Format("{0} t:ScriptableObject", "KHFCSetting"));
+		//			if (guids == null || guids.Length <= 0) {
+		//				return m_Instance;
+		//			}
+		//			var assetPath = AssetDatabase.GUIDToAssetPath(guids[0]);
+		//			m_Instance = (KHFCSetting)AssetDatabase.LoadAssetAtPath(assetPath, typeof(KHFCSetting));
+		//		}
+
+		//		return m_Instance;
+		//	}
+		//}
 
 		const string m_NameAssembly = "Assembly-CSharp";
 		const string m_NameAssemblyEditor = "Assembly-CSharp-Editor";

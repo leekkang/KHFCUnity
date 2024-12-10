@@ -30,8 +30,13 @@ namespace KHFC {
 			return angle;
 		}
 
-		///<summary> 분산랜덤 </summary>
+
+		/// <summary> 분산랜덤 </summary>
 		/// <param name="variance">클수록 뾰족해짐! 최소값 기본값이 1</param>
+		/// <param name="middleValue"> 중간값 </param>
+		/// <param name="range"> 값 표현 범위, 그래프의 절반 범위 </param>
+		/// <param name="variance"> 분산에 사용하는 로그의 밑(base) </param>
+		/// <returns></returns>
 		public static int DistributionRandom(int middleValue, float range, int variance = 1) {
 			variance = Mathf.Max(1, variance);
 			variance = (int)Math.Pow(10, variance);
@@ -65,10 +70,10 @@ namespace KHFC {
 
 		/// <summary> 폴더 생성 </summary>
 		public static void CreateDir(string path, bool delIfExists = false) {
-			if (System.IO.Directory.Exists(path) && delIfExists) {
-				System.IO.Directory.Delete(path, true);
+			if (!System.IO.Directory.Exists(path)) {
 				System.IO.Directory.CreateDirectory(path);
-			} else {
+			} else if (delIfExists) {
+				System.IO.Directory.Delete(path, true);
 				System.IO.Directory.CreateDirectory(path);
 			}
 		}
@@ -94,7 +99,7 @@ namespace KHFC {
 
 		/// <summary> 폴더 복사 </summary>
 		public static void CopyDirectory(string sourceDirName, string destDirName, bool copySubDirs) {
-			// Get the subdirectories for the specified directory.
+			// Get the subdirectories for the specified directory
 			System.IO.DirectoryInfo dir = new(sourceDirName);
 			System.IO.DirectoryInfo[] dirs = dir.GetDirectories();
 
@@ -104,19 +109,19 @@ namespace KHFC {
 					+ sourceDirName);
 			}
 
-			// If the destination directory doesn't exist, create it. 
+			// If the destination directory doesn't exist, create it
 			if (!System.IO.Directory.Exists(destDirName)) {
 				System.IO.Directory.CreateDirectory(destDirName);
 			}
 
-			// Get the files in the directory and copy them to the new location.
+			// Get the files in the directory and copy them to the new location
 			System.IO.FileInfo[] files = dir.GetFiles();
 			foreach (System.IO.FileInfo file in files) {
 				string temppath = System.IO.Path.Combine(destDirName, file.Name);
 				file.CopyTo(temppath, false);
 			}
 
-			// If copying subdirectories, copy them and their contents to new location. 
+			// If copying subdirectories, copy them and their contents to new location
 			if (copySubDirs) {
 				foreach (System.IO.DirectoryInfo subdir in dirs) {
 					string temppath = System.IO.Path.Combine(destDirName, subdir.Name);

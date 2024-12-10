@@ -20,6 +20,11 @@ namespace KHFC {
 				}
 			}
 		}
+		public static void ClearLock() {
+			lock (LockTouchObj) {
+				LockTouch = 0;
+			}
+		}
 
 		protected Transform m_CachedTransform;
 		public RectTransform rectTransform {
@@ -73,8 +78,7 @@ namespace KHFC {
 			return atlas != null;
 		}
 		public static void AddAtlas(UnityEngine.U2D.SpriteAtlas atlas) {
-			if (mListLoadedAtlas == null)
-				mListLoadedAtlas = new RefList<UnityEngine.U2D.SpriteAtlas>();
+			mListLoadedAtlas ??= new RefList<UnityEngine.U2D.SpriteAtlas>();
 			mListLoadedAtlas.Add(atlas);
 		}
 		/// <summary> 리스트에서 제거되면 true, 아니면 false </summary>

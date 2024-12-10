@@ -17,4 +17,14 @@ namespace KHFC {
 			Debug.Log("ScreenCaptured : " + path);
 		}
 	}
+
+	public class RenderTextureCapture {
+		public static void RenderTextureToPng(RenderTexture tex, string path) {
+			
+		}
+
+		public static void CameraCapture(Camera cam) {
+
+		}
+	}
 }
