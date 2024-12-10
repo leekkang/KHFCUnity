@@ -6,6 +6,11 @@ using UnityEditor;
 //using System.Reflection;
 
 namespace KHFC {
+	static class UseDef {
+		public const bool UNITASK = false;
+		public const bool ADDRESSABLE = false;
+	}
+
 	[System.Serializable]
 	public class PublishOption {
 		public string m_PublishName;		//Publish 이름 ( BUILD에선 결과물의 이름, DefineSymbol로 사용된다)
