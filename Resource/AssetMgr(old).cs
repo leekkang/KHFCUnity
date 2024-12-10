@@ -3,6 +3,9 @@
 //using UnityEngine;
 //using Cysharp.Threading.Tasks;
 //using System.Threading.Tasks;
+//using UnityEngine.AddressableAssets;
+//using UnityEngine.ResourceManagement.AsyncOperations;
+
 
 //#if UNITY_EDITOR
 //using UnityEditor;
@@ -12,7 +15,7 @@
 ////TODO : Dependency 관련 코드 모두 제거. 시간나면 추가하자
 //namespace KHFC {
 //	public enum AssetLocation {
-//		None = -1,
+//		Default = -1,
 //		Resources,
 //		LocalAssetBundle,
 //		RemoteAssetBundle,
@@ -31,7 +34,7 @@
 
 //#if UNITY_EDITOR
 //		/// <summary>에디터에서 현재 로드 된 에셋번들을 확인 하기 위함</summary>
-//		public List<AssetBundle> m_ListLoadedbundle = new();
+//		public List<AssetBundle> m_ListLoadedbundle = new List<AssetBundle>();
 //#endif
 //		class AssetBundleInfo {
 //			public bool m_Loaded = false;
@@ -60,6 +63,7 @@
 //		}
 
 //		Dictionary<string, AssetBundleInfo> m_DicAssetbundle = null;
+//		Dictionary<string, AsyncOperationHandle<Object>> m_DicAddressable = new Dictionary<string, AsyncOperationHandle<Object>>();
 
 //		public void Open() {
 //			if (m_OnInitialized)
@@ -85,15 +89,20 @@
 //		}
 
 //		//Get Asset by location Type
-//		public Object GetAsset(string assetName, string bundleName) {
+//		public Object GetAsset(string assetName, AssetLocation location, string bundleName = null) {
 //			Object resultObj = null;
 
-//			bundleName = bundleName.ToLower();
+//			if (location == AssetLocation.Default)
+//				location = m_LocationType;
 
-//			if (m_LocationType == AssetLocation.Resources) {
+//			if (location == AssetLocation.Resources) {
 //				resultObj = LoadFromAssetLink(assetName);
 //				//resultObj = LoadFromResources(assetName);
+//			} else if (location == AssetLocation.LocalAssetBundle) {
+
 //			} else {
+//				bundleName ??= assetName;
+//				bundleName = bundleName.ToLower();
 //				string prefix = bundleName.Split('_')[0];
 //				BundleProcess processor = KHFCSetting.inst.m_ListBundleProcess.Find(unit => unit.m_AssetPrefix == prefix);
 //				if (processor == null || !processor.m_DontZipAssetbundle) {
@@ -110,11 +119,16 @@
 //			return resultObj;
 //		}
 
-//		public void GetAssetAsync(string assetName, string bundleName, System.Action<Object> actOnAfter) {
-//			if (m_LocationType == AssetLocation.Resources) {
-//				Object resultObj = LoadFromAssetLink(assetName);
-//				actOnAfter(resultObj);
+//		public void GetAssetAsync(string assetName, System.Action<Object> actOnAfter,
+//								  AssetLocation location, string bundleName) {
+//			if (location == AssetLocation.Default)
+//				location = m_LocationType;
+
+//			if (location == AssetLocation.Resources) {
+//				_LoadFromAddressable(assetName, actOnAfter);
 //				//LoadFromResourcesAsync(assetName, asset => actOnAfter(asset));
+//			} else if (location == AssetLocation.LocalAssetBundle) {
+//				_LoadFromAddressable(assetName, actOnAfter);
 //			} else {
 //				bundleName = bundleName.ToLower();
 //				string prefix = bundleName.Split('_')[0];
@@ -144,33 +158,93 @@
 //			return null;
 //		}
 
+//		//public UniTask<GameObject> GetAssetAsync(string assetName, string bundleName) {
 
-//		private Object LoadFromAssetLink(string assetName) {
+//		//}
+
+//		public void ClearAddressable() {
+//			foreach (var pair in m_DicAddressable) {
+//				Addressables.Release(pair.Value);
+//			}
+//			m_DicAddressable.Clear();
+//		}
+//		public void ReleaseAddressable(string assetName) {
+//			if (m_DicAddressable.TryGetValue(assetName, out AsyncOperationHandle<Object> handle)) {
+//				Addressables.Release(handle);
+//				m_DicAddressable.Remove(assetName);
+//			}
+//		}
+//		void _LoadFromAddressable(string assetName, System.Action<Object> onAfter) {
+//			//AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(assetName);
+//			if (m_DicAddressable.TryGetValue(assetName, out AsyncOperationHandle<Object> handle)) {
+//				onAfter(handle.Result);
+//				return;
+//			}
+//			handle = Addressables.LoadAssetAsync<Object>(assetName);
+
+//			if (!handle.IsValid()) {
+//				Debug.LogError("Invalid AsyncOperationHandle");
+//				Addressables.Release(handle);
+//				onAfter(null);
+//				return;
+//			}
+//			//AsyncOperationHandle<long> sizeHandle = Addressables.GetDownloadSizeAsync(key); ;
+//			//sizeHandle.Completed += (op) => {
+//			//	long result = op.Result;
+//			//	Debug.Log($"{key} size : {result}");
+//			//};
+
+//			if (handle.IsDone) {
+//				if (handle.Status == AsyncOperationStatus.Succeeded) {
+//					// 성공 시 작업 처리
+//					Debug.Log("Async operation succeeded");
+//					m_DicAddressable.Add(assetName, handle);
+//					onAfter(handle.Result);
+//				} else if (handle.Status == AsyncOperationStatus.Failed) {
+//					// 실패 시 작업 처리
+//					Debug.LogError("Async operation failed");
+//					Addressables.Release(handle);
+//					onAfter(null);
+//				}
+//			} else {
+//				// 작업 진행 중
+//				Debug.Log("Async operation still in progress");
+//			}
+//			//await asyncOperation.;
+//			handle.Completed += (operation) => {
+//				m_DicAddressable.Add(assetName, handle);
+//				onAfter(operation.Result);
+//				Debug.Log($"_LoadFromAddressable Complete : {operation.Result.name}");
+//				//Addressables.Release(operation);
+//			};
+//		}
+
+//		Object LoadFromAssetLink(string assetName) {
 //			return AssetLinkData.inst.GetLink<Object>(assetName);
 //		}
 
-//		private Object LoadFromResources(string assetName) {
+//		Object LoadFromResources(string assetName) {
 //			return Resources.Load(assetName);
 //		}
 
-//		private void LoadFromResourcesAsync(string assetName, System.Action<Object> actOnAfter) {
+//		void LoadFromResourcesAsync(string assetName, System.Action<Object> actOnAfter) {
 //			StartCoroutine(CoLoadFromResourcesAsync(assetName, actOnAfter));
 //		}
-//		private IEnumerator CoLoadFromResourcesAsync(string assetName, System.Action<Object> actOnAfter) {
+//		IEnumerator CoLoadFromResourcesAsync(string assetName, System.Action<Object> actOnAfter) {
 //			ResourceRequest req = Resources.LoadAsync(assetName);
 //			yield return req;
 
 //			actOnAfter(req.asset);
 //		}
 
-//		private async Task<Object> LoadFromResourcesAsync(string assetName) {
+//		async Task<Object> LoadFromResourcesAsync(string assetName) {
 //			ResourceRequest req = Resources.LoadAsync(assetName);
 //			await req;
 //			return req.asset;
 //		}
 
 
-//		private Object LoadFromAssetBundle(string assetName, string bundleName, bool isSingly = false) {
+//		Object LoadFromAssetBundle(string assetName, string bundleName, bool isSingly = false) {
 //			if (m_SB == null)
 //				m_SB = new System.Text.StringBuilder();
 
@@ -198,10 +272,7 @@
 //			}
 
 //			AssetBundleInfo bundleInfo = m_DicAssetbundle[finalBundleName];
-//			AssetBundle loadedBundle = bundleInfo.m_Bundle;
-
-//			if (loadedBundle == null)
-//				loadedBundle = AssetBundle.LoadFromFile(m_LocationPath + bundleName);
+//			AssetBundle loadedBundle = bundleInfo.m_Bundle != null ? bundleInfo.m_Bundle : AssetBundle.LoadFromFile(m_LocationPath + bundleName);
 
 //			if (loadedBundle == null)
 //				return null;
@@ -232,10 +303,10 @@
 //			return resultObj;
 //		}
 
-//		private void LoadFromAssetBundleAsync(string assetName, string bundleName, System.Action<Object> actOnAfter, bool isSingly = false) {
+//		void LoadFromAssetBundleAsync(string assetName, string bundleName, System.Action<Object> actOnAfter, bool isSingly = false) {
 //			StartCoroutine(CoLoadFromAssetBundleAsync(assetName, bundleName, actOnAfter, isSingly));
 //		}
-//		private IEnumerator CoLoadFromAssetBundleAsync(string assetName, string bundleName, System.Action<Object> actOnAfter, bool isSingly = false) {
+//		IEnumerator CoLoadFromAssetBundleAsync(string assetName, string bundleName, System.Action<Object> actOnAfter, bool isSingly = false) {
 //			if (m_SB == null)
 //				m_SB = new System.Text.StringBuilder();
 
@@ -314,7 +385,7 @@
 //			actOnAfter(resultObj);
 //		}
 
-//		private Object LoadFromFile(string assetName, string bundleName, BundleProcess bundleProcessor) {
+//		Object LoadFromFile(string assetName, string bundleName, BundleProcess bundleProcessor) {
 //			string file_extension = string.Empty;
 
 //			// TODO: 확장자 선정 방식 변경 필요
@@ -340,10 +411,10 @@
 //			return (Object)wwwLoadFile.GetAudioClip();
 //		}
 
-//		private void LoadFromFileAsync(string assetName, string bundleName, BundleProcess bundleProcessor, System.Action<Object> actOnAfter) {
+//		void LoadFromFileAsync(string assetName, string bundleName, BundleProcess bundleProcessor, System.Action<Object> actOnAfter) {
 //			StartCoroutine(CoLoadFromFileAsync(assetName, bundleName, bundleProcessor, actOnAfter));
 //		}
-//		private IEnumerator CoLoadFromFileAsync(string assetName, string bundleName, BundleProcess bundleProcessor, System.Action<Object> actOnAfter) {
+//		IEnumerator CoLoadFromFileAsync(string assetName, string bundleName, BundleProcess bundleProcessor, System.Action<Object> actOnAfter) {
 //			string file_extension = string.Empty;
 
 //			// TODO: 확장자 선정 방식 변경 필요
@@ -400,7 +471,7 @@
 //		}
 
 
-//		private void LoadRoot() {
+//		void LoadRoot() {
 //			//			string manifest_name = "";
 
 //			//#if UNITY_STANDALONE_WIN && !UNITY_EDITOR_WIN
@@ -444,7 +515,7 @@
 //			//}
 //		}
 
-//		private string GetLocationPath() {
+//		string GetLocationPath() {
 //			switch (m_LocationType) {
 //				case AssetLocation.Resources:
 //					return "";
