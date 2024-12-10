@@ -306,15 +306,18 @@ namespace KHFC {
 
 		/// <summary> <paramref name="prefix"/>로 시작하는 오브젝트를 제외한 모든 deactive 오브젝트를 풀에서 제거한다 </summary>
 		/// <param name="prefix"> 제거하지 않을 오브젝트의 이름 prefix </param>
-		public void UnloadDeactivesExcept(string prefix) {
+		public void UnloadDeactivesExcept(params string[] prefix) {
 			int count = m_ListDeactivated.Count;
+			int exceptCount = prefix.Length;
 			m_ListDeactivated.RemoveAll(item => {
 				bool result = item != null;
 				if (item.m_IsGui) // NGUI를 사용하는 GUI의 경우, Destroy하고 Instantiate할때 메모리릭이 발생한다.
 					return false;
 
-				result = item.m_Name.StartsWith(prefix);
-				if (result) {
+				for (int i = 0; i < exceptCount; i++)
+					result |= item.m_Name.StartsWith(prefix[i]);
+
+				if (!result) {
 					UnLoadAsset(item.m_Name);
 					Destroy(item.m_Obj);
 				}
