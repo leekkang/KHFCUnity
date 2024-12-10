@@ -267,7 +267,8 @@ namespace KHFC {
 			// 해당 패턴의 이름을 애셋 풀에서 찾아서 리소스 해제
 			foreach (var item in m_DicAsset) {
 				if (item.Key.StartsWith(prefix)) {
-					Resources.UnloadAsset(item.Value);  // 리소스만 제거, 키 값은 존재함
+					// TODO : addressable 사용하면서 에러로그가 나옴. 확인 필요
+					//Resources.UnloadAsset(item.Value);  // 리소스만 제거, 키 값은 존재함
 					listKey.Add(item.Key);
 				}
 			}
@@ -314,12 +315,14 @@ namespace KHFC {
 				if (item.m_IsGui) // NGUI를 사용하는 GUI의 경우, Destroy하고 Instantiate할때 메모리릭이 발생한다.
 					return false;
 
+				// 패턴 일치하면 result == false 가 된다.
 				for (int i = 0; i < exceptCount; i++)
-					result |= item.m_Name.StartsWith(prefix[i]);
+					result &= !item.m_Name.StartsWith(prefix[i]);
 
-				if (!result) {
+				if (result) {
 					UnLoadAsset(item.m_Name);
 					Destroy(item.m_Obj);
+					Debug.Log($"Deactive Asset : {item.m_Name}");
 				}
 
 				return result;
