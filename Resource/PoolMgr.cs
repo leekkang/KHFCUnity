@@ -322,7 +322,7 @@ namespace KHFC {
 				if (result) {
 					UnLoadAsset(item.m_Name);
 					Destroy(item.m_Obj);
-					Debug.Log($"Deactive Asset : {item.m_Name}");
+					//Debug.Log($"Deactive Asset : {item.m_Name}");
 				}
 
 				return result;
