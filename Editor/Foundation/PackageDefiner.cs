@@ -6,24 +6,24 @@ namespace KHFC {
 
 		static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths) {
 			bool imported = false;
-			foreach (string path in importedAssets) {
-				if (Path.GetExtension(path) == ".xls" || Path.GetExtension(path) == ".xlsx") {
-					//if (cachedInfos == null) cachedInfos = FindExcelAssetInfos();
-					cachedInfos ??= FindExcelAssetInfos();
+			//foreach (string path in importedAssets) {
+			//	if (Path.GetExtension(path) == ".xls" || Path.GetExtension(path) == ".xlsx") {
+			//		//if (cachedInfos == null) cachedInfos = FindExcelAssetInfos();
+			//		cachedInfos ??= FindExcelAssetInfos();
 
-					var excelName = Path.GetFileNameWithoutExtension(path);
-					if (excelName.StartsWith("~$"))
-						continue;
+			//		var excelName = Path.GetFileNameWithoutExtension(path);
+			//		if (excelName.StartsWith("~$"))
+			//			continue;
 
-					ExcelAssetInfo info = cachedInfos.Find(i => i.ExcelName == excelName);
+			//		ExcelAssetInfo info = cachedInfos.Find(i => i.ExcelName == excelName);
 
-					if (info == null)
-						continue;
+			//		if (info == null)
+			//			continue;
 
-					ImportExcel(path, info);
-					imported = true;
-				}
-			}
+			//		ImportExcel(path, info);
+			//		imported = true;
+			//	}
+			//}
 
 			if (imported) {
 				AssetDatabase.SaveAssets();
