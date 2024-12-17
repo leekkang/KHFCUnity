@@ -8,7 +8,7 @@ namespace KHFC {
 
 	public class ButtonWdgt : Button {
 		// TODO : 해당 버튼을 사용하는 부모 패널을 특정지을 방법이 없을까? 현재는 클라이언트에 맞게 수정중임
-		AbstractPanel m_Parent;
+		UIBase m_Parent;
 		DelClick m_Click;	// 얘네들 에디터 타임에 저장할 수 있는 방법은 UnityEvent 말고 없음. NGUI도 뜯어보면 런타임에 델리게이트 찾더라.
 		DelHover m_Enter;
 		DelHover m_Exit;

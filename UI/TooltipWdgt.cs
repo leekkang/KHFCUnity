@@ -8,7 +8,7 @@ namespace KHFC {
 
 	public class TooltipWdgt : Selectable {
 		// TODO : 해당 버튼을 사용하는 부모 패널을 특정지을 방법이 없을까? 현재는 클라이언트에 맞게 수정중임
-		AbstractPanel m_Parent;
+		UIBase m_Parent;
 		DelHover m_Enter;
 		DelHover m_Exit;
 

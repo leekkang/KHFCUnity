@@ -27,7 +27,7 @@ namespace KHFC {
 		}
 
 		protected Transform m_CachedTransform;
-		public RectTransform rectTransform {
+		public RectTransform rt {
 			get {
 				if (m_CachedTransform == null)
 					m_CachedTransform = GetComponent<RectTransform>();
