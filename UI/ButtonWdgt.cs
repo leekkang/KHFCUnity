@@ -1,13 +1,11 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace KHFC {
 	public delegate void DelClick(GameObject obj);
 
-	public class ButtonWdgt : Button {
-		// TODO : 해당 버튼을 사용하는 부모 패널을 특정지을 방법이 없을까? 현재는 클라이언트에 맞게 수정중임
+	public class ButtonWdgt : UnityEngine.UI.Button {
 		UIBase m_Parent;
 		DelClick m_Click;	// 얘네들 에디터 타임에 저장할 수 있는 방법은 UnityEvent 말고 없음. NGUI도 뜯어보면 런타임에 델리게이트 찾더라.
 		DelHover m_Enter;
@@ -62,7 +60,7 @@ namespace KHFC {
 			m_Parent.OnPreClickDefault();
 
 			if (m_OnClickSound)
-				SoundMgr.inst.PlayEfx(GlobalConst.SOUND_EFX_BUTTON_OK, GlobalConst.SOUND_BUTTON_VOLUME);
+				SoundMgr.inst.PlayEfx(Consts.SOUND_EFX_BUTTON_OK, Consts.SOUND_BUTTON_VOLUME);
 
 			m_Click(this.gameObject);
 
@@ -75,7 +73,7 @@ namespace KHFC {
 				return;
 
 			if (m_OnHoverSound)
-				SoundMgr.inst.PlayEfx(GlobalConst.SOUND_EFX_BUTTON_HOVER, GlobalConst.SOUND_BUTTON_VOLUME);
+				SoundMgr.inst.PlayEfx(Consts.SOUND_EFX_BUTTON_HOVER, Consts.SOUND_BUTTON_VOLUME);
 
 			m_Enter(this.gameObject);
 		}

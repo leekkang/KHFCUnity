@@ -208,7 +208,7 @@ namespace KHFC {
 			};
 
 			for (int i = 0; i < m_ListFolderPath.Count; i++) {
-				Utility.CreateDir(m_ListFolderPath[i]);
+				Util.CreateDir(m_ListFolderPath[i]);
 			}
 		}
 

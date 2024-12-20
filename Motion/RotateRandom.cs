@@ -74,7 +74,7 @@ public class RotateRandom : MonoBehaviour {
 
 	void Awake() {
 		m_Speed = GetRandomSpeed();
-		m_Play = !KHFC.Utility.FloatEqual(m_Speed, 0f);
+		m_Play = !KHFC.Util.FloatEqual(m_Speed, 0f);
 		m_SoftStop = null;
 	}
 
@@ -90,7 +90,7 @@ public class RotateRandom : MonoBehaviour {
 			StopCoroutine(m_SoftStop);
 
 		// 멈췄다 다시 돌아가기 시작할 때를 위해 켜는 부분만 따로 지정
-		if (!KHFC.Utility.FloatEqual(speed, 0f))
+		if (!KHFC.Util.FloatEqual(speed, 0f))
 			m_Play = true;
 
 		if (!gameObject.activeInHierarchy || delay < m_MinInterval) {
@@ -118,14 +118,14 @@ public class RotateRandom : MonoBehaviour {
 		}
 
 		m_Speed = endSpeed;
-		m_Play = !KHFC.Utility.FloatEqual(m_Speed, 0f);
+		m_Play = !KHFC.Util.FloatEqual(m_Speed, 0f);
 	}
 
 
 	float GetRandomSpeed() {
 		int sign = m_AllowReverse ? (UnityEngine.Random.Range(0, 2) == 0 ? 1 : -1) : 1;
 
-		if (KHFC.Utility.FloatEqual(m_Min, m_Max))
+		if (KHFC.Util.FloatEqual(m_Min, m_Max))
 			return sign * m_Min;
 
 		ValidateMinMax();

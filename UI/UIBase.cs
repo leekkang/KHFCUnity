@@ -41,9 +41,11 @@ namespace KHFC {
 
 		/// <summary> 해당 UI의 초기화에 필요한 정보를 로드하는 함수 </summary>
 		public virtual void Init() {
-			m_ListCachedObject = new List<GameObject>();
-
 			m_OnInitialized = true;
+		}
+
+		public virtual void Awake() {
+			m_CachedTransform = transform;
 		}
 
 		void OnEnable() {
@@ -67,6 +69,41 @@ namespace KHFC {
 
 		public virtual void OnEnableProcess() { }
 		public virtual void OnDisableProcess() { }
+		public virtual void OnDestroyProcess() { }
+
+
+		protected GameObject Get(int index) => GetCachedObject(index);
+		protected GameObject Get<T>(T alias) where T : System.Enum {
+			return GetCachedObject(alias);
+		}
+		protected T Get<T>(Enum alias) where T : Component {
+			return GetCachedObject<T>(alias);
+		}
+		protected T Get<T>(int index) where T : Component {
+			return GetCachedObject<T>(index);
+		}
+
+
+		/// <summary> OnClick 함수를 실행하기 전 호출하는 함수, 보통 오작동 방지를 위해 터치제한 등을 거는 용도로 사용한다 </summary>
+		public virtual void OnPreClickDefault() {
+			lockTouch = true;
+		}
+
+		public virtual void OnEnterDefault(GameObject obj) {
+#if UNITY_EDITOR
+			Debug.Log($"{GetType()} OnEnter is not registered : {obj.name}");
+#endif
+		}
+		public virtual void OnExitDefault(GameObject obj) {
+#if UNITY_EDITOR
+			Debug.Log($"{GetType()} OnExit is not registered : {obj.name}");
+#endif
+		}
+		public void OnClickDefault(GameObject obj) {
+#if UNITY_EDITOR
+			Debug.Log($"{GetType()} OnClick is not registered : {obj.name}");
+#endif
+		}
 
 
 		public static bool TryGetAtlas(string name, out UnityEngine.U2D.SpriteAtlas atlas) {

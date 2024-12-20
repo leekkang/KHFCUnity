@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace KHFC {
 	public abstract class AbstractGameState : MonoBehaviour {
-		public string m_StateName;
-
-		public virtual void OnEnter(string prevState) { }
-		public virtual void OnLeave(string nextState) { }
+		public int m_StateIndex;
+		public virtual void OnEnter(int prevStateIndex) { }
+		public virtual void OnLeave(int nextStateIndex) { }
 	}
 }

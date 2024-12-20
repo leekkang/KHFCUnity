@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-/// <summary> 시계바늘처럼 움직이고 싶을 때 사용하는 회전 컴포넌트 </summary>
+/// <summary> 시계바늘처럼 움직이고 싶을 때 사용하는 회전 컴포넌트, 각도가 완벽히 정확하진 않음 </summary>
 [DisallowMultipleComponent]
 [ExecuteInEditMode]
 //[UnityEditor.CanEditMultipleObjects]
@@ -41,7 +41,7 @@ public class RotateClock : MonoBehaviour {
 		get => m_Angle;
 		set {
 			m_Angle = value;
-			if (KHFC.Utility.FloatEqual(m_Angle, 0f))
+			if (KHFC.Util.FloatEqual(m_Angle, 0f))
 				m_Play = false;
 			m_DeltaAngle = m_Angle / m_AngleChangeTime;
 		}
@@ -50,7 +50,7 @@ public class RotateClock : MonoBehaviour {
 		get => m_Interval;
 		set {
 			m_Interval = value;
-			if (KHFC.Utility.FloatEqual(m_Interval, 0f))
+			if (KHFC.Util.FloatEqual(m_Interval, 0f))
 				m_Play = false;
 		}
 	}
@@ -90,8 +90,8 @@ public class RotateClock : MonoBehaviour {
 			}
 
 			
-			angle.z = KHFC.Utility.ClampAngle(m_TmpAngle, 0);
-			//angle.z = KHFC.Utility.ClampAngle(angle.z, 0);
+			angle.z = KHFC.Util.ClampAngle(m_TmpAngle, 0);
+			//angle.z = KHFC.Util.ClampAngle(angle.z, 0);
 			//m_TR.localRotation = Quaternion.Euler(angle);
 			m_TR.localEulerAngles = angle;
 		}
@@ -105,7 +105,7 @@ public class RotateClock : MonoBehaviour {
 			m_TmpAngle = m_TR.localEulerAngles.z;
 			m_DestAngle = m_TR.localEulerAngles.z + m_Angle;
 		} else {
-			//m_Angle = KHFC.Utility.ClampAngle(m_Angle, 0);
+			//m_Angle = KHFC.Util.ClampAngle(m_Angle, 0);
 			m_TR.Rotate(new Vector3(0, 0, m_Angle));
 		}
 		m_OnChangeRotation?.Invoke();

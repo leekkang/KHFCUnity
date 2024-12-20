@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using UnityEditor;
 using System.Linq;
+using UnityEngine;
 
 namespace KHFC.Editor {
 	/// <summary> 현재 프로젝트에서 특정 패키지를 사용하고 있는지 확인하고 디파인 심볼을 설정한다 </summary>
 	[InitializeOnLoad]	
 	public class PackageDefiner : UnityEditor.AssetModificationProcessor {
 		const string PREFIX = "KHFC_";
+		/// <summary> 설치되어 있는 어셈블리 종류. 어셈블리 이름과 직접 비교한다 (이름이 동일해야함) </summary>
 		static readonly HashSet<string> m_ArrAssembly = new() { "UniTask" };
+		/// <summary>
+		/// 설치되어 있는 패키지 이름.
+		/// <see cref="UnityEditor.PackageManager.PackageInfo.displayName"/> 과 비교한다 (이름이 동일해야함)
+		/// </summary>
 		static readonly HashSet<string> m_ArrPackage = new() { "Addressables" };
 		
-		static bool m_Initialized = false;
-		static BuildTarget m_BuildTarget;
-
 		static PackageDefiner() {
 			// Open the Easy Save 3 window the first time ES3 is installed.
 			//ES3Editor.ES3Window.OpenEditorWindowOnStart();
@@ -27,15 +30,27 @@ namespace KHFC.Editor {
 #endif
 		}
 
+		[InitializeOnLoadMethod]
 		static void UpdateSymbol() {
-			if (m_Initialized)
-				return;
+			//PlayerPrefs.SetInt
 			BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-			if (target == m_BuildTarget)
-				return;
+			//RemoveSymbol(target);
 
-			m_BuildTarget = target;
-			FindSymbolInAssemblies();
+			BuildTargetGroup group = BuildPipeline.GetBuildTargetGroup(target);
+			List<string> list = PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';').ToList();
+
+			List<string> listTarget = list.FindAll(Predicate);
+			List<string> listSymbol = FindSymbolInAssemblies();
+			listSymbol.AddRange(FindSymbolInPackage());
+
+			if (listSymbol.Count != listTarget.Count) {
+				//AddSymbols(listSymbol.ToArray(), group);
+				list.RemoveAll(Predicate);
+				list.AddRange(listSymbol);
+				PlayerSettings.SetScriptingDefineSymbolsForGroup(group, list.ToArray());
+			}
+
+			static bool Predicate(string x) => x.StartsWith(PREFIX);
 		}
 
 
@@ -52,7 +67,7 @@ namespace KHFC.Editor {
 	}
 #endif
 
-		static void FindSymbolInAssemblies() {
+		static List<string> FindSymbolInAssemblies() {
 #if UNITY_2017_3_OR_NEWER
 			UnityEditor.Compilation.Assembly[] assemblies = UnityEditor.Compilation.CompilationPipeline.GetAssemblies();
 
@@ -83,11 +98,13 @@ namespace KHFC.Editor {
 			//		break;
 			//	}
 			//}
-			AddSymbols(listSymbol.ToArray());
+			return listSymbol;
+#else
+			return null;
 #endif
 		}
 
-		static void FindSymbolInPackage() {
+		static List<string> FindSymbolInPackage() {
 			List<string> listSymbol = new();
 			//var enumerator = m_ArrPackage.GetEnumerator();
 			foreach (string name in m_ArrPackage) {
@@ -95,34 +112,46 @@ namespace KHFC.Editor {
 				if (info != null)
 					listSymbol.Add(PREFIX + name.ToUpper());
 			}
-			AddSymbols(listSymbol.ToArray());
+			return listSymbol;
 		}
 
 		static UnityEditor.PackageManager.PackageInfo GetPackageInfo(string packageName) {
-			return UnityEditor.AssetDatabase.FindAssets("package")
-				.Select(UnityEditor.AssetDatabase.GUIDToAssetPath)
-					.Where(x => UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(x) != null)
-				.Select(UnityEditor.PackageManager.PackageInfo.FindForAssetPath)
-					.Where(x => x != null)
-				.First(x => x.name.Contains(packageName));
+			List<string> listPath = UnityEditor.AssetDatabase.FindAssets("package")
+					.Select(UnityEditor.AssetDatabase.GUIDToAssetPath)
+					.Where(x => UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(x) != null).ToList();
+			return 
+				listPath.Select(UnityEditor.PackageManager.PackageInfo.FindForAssetPath)
+						.Where(x => x != null)
+						.First(x => x.displayName.Contains(packageName));
 		}
 
-		static void AddSymbol(string name) {
-			BuildTargetGroup group = BuildPipeline.GetBuildTargetGroup(m_BuildTarget);
+		static void AddSymbol(string name, BuildTargetGroup group) {
 			List<string> listSymbol = PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';').ToList();
-			if(listSymbol.FindIndex(x => x == name) == -1)
+			if (listSymbol.FindIndex(x => x == name) == -1)
 				listSymbol.Add(name);
 
-			PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", listSymbol));
+			PlayerSettings.SetScriptingDefineSymbolsForGroup(group, listSymbol.ToArray());
+			//PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", listSymbol));
 		}
 
-		static void AddSymbols(string[] names) {
-			BuildTargetGroup group = BuildPipeline.GetBuildTargetGroup(m_BuildTarget);
+		static void AddSymbols(string[] names, BuildTargetGroup group) {
+			UnityEngine.Debug.Log($"KHFC.PackageDefiner add symbol : {names.ToList()}");
 			List<string> listSymbol = PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';').ToList();
 			// 없는 심볼이면 추가
 			listSymbol.AddRange(names.Except(listSymbol));
 
-			PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", listSymbol));
+			PlayerSettings.SetScriptingDefineSymbolsForGroup(group, listSymbol.ToArray());
+			//PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", listSymbol));
+		}
+
+		/// <summary> 심볼 추가하기 전 예전에 추가한 심볼들을 전부 제거한다. </summary>
+		static void RemoveSymbol(BuildTarget target) {
+			BuildTargetGroup group = BuildPipeline.GetBuildTargetGroup(target);
+			List<string> listSymbol = PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';').ToList();
+			listSymbol.RemoveAll(x => x.StartsWith(PREFIX));
+
+			PlayerSettings.SetScriptingDefineSymbolsForGroup(group, listSymbol.ToArray());
+			//PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", listSymbol));
 		}
 
 

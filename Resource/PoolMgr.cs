@@ -3,8 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
+#if KHFC_UNITASK
 using Cysharp.Threading.Tasks;
-using System.Threading.Tasks;
+using AsyncVoid = Cysharp.Threading.Tasks.UniTaskVoid;
+using Async = Cysharp.Threading.Tasks.UniTask;
+using AsyncGO = Cysharp.Threading.Tasks.UniTask<UnityEngine.GameObject>;
+using AsyncObj = Cysharp.Threading.Tasks.UniTask<UnityEngine.Object>;
+#else
+using AsyncVoid = System.Threading.Tasks.Task;
+using Async = System.Threading.Tasks.Task;
+using AsyncGO = System.Threading.Tasks.Task<UnityEngine.GameObject>;
+using AsyncObj = System.Threading.Tasks.Task<UnityEngine.Object>;
+#endif
 
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -151,11 +161,15 @@ namespace KHFC {
 			_PrespawnObject(assetName, count, Vector3.zero, null, null, type);
 		}
 
-		public void PrespawnObjectAsync(string assetName, int count = 1, Action<bool> onAfter = null, AssetType type = AssetType.Prefab) {
+		public void PrespawnObjectAsync(string assetName, int count = 1, AssetType type = AssetType.Prefab) {
+			_PrespawnObjectAsync(assetName, count, Vector3.zero, null, null, type).Forget();
+		}
+
+		public void PrespawnObjectAsync(string assetName, Action<bool> onAfter, int count = 1, AssetType type = AssetType.Prefab) {
 			_PrespawnObjectAsync(assetName, count, onAfter, Vector3.zero, null, null, type);
 		}
 
-		public IEnumerator CoPrespawnObjectAsync(string name, int count = 1, Action<bool> onAfter = null, AssetType type = AssetType.Prefab) {
+		public IEnumerator CoPrespawnObjectAsync(string name, Action<bool> onAfter, int count = 1, AssetType type = AssetType.Prefab) {
 			bool success = false;
 			bool loaded = false;
 			_PrespawnObjectAsync(name, count, (suc) => {
@@ -187,6 +201,27 @@ namespace KHFC {
 			//NFC.AssetMgr.inst.UnLoadDependencies(assetName);
 #endif
 
+			return obj;
+		}
+
+		/// <summary> 개별적으로 관리할 게임 오브젝트를 비동기로 생성하는 함수 </summary>
+		/// <remarks> 오브젝트 파괴 시 <see cref="Resources.UnloadAsset"/> 함수로 메모리를 해제한다. </remarks>
+		public async AsyncGO CreateGameObjectAsync(string assetName, Transform parent = null,
+															   Vector3 pos = default, TfInfo rot = null, TfInfo scale = null,
+															   AssetType type = AssetType.Prefab,
+															   bool activeEnable = true) {
+			Object asset = await CreateAssetAsync(assetName);
+			if (asset == null)
+				return null;
+
+			GameObject obj = PostProcessObject(asset, parent, pos, rot, scale,
+												type, activeEnable, IsGuiObject(assetName));
+			obj.name = assetName;
+
+#if BUILD_LOCAL_BUNDLE || BUILD_REMOTE_BUNDLE || UNITY_EDITOR
+			//if(unloadDependencies)
+			//	NFC.AssetMgr.inst.UnLoadDependencies(assetName);
+#endif
 			return obj;
 		}
 
@@ -235,7 +270,7 @@ namespace KHFC {
 				return result;
 			});
 
-			UnLoadAsset(assetName);
+			ReleaseAsset(assetName);
 		}
 
 		/// <summary> 이름에 <paramref name="pattern"/>을 포함하는 애셋과 게임 오브젝트들을 모든 풀에서 제거하는 함수 </summary>
@@ -275,7 +310,7 @@ namespace KHFC {
 
 			// 애셋 풀에 있는 모든 지워진 애셋들을 제거
 			foreach (string key in listKey)
-				UnLoadAsset(key);
+				ReleaseAsset(key);
 
 			Resources.UnloadUnusedAssets();
 
@@ -296,7 +331,7 @@ namespace KHFC {
 				if (item.m_IsGui) // NGUI를 사용하는 GUI의 경우, Destroy하고 Instantiate할때 메모리릭이 발생한다.
 					return false;
 
-				UnLoadAsset(item.m_Name);
+				ReleaseAsset(item.m_Name);
 				Destroy(item.m_Obj);
 
 				return result;
@@ -320,7 +355,7 @@ namespace KHFC {
 					result &= !item.m_Name.StartsWith(prefix[i]);
 
 				if (result) {
-					UnLoadAsset(item.m_Name);
+					ReleaseAsset(item.m_Name);
 					Destroy(item.m_Obj);
 					//Debug.Log($"Deactive Asset : {item.m_Name}");
 				}
@@ -353,6 +388,27 @@ namespace KHFC {
 #endif
 			}
 
+			return asset;
+		}
+
+		/// <summary> 비동기로 애셋을 생성하고 풀에 넣는 함수 </summary>
+		public async AsyncObj SpawnAssetAsync(string assetName) {
+			if (m_DicAsset.TryGetValue(assetName, out Object asset))
+				return asset;
+
+			asset = await CreateAssetAsync(assetName);
+			if (m_DicAsset.ContainsKey(assetName)) {
+				if (asset == null)
+					asset = m_DicAsset[assetName];
+				// TODO : 여러 개 호출하면 같은 주소를 공유하는 지 확인 해봐야함
+				//else
+				//	ReleaseAsset(asset);
+			} else {
+				m_DicAsset.Add(assetName, asset);
+#if UNITY_EDITOR
+				m_ListLoadedAsset.Add(asset);
+#endif
+			}
 			return asset;
 		}
 
@@ -395,6 +451,15 @@ namespace KHFC {
 		}
 
 		/// <summary> 개별적으로 관리할 애셋을 비동기로 생성하는 함수 </summary>
+		public async AsyncObj CreateAssetAsync(string assetName) {
+			Object asset = await _LoadFromAddressableAsync(assetName);
+			if (asset == null) {
+				Debug.LogWarning("There is no resource, name : " + assetName);
+			}
+			return asset;
+		}
+
+		/// <summary> 개별적으로 관리할 애셋을 비동기로 생성하는 함수 </summary>
 		/// <param name="onAfter"> 로드 한 이후에 호출할 함수 </param>
 		public void CreateAssetAsync(string assetName, Action<Object> onAfter) {
 			// 동일한 애셋의 생성 요청이 여러번 들어올 경우 중복 생성을 방지하기 위해 콜백함수만 임시로 저장해놓는다
@@ -431,17 +496,29 @@ namespace KHFC {
 		/// <summary> 애셋 풀에서 해당 애셋을 찾아 제거해주는 함수 </summary>
 		/// <param name="assetName"> 애셋 이름 (== 상대 경로) </param>
 		/// <param name="unloadDependencies"> <c>true</c>인 경우 AssetBundle을 이용 할때 Dependencies도 언로드 한다 </param>
-		public void UnLoadAsset(string assetName, bool unloadDependencies = true) {
+		public void ReleaseAsset(string assetName, bool unloadDependencies = true) {
 			if (!m_DicAsset.TryGetValue(assetName, out Object obj))
 				return;
 
 			m_DicAsset.Remove(assetName);
-			ReleaseAddressable(obj);
+			ReleaseAsset(obj);
 
 #if UNITY_EDITOR
 			m_ListLoadedAsset.RemoveBySwap(obj);
 #endif
 			obj = null;
+		}
+
+
+		public void ClearAsset() {
+			foreach (var pair in m_DicAsset) {
+				Addressables.Release(pair.Value);
+			}
+			m_DicAsset.Clear();
+		}
+
+		public void ReleaseAsset(Object asset) {
+			Addressables.Release(asset);
 		}
 
 		#endregion
@@ -465,32 +542,14 @@ namespace KHFC {
 			m_ListLoadedAsset.Clear();
 #endif
 
-			m_DicAsset.Clear();
-			ClearAddressable();
+			//m_DicAsset.Clear();
+			ClearAsset();
 
 			Resources.UnloadUnusedAssets();
 		}
 
 
 
-
-
-		public void ClearAddressable() {
-			foreach (var pair in m_DicAsset) {
-				Addressables.Release(pair.Value);
-			}
-			m_DicAsset.Clear();
-		}
-
-		public void ReleaseAddressable(Object asset) {
-			Addressables.Release(asset);
-		}
-		public void ReleaseAddressable(string assetName) {
-			if (m_DicAsset.TryGetValue(assetName, out Object asset)) {
-				Addressables.Release(asset);
-				m_DicAsset.Remove(assetName);
-			}
-		}
 
 
 		void LoadAssetPostProcess(ref AsyncOperationHandle<Object> handle, ref string assetName, System.Action<Object> onAfter) {
@@ -519,7 +578,7 @@ namespace KHFC {
 			LoadAssetPostProcess(ref handle, ref assetName, (obj) => asset = obj);
 			return asset;
 		}
-		async UniTask<Object> _LoadFromAddressableAsync(string assetName) {
+		async AsyncObj _LoadFromAddressableAsync(string assetName) {
 			if (m_DicAsset.TryGetValue(assetName, out Object asset)) {
 				return asset;
 			}
@@ -536,8 +595,11 @@ namespace KHFC {
 			else
 				Debug.Log("Async operation still in progress");
 
+#if KHFC_UNITASK
 			Object obj = await handle.ToUniTask();
-			m_DicAsset.Add(assetName, obj);
+#else
+			Object obj = await handle;
+#endif
 			Debug.Log($"LoadFromAddressable Complete : {obj.name}");
 			return obj;
 		}
@@ -639,6 +701,27 @@ namespace KHFC {
 			}
 		}
 
+		async AsyncVoid _PrespawnObjectAsync(string assetName, int count,
+											   Vector3 pos, TfInfo rot, TfInfo scale, AssetType type) {
+			// 애셋을 먼저 생성한 뒤 반복
+			Object asset = await SpawnAssetAsync(assetName);
+			if (asset == null)
+				return;
+
+			for (int i = 0; i < count; ++i) {
+				if (TryGetRecycledItem(assetName, out PoolItem resultItem)) {
+					resultItem.m_Obj = PostProcess(resultItem.m_Obj, transform, pos, rot, scale,
+													false, resultItem.m_IsGui);
+					m_ListDeactivated.Add(resultItem);
+				} else {
+					resultItem.m_Obj = PostProcessObject(asset, transform, pos, rot, scale,
+														 type, false, resultItem.m_IsGui);
+					resultItem.m_Obj.name = assetName;
+					PostPrespawnProcess(resultItem);
+				}
+			}
+		}
+
 		void _PrespawnObjectAsync(string assetName, int count, Action<bool> onAfter,
 								  Vector3 pos, TfInfo rot, TfInfo scale, AssetType type) {
 			// 애셋을 먼저 생성한 뒤 반복
@@ -663,7 +746,6 @@ namespace KHFC {
 
 				onAfter?.Invoke(asset != null);
 			});
-
 		}
 
 		/// <summary> <see cref="AssetType"/>에 맞게 게임 오브젝트를 설정하는 함수 </summary>

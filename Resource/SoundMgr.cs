@@ -2,8 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-using Cysharp.Threading.Tasks;
 using System.Threading;
+
+#if KHFC_UNITASK
+using AsyncVoid = Cysharp.Threading.Tasks.UniTaskVoid;
+using Async = Cysharp.Threading.Tasks.UniTask;
+#else
+using AsyncVoid = System.Threading.Tasks.Task;
+using Async = System.Threading.Tasks.Task;
+#endif
 
 namespace KHFC {
 	public class SoundMgr : Singleton<SoundMgr> {
@@ -268,7 +275,7 @@ namespace KHFC {
 			targetSource.Reset();
 			m_PoolSource.Push(targetSource);
 		}
-		async UniTaskVoid PlayEfxAsync(string name, float delay, float volume = -1f, Vector3 pos = default, Transform parent = null, float startTime = 0f, bool ignoreScale = false) {
+		async AsyncVoid PlayEfxAsync(string name, float delay, float volume = -1f, Vector3 pos = default, Transform parent = null, float startTime = 0f, bool ignoreScale = false) {
 			GameObject sounObj = SpawnSound(name, pos, parent);
 			if (sounObj == null) {
 				Debug.LogWarning("Can't LoadSound : " + name);
@@ -299,19 +306,19 @@ namespace KHFC {
 				newSource.PlayOneShot(newSource.clip);
 
 			if (delay > 0) {
-				await UniTask.Delay((int)(delay * 1000), cancellationToken: sound.m_Token.Token);
+				await Async.Delay((int)(delay * 1000), cancellationToken: sound.m_Token.Token);
 			}
 
 			float duration = sound.m_Source.clip.length;
 			if (sound.m_IgnoreTimescale)
 				duration *= Time.timeScale;
 
-			await UniTask.Delay((int)(duration * 1000), cancellationToken: sound.m_Token.Token);
+			await Async.Delay((int)(duration * 1000), cancellationToken: sound.m_Token.Token);
 
 			StopEfx(sound);
 		}
 
-		async UniTaskVoid PlayBgmAsync(string name, float delay, bool unloadPrev) {
+		async AsyncVoid PlayBgmAsync(string name, float delay, bool unloadPrev) {
 			if (string.IsNullOrEmpty(name))
 				return;
 
@@ -336,7 +343,7 @@ namespace KHFC {
 				m_CurBgm.Play();
 		}
 
-		async UniTask FadeOutBgmAsync(bool unloadPrev) {
+		async Async FadeOutBgmAsync(bool unloadPrev) {
 			if (m_CurBgm == null)
 				return;
 
@@ -349,7 +356,7 @@ namespace KHFC {
 					return;
 
 				m_CurBgm.volume = Mathf.Lerp(curVolume, 0, t);
-				await UniTask.Yield();
+				await Async.Yield();
 			}
 
 			StopBgm(unloadPrev);

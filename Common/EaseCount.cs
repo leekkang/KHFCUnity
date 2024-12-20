@@ -1,33 +1,44 @@
-﻿using UnityEngine;
+﻿
+using System.Threading;
 
 namespace KHFC {
 	/// <summary> 특정 시간대에 해당하는 Ease 값을 손쉽게 가져올 수 있도록 만든 클래스 </summary>
 	public class EaseCount {
-		public float m_Duration;
+		/// <summary> 변화값 </summary>
+		public float m_Value;
+
+		/// <summary> 시작값 </summary>
 		public float m_Src;
+		/// <summary> 도착값 </summary>
 		public float m_Dest;
+
+		/// <summary> 카운트 진행 시간 </summary>
 		public float m_Count;
+		/// <summary> 값 변경 시간 </summary>
+		public float m_Duration;
+		/// <summary> 카운트 전 지연 시간 </summary>
 		public float m_Delay;
 
-		public float value {
-			get; private set;
-		}
 
 		public delegate void Callback();
 
 		EasingFunction.Function mFunc;
 
-		bool m_CheckStart = false;
+		/// <summary> 카운팅을 시작했는가? -> <see cref="m_Delay"/> 만큼 시간이 지났는가? </summary>
+		public bool m_CheckStart = false;
 		/// <summary> 바로 호출하지 않고 delay 이후 호출한다 </summary>
 		Callback m_OnStart;
+		/// <summary> 카운트 종료 이후 호출한다 </summary>
 		Callback m_OnAfter;
 
+		/// <summary> 현재 카운팅을 하고 있는가? </summary>
 		public bool counting {
 			get; private set;
 		}
-		public bool pause {
-			get; set;
-		}
+		/// <summary> 카운팅 일시 중지 </summary>
+		public bool m_Pause;
+
+		CancellationTokenSource m_Token;
 
 		public EaseCount(EasingFunction.Ease type) {
 			mFunc = EasingFunction.GetEasingFunction(type);
@@ -44,16 +55,6 @@ namespace KHFC {
 			Reset();
 
 			return this;
-		}
-
-		public void Reset() {
-			counting = true;
-			pause = false;
-			m_Count = 0f;
-
-			m_CheckStart = false;
-			m_OnAfter = null;
-			m_OnStart = null;
 		}
 
 		public EaseCount SetEase(EasingFunction.Ease type) {
@@ -78,30 +79,40 @@ namespace KHFC {
 
 		public void ForceEnd() {
 			counting = false;
-			pause = false;
+			m_Pause = false;
 			m_OnAfter?.Invoke();
 		}
 
-		public float Update() {
+		public float Update(float deltaTime) {
 			if (!counting)
 				return m_Dest;
 
-			if (!pause) {
-				m_Count += Time.deltaTime;
+			if (!m_Pause) {
+				m_Count += deltaTime;
 				if (m_Count < m_Delay) {
-					value = m_Src;
+					m_Value = m_Src;
 				} else if (m_Count < (m_Delay + m_Duration)) {
 					if (!m_CheckStart) {
 						m_CheckStart = true;
 						m_OnStart?.Invoke();
 					}
-					value = mFunc(m_Src, m_Dest, (m_Count - m_Delay) / m_Duration);
+					m_Value = mFunc(m_Src, m_Dest, (m_Count - m_Delay) / m_Duration);
 				} else {
-					value = m_Dest;
+					m_Value = m_Dest;
 					ForceEnd();
 				}
 			}
-			return value;
+			return m_Value;
+		}
+
+		void Reset() {
+			counting = true;
+			m_Pause = false;
+			m_Count = 0f;
+
+			m_CheckStart = false;
+			m_OnAfter = null;
+			m_OnStart = null;
 		}
 	}
 }

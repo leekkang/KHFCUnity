@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace KHFC {
-	public class Utility {
+	public class Util {
 		#region Math
 
 		/// <summary> 소수점 4자리 까지 비교 </summary>
@@ -36,7 +36,6 @@ namespace KHFC {
 		/// <param name="middleValue"> 중간값 </param>
 		/// <param name="range"> 값 표현 범위, 그래프의 절반 범위 </param>
 		/// <param name="variance"> 분산에 사용하는 로그의 밑(base) </param>
-		/// <returns></returns>
 		public static int DistributionRandom(int middleValue, float range, int variance = 1) {
 			variance = Mathf.Max(1, variance);
 			variance = (int)Math.Pow(10, variance);
@@ -80,9 +79,9 @@ namespace KHFC {
 
 		/// <summary> 파일 혹은 폴더 복사 </summary>
 		public static void CopyFileOrDirectory(string srcFullPath, string destPath) {
-			if (Utility.IsFile(srcFullPath) && System.IO.File.Exists(srcFullPath))
+			if (IsFile(srcFullPath) && System.IO.File.Exists(srcFullPath))
 				System.IO.File.Copy(srcFullPath, destPath, true);
-			else if (!Utility.IsFile(srcFullPath) && System.IO.Directory.Exists(srcFullPath))
+			else if (!IsFile(srcFullPath) && System.IO.Directory.Exists(srcFullPath))
 				CopyDirectory(srcFullPath, destPath, true);
 		}
 
@@ -91,9 +90,9 @@ namespace KHFC {
 			if (CheckExistFileOrDir(path) == false)
 				return;
 
-			if (Utility.IsFile(path) && System.IO.File.Exists(path))
+			if (IsFile(path) && System.IO.File.Exists(path))
 				System.IO.File.Delete(path);
-			else if (!Utility.IsFile(path) && System.IO.Directory.Exists(path))
+			else if (!IsFile(path) && System.IO.Directory.Exists(path))
 				System.IO.Directory.Delete(path, true);
 		}
 
@@ -131,14 +130,6 @@ namespace KHFC {
 		}
 
 		#endregion
-
-		/// <summary> 실제 시간만큼 대기 </summary>
-		public static IEnumerator WaitForRealSeconds(float time) {
-			float start = Time.realtimeSinceStartup;
-			while (Time.realtimeSinceStartup < start + time) {
-				yield return null;
-			}
-		}
 
 		/// <summary> 메모리 복사, 주의 : Serialized Field만 복사됨 </summary>
 		public static T DeepClone<T>(T obj) {
@@ -200,87 +191,5 @@ namespace KHFC {
 		}
 
 		#endregion
-	}
-
-	public static class StopWatchUtil {
-#if UNITY_EDITOR
-		static Dictionary<string, System.Diagnostics.Stopwatch> mDicWatch = new Dictionary<string, System.Diagnostics.Stopwatch>();
-#endif
-		static bool mUseLog = false;
-		static System.Text.StringBuilder mLog;
-
-		public static System.Text.StringBuilder GetLog() {
-			mUseLog = false;
-			return mLog;
-		}
-
-		[System.Diagnostics.Conditional("UNITY_EDITOR")]
-		public static void InitLog() {
-			mUseLog = true;
-			mLog = new System.Text.StringBuilder();
-			mLog.Remove(0, mLog.Length);
-		}
-
-		[System.Diagnostics.Conditional("UNITY_EDITOR")]
-		public static void CheckTimeStart(string msg) {
-			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-
-#if UNITY_EDITOR
-			if (!mDicWatch.ContainsKey(msg))
-				mDicWatch.Add(msg, watch);
-
-			watch.Reset();
-			watch.Start();
-
-			string resultMsg = string.Format("StopWatch : {0} START", msg);
-			UnityEngine.Debug.Log(resultMsg);
-
-			if (!mUseLog)
-				return;
-
-			if (mLog == null)
-				mLog = new System.Text.StringBuilder();
-
-			mLog.AppendLine(resultMsg);
-#endif
-		}
-
-		[System.Diagnostics.Conditional("UNITY_EDITOR")]
-		public static void CheckTimeEnd(string msg) {
-#if UNITY_EDITOR
-			if (!mDicWatch.ContainsKey(msg))
-				return;
-
-			System.Diagnostics.Stopwatch watch = mDicWatch[msg];
-
-			watch.Stop();
-
-			string resultMsg = string.Format("StopWatch : {0} End, Time : {1}", msg, watch.Elapsed.TotalSeconds);
-			UnityEngine.Debug.Log(resultMsg);
-
-
-			if (mUseLog)
-				mLog.AppendLine(resultMsg);
-#endif
-		}
-	}
-
-
-	public static class Base64Util {
-		public static string Encoding(string text, System.Text.Encoding encodeType = null) {
-			if (encodeType == null)
-				encodeType = System.Text.Encoding.UTF8;
-
-			byte[] bytes = encodeType.GetBytes(text);
-			return System.Convert.ToBase64String(bytes);
-		}
-
-		public static string Decoding(string text, System.Text.Encoding encodeType = null) {
-			if (encodeType == null)
-				encodeType = System.Text.Encoding.UTF8;
-
-			byte[] bytes = System.Convert.FromBase64String(text);
-			return encodeType.GetString(bytes);
-		}
 	}
 }

@@ -50,56 +50,56 @@ public class KHFCEditorMenu {
 	/// <summary>
 	/// 배치 제작용. 3DMerge 프로젝트에서만 사용
 	/// </summary>
-	[MenuItem("KHFC/Make Model To Object")]
-	static public void MakeModelToObject() {
-#if UNITY_EDITOR
-		// base gameobject
-		GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Media/Prefab/Empty.prefab");
-		//string folderPath = "Assets/3D Props - Adorable Items/Adorable 3D Items";
-		string folderPath = "Assets/Media/Mesh/LowpolyHats";
-		string[] arrGUID = AssetDatabase.FindAssets("t:Prefab", new string[] { folderPath });
-		CreateAssetFromGUID(arrGUID, 15f);	// 1 / 모델 스케일 팩터 -> 0.01이면 100
+//	[MenuItem("KHFC/Make Model To Object")]
+//	static public void MakeModelToObject() {
+//#if UNITY_EDITOR
+//		// base gameobject
+//		GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Media/Prefab/Empty.prefab");
+//		//string folderPath = "Assets/3D Props - Adorable Items/Adorable 3D Items";
+//		string folderPath = "Assets/Media/Mesh/LowpolyHats";
+//		string[] arrGUID = AssetDatabase.FindAssets("t:Prefab", new string[] { folderPath });
+//		CreateAssetFromGUID(arrGUID, 15f);	// 1 / 모델 스케일 팩터 -> 0.01이면 100
 
-		void CreateAssetFromGUID(string[] arrGUID, float scale) {
-			for (int i = 0; i < arrGUID.Length; i++) {
-				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
-				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
+//		void CreateAssetFromGUID(string[] arrGUID, float scale) {
+//			for (int i = 0; i < arrGUID.Length; i++) {
+//				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
+//				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
 
-				//AssetDatabase.CopyAsset( )
-				GameObject go = PrefabUtility.InstantiatePrefab(basePrefab) as GameObject;
-				PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
+//				//AssetDatabase.CopyAsset( )
+//				GameObject go = PrefabUtility.InstantiatePrefab(basePrefab) as GameObject;
+//				PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
 
-				GameObject prefab = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
-				prefab = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-				PrefabUtility.UnpackPrefabInstance(prefab, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
-				prefab.RemoveComponent<Animator>();
-				prefab.SafeAddComponent<cakeslice.Outline>();
+//				GameObject prefab = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
+//				prefab = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+//				PrefabUtility.UnpackPrefabInstance(prefab, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
+//				prefab.RemoveComponent<Animator>();
+//				prefab.SafeAddComponent<cakeslice.Outline>();
 
-				MeshCollider col = prefab.SafeAddComponent<MeshCollider>();
-				col.convex = true;
-				col.isTrigger = false;
-				col.cookingOptions = MeshColliderCookingOptions.CookForFasterSimulation
-									| MeshColliderCookingOptions.EnableMeshCleaning
-									| MeshColliderCookingOptions.WeldColocatedVertices
-									| MeshColliderCookingOptions.UseFastMidphase;
+//				MeshCollider col = prefab.SafeAddComponent<MeshCollider>();
+//				col.convex = true;
+//				col.isTrigger = false;
+//				col.cookingOptions = MeshColliderCookingOptions.CookForFasterSimulation
+//									| MeshColliderCookingOptions.EnableMeshCleaning
+//									| MeshColliderCookingOptions.WeldColocatedVertices
+//									| MeshColliderCookingOptions.UseFastMidphase;
 
-				Transform parent = go.transform.GetChild(0).GetChild(0);
-				prefab.transform.position = Vector3.zero;
-				//prefab.transform.rotation = Quaternion.identity;
-				prefab.transform.localEulerAngles = new Vector3(0f, 180, 0f);
-				prefab.transform.localScale *= scale;
-				prefab.transform.SetParent(parent, false);
+//				Transform parent = go.transform.GetChild(0).GetChild(0);
+//				prefab.transform.position = Vector3.zero;
+//				//prefab.transform.rotation = Quaternion.identity;
+//				prefab.transform.localEulerAngles = new Vector3(0f, 180, 0f);
+//				prefab.transform.localScale *= scale;
+//				prefab.transform.SetParent(parent, false);
 
-				go.ChangeLayerRecursivley(LayerMask.NameToLayer("Object"));
-				PrefabUtility.SaveAsPrefabAsset(go, $"Assets/Media/Prefab/CreatedByEditor/{prefab.name}.prefab");
-				GameObject.DestroyImmediate(go);
+//				go.ChangeLayerRecursivley(LayerMask.NameToLayer("Object"));
+//				PrefabUtility.SaveAsPrefabAsset(go, $"Assets/Media/Prefab/CreatedByEditor/{prefab.name}.prefab");
+//				GameObject.DestroyImmediate(go);
 
-				//AssetDatabase.CreateAsset
-			}
-		}
-		AssetDatabase.Refresh();
-#endif
-	}
+//				//AssetDatabase.CreateAsset
+//			}
+//		}
+//		AssetDatabase.Refresh();
+//#endif
+//	}
 
 	[MenuItem("KHFC/Add X 90 degree")]
 	static public void AddXdegree() {
@@ -240,7 +240,7 @@ public class KHFCEditorMenu {
 			return;
 		}
 		string assetPath = AssetDatabase.GUIDToAssetPath(arrGUID[0]).Replace("KHFCSetting.cs", "Resources/KHFCSetting.asset");
-		KHFC.Utility.CreateDir(System.IO.Path.GetDirectoryName(assetPath));
+		KHFC.Util.CreateDir(System.IO.Path.GetDirectoryName(assetPath));
 		AssetDatabase.CreateAsset(asset, assetPath);
 		AssetDatabase.SaveAssets();
 

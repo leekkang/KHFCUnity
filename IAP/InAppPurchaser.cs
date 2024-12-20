@@ -8,10 +8,11 @@ using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.Security;
 using Unity.Services.Core;
 using Unity.Services.Core.Environments;
-using System.Threading.Tasks;
 
 #if KHFC_UNITASK
-using Cysharp.Threading.Tasks;
+using AsyncVoid = Cysharp.Threading.Tasks.UniTaskVoid;
+#else
+using AsyncVoid = System.Threading.Tasks.Task;
 #endif
 
 namespace KHFC.IAP {
@@ -58,12 +59,8 @@ namespace KHFC.IAP {
 			if (initialized)
 				return;
 
-#if KHFC_UNITASK
 			InitializeProcess().Forget();
-#else
-			Task.Run(InitializeProcess);
 			//InitializeProcessSync();
-#endif
 		}
 
 		/// <summary> 스토어에 등록된 가격 정보를 리턴 </summary>
@@ -74,8 +71,7 @@ namespace KHFC.IAP {
 			return product.metadata.localizedPriceString;
 		}
 
-#if KHFC_UNITASK
-		async UniTaskVoid InitializeProcess() {
+		async AsyncVoid InitializeProcess() {
 			try {
 				InitializationOptions options = new InitializationOptions()
 					.SetEnvironmentName(ENV_NAME);
@@ -88,19 +84,7 @@ namespace KHFC.IAP {
 
 			InitializePurchasing();
 		}
-#else
-		async Task InitializeProcess() {
-			try {
-				InitializationOptions options = new InitializationOptions()
-					.SetEnvironmentName(ENV_NAME);
 
-				await UnityServices.InitializeAsync(options);
-			} catch (Exception e) {
-				// An error occurred during initialization.
-				Debug.LogError($"UnityServices Initialize Failed : {e}");
-			}
-			InitializePurchasing();
-		}
 		void InitializeProcessSync() {
 			try {
 				InitializationOptions options = new InitializationOptions()
@@ -113,7 +97,6 @@ namespace KHFC.IAP {
 			}
 			InitializePurchasing();
 		}
-#endif
 
 		public void InitializePurchasing() {
 			if (initialized)
@@ -278,5 +261,4 @@ namespace KHFC.IAP {
 			}
 		}
 	}
-
 }

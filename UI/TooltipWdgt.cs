@@ -1,13 +1,11 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace KHFC {
 	public delegate void DelHover(GameObject obj);
 
-	public class TooltipWdgt : Selectable {
-		// TODO : 해당 버튼을 사용하는 부모 패널을 특정지을 방법이 없을까? 현재는 클라이언트에 맞게 수정중임
+	public class TooltipWdgt : UnityEngine.UI.Selectable {
 		UIBase m_Parent;
 		DelHover m_Enter;
 		DelHover m_Exit;

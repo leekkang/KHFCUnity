@@ -8,8 +8,8 @@ namespace KHFC {
 	/// </summary>
 	/// <remarks> 호스트 프로젝트의 매니저 클래스가 관리해야 한다. </remarks>
 	public class GameStateCtrl : MonoBehaviour {
-		public string m_CurState = "";
-		public string m_PrevState = "";
+		public int m_CurState = -1;
+		public int m_PrevState = -1;
 		
 		readonly List<AbstractGameState> m_ListState = new();
 
@@ -23,40 +23,35 @@ namespace KHFC {
 			AbstractGameState stateBase = (AbstractGameState)state.AddComponent(System.Type.GetType(stageName));
 			state.transform.parent = transform;
 
-			stateBase.m_StateName = stageName;
 			m_ListState.Add(stateBase);
+			stateBase.m_StateIndex = m_ListState.Count - 1;
 		}
 
 		public AbstractGameState GetCurState() {
 			return GetState(m_CurState);
 		}
 
-		public void ChangeState(string nextStageName) {
-			//NUCamera.ignoreAllEvents = true;
+		public void ChangeState(int nextStageIndex) {
+			int curStateIndex = m_CurState;
 
-			string curStateName = m_CurState;
+			if (curStateIndex > -1) {
+				AbstractGameState curState = GetState(curStateIndex);
+				curState.OnLeave(nextStageIndex);
 
-			if (!string.IsNullOrEmpty(curStateName)) {
-				AbstractGameState curState = GetState(curStateName);
-
-				curState.OnLeave(nextStageName);
-
-				// 이전 스테이트의 이름을 기억
-				m_PrevState = curStateName;
+				// 이전 스테이트의 인덱스를 기억
+				m_PrevState = curStateIndex;
 			}
 
-			m_CurState = nextStageName;
+			m_CurState = nextStageIndex;
 
-			AbstractGameState nextState = GetState(nextStageName);
-			nextState.m_StateName = nextStageName;
+			AbstractGameState nextState = GetState(nextStageIndex);
+			nextState.m_StateIndex = nextStageIndex;
 
-			nextState.OnEnter(curStateName);
-
-			//NUCamera.ignoreAllEvents = false;
+			nextState.OnEnter(curStateIndex);
 		}
 
-		public AbstractGameState GetState(string name) {
-			return m_ListState.Find(state => state.m_StateName == name);
+		public AbstractGameState GetState(int index) {
+			return (-1 < index && m_ListState.Count < index) ? m_ListState[index] : null;
 		}
 
 		public T GetState<T>() where T : AbstractGameState {

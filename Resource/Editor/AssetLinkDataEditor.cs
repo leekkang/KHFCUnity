@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace KHFC {
 	// TODO : AssetLinkData를 제네릭하게 만들면 해당 코드 전부 AssetLinkData로 옮겨도 될 듯
+	// TODO : Addressables 도입으로 필요없어짐. Addressables를 사용하지 않는 시스템에서만 사용
 	public class AssetLinkDataEditor {
 		// TODO : Addressable 도입으로 전부 번들로 빠짐, 스프라이트는 아틀라스에서 복사하기 때문에 강한 참조 사용 제외
 		//const string PREFAB_ROOT_PATH = "Assets/Media/Prefab";
