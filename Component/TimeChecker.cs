@@ -1,0 +1,114 @@
+﻿
+using UnityEngine;
+
+namespace KHFC {
+	/// <summary> 정확하게 시간을 측정할 수 있는 컴포넌트 </summary>
+	[DisallowMultipleComponent]
+	public class TimeChecker : MonoBehaviour {
+		/// <summary> 현재 시간, 스레드에서 계속 갱신함 </summary>
+		[ReadOnly]
+		[SerializeField] int m_CurTimeStamp;
+
+		/// <summary> 현재 시간, 스레드에서 계속 갱신함 </summary>
+		public int now => m_CurTimeStamp;
+
+		/// <summary> 한번에 돌릴 각도 </summary>
+		[KHFC.FieldName("한번에 돌릴 각도")]
+		[SerializeField] float m_Angle = -30f;
+		/// <summary> 각도 변경 시간 간격 </summary>
+		[KHFC.FieldName("각도 변경 시간 간격")]
+		[SerializeField] float m_Interval = 1f;
+
+		/// <summary> 각도 변경에 걸리는 시간 </summary>
+		[KHFC.FieldName("각도 변경에 걸리는 시간")]
+		[SerializeField] float m_AngleChangeTime = .05f;
+
+		/// <summary> 각도가 변경될 때 마다 호출하는 콜백함수 </summary>
+		System.Action m_OnChangeRotation;
+
+		float m_Count;
+
+		Transform m_TR;             // 캐싱용
+
+		bool m_ChangeAngle = false;
+		float m_DestAngle;          // 각도 변경 시 필요한 임시 각도
+		float m_DeltaAngle;         // 각도 변경 시 시간에 따른 변경값
+		float m_TmpAngle;           // 각도 변경 시 임시 저장값
+
+		public bool isPlay => m_Play;
+		public float angle {
+			get => m_Angle;
+			set {
+				m_Angle = value;
+				if (KHFC.Util.FloatEqual(m_Angle, 0f))
+					m_Play = false;
+				m_DeltaAngle = m_Angle / m_AngleChangeTime;
+			}
+		}
+		public float interval {
+			get => m_Interval;
+			set {
+				m_Interval = value;
+				if (KHFC.Util.FloatEqual(m_Interval, 0f))
+					m_Play = false;
+			}
+		}
+		public bool rotateClockwise => m_Angle < 0;
+		public System.Action onChange {
+			private get => m_OnChangeRotation;
+			set { m_OnChangeRotation = value; }
+		}
+
+		public void Play() {
+			m_Play = true;
+		}
+
+		public void Stop() {
+			m_Play = false;
+			m_Count = m_RotateImmediately ? 0f : m_Interval;
+		}
+
+		private void Awake() {
+			m_TR = transform;
+			m_DeltaAngle = m_Angle / m_AngleChangeTime;
+		}
+
+		void Update() {
+			if (!m_Play)
+				return;
+
+			float deltaTime = Time.deltaTime;
+			if (m_ChangeAngle) {
+				Vector3 angle = m_TR.localEulerAngles;
+				m_TmpAngle += m_DeltaAngle * deltaTime;
+
+				if ((m_Angle > 0f && m_TmpAngle > m_DestAngle) ||
+					(m_Angle < 0f && m_TmpAngle < m_DestAngle)) {
+					m_TmpAngle = m_DestAngle;
+					m_ChangeAngle = false;
+				}
+
+
+				angle.z = KHFC.Util.ClampAngle(m_TmpAngle, 0);
+				//angle.z = KHFC.Util.ClampAngle(angle.z, 0);
+				//m_TR.localRotation = Quaternion.Euler(angle);
+				m_TR.localEulerAngles = angle;
+			}
+			m_Count -= deltaTime;
+			if (m_Count > 0)
+				return;
+
+			// 각도 변경시간이 너무 짧으면 일반 회전과 동일하게 처리한다.
+			if (m_AngleChangeTime > 0.01f) {
+				m_ChangeAngle = true;
+				m_TmpAngle = m_TR.localEulerAngles.z;
+				m_DestAngle = m_TR.localEulerAngles.z + m_Angle;
+			} else {
+				//m_Angle = KHFC.Util.ClampAngle(m_Angle, 0);
+				m_TR.Rotate(new Vector3(0, 0, m_Angle));
+			}
+			m_OnChangeRotation?.Invoke();
+			m_Count = m_Interval;
+		}
+	}
+}
