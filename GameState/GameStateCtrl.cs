@@ -51,7 +51,7 @@ namespace KHFC {
 		}
 
 		public AbstractGameState GetState(int index) {
-			return (-1 < index && m_ListState.Count < index) ? m_ListState[index] : null;
+			return (-1 < index && index < m_ListState.Count) ? m_ListState[index] : null;
 		}
 
 		public T GetState<T>() where T : AbstractGameState {
