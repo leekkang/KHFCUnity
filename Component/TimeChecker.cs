@@ -1,76 +1,83 @@
 ﻿
+using System;
 using UnityEngine;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace KHFC {
 	/// <summary> 정확하게 시간을 측정할 수 있는 컴포넌트 </summary>
 	[DisallowMultipleComponent]
 	public class TimeChecker : MonoBehaviour {
-		/// <summary> 현재 시간, 스레드에서 계속 갱신함 </summary>
-		[ReadOnly]
-		[SerializeField] int m_CurTimeStamp;
+		readonly static DateTime epochTime = new(1970, 1, 1);
 
-		/// <summary> 현재 시간, 스레드에서 계속 갱신함 </summary>
-		public int now => m_CurTimeStamp;
+		public static DateTime utcNow = DateTime.UtcNow;
+		public static TimeChecker inst;
+
+		System.Action<float> m_OnFixed;
+
+		/// <summary> 현재 시간, 스레드에서 계속 갱신함, 단위는 millisecond </summary>
+		[ReadOnly]
+		[SerializeField] long m_CurTimeStamp;
+
+		/// <summary> 현재 시간, 스레드에서 계속 갱신함, 단위는 millisecond </summary>
+		public long now => m_CurTimeStamp;
+
+		DateTime m_StartTime;
+
+		/// <summary> 스레드에서 루프 간 시간 간격, 단위는 millisecond 이다. </summary>
+		/// <remarks> 기본값 50, 0.02초마다 1번씩 루프를 호출한다. -> 1초에 50번 호출 </remarks>
+		public int m_Interval = 50;
+		CancellationTokenSource m_Token;
 
 		/// <summary> 한번에 돌릴 각도 </summary>
 		[KHFC.FieldName("한번에 돌릴 각도")]
 		[SerializeField] float m_Angle = -30f;
-		/// <summary> 각도 변경 시간 간격 </summary>
-		[KHFC.FieldName("각도 변경 시간 간격")]
-		[SerializeField] float m_Interval = 1f;
-
-		/// <summary> 각도 변경에 걸리는 시간 </summary>
-		[KHFC.FieldName("각도 변경에 걸리는 시간")]
-		[SerializeField] float m_AngleChangeTime = .05f;
 
 		/// <summary> 각도가 변경될 때 마다 호출하는 콜백함수 </summary>
 		System.Action m_OnChangeRotation;
 
-		float m_Count;
+		public static void AddFixed(System.Action<float> onFixedUpdate) => inst.AddFixed(onFixedUpdate);
+		public static void RemoveFixed(System.Action<float> onFixedUpdate) => inst.AddFixed(onFixedUpdate);
 
-		Transform m_TR;             // 캐싱용
+		public void AddFixed(System.Action<float> onFixedUpdate) {
+			if (onFixedUpdate != null)
+				m_OnFixed += onFixedUpdate;
 
-		bool m_ChangeAngle = false;
-		float m_DestAngle;          // 각도 변경 시 필요한 임시 각도
-		float m_DeltaAngle;         // 각도 변경 시 시간에 따른 변경값
-		float m_TmpAngle;           // 각도 변경 시 임시 저장값
-
-		public bool isPlay => m_Play;
-		public float angle {
-			get => m_Angle;
-			set {
-				m_Angle = value;
-				if (KHFC.Util.FloatEqual(m_Angle, 0f))
-					m_Play = false;
-				m_DeltaAngle = m_Angle / m_AngleChangeTime;
+			if (m_DicMultiObjEventMap.ContainsKey(eventType)) {
+				m_DicMultiObjEventMap[eventType] -= observer;
+				if (null == m_DicMultiObjEventMap[eventType]) {
+					m_DicMultiObjEventMap.Remove(eventType);
+				}
 			}
 		}
-		public float interval {
-			get => m_Interval;
-			set {
-				m_Interval = value;
-				if (KHFC.Util.FloatEqual(m_Interval, 0f))
-					m_Play = false;
+
+		public void RemoveFixed(System.Action<float> onFixedUpdate) {
+			if (onFixedUpdate != null)
+				m_OnFixed -= onFixedUpdate;
+		}
+
+		public void Init() {
+			m_StartTime = DateTime.UtcNow;
+			m_Token?.Cancel();
+			m_Token = new CancellationTokenSource();
+			Task.Run(Loop);
+		}
+
+		async Task Loop() {
+			while (!m_Token.IsCancellationRequested) {
+				m_CurTimeStamp = Interop.Sys.GetSystemTimeAsTicks()
+
+				await Task.Delay(m_Interval, cancellationToken:m_Token.Token);
 			}
 		}
-		public bool rotateClockwise => m_Angle < 0;
-		public System.Action onChange {
-			private get => m_OnChangeRotation;
-			set { m_OnChangeRotation = value; }
+
+		void Awake() {
+			inst = this;
 		}
 
-		public void Play() {
-			m_Play = true;
-		}
-
-		public void Stop() {
-			m_Play = false;
-			m_Count = m_RotateImmediately ? 0f : m_Interval;
-		}
-
-		private void Awake() {
-			m_TR = transform;
-			m_DeltaAngle = m_Angle / m_AngleChangeTime;
+		void OnDestroy() {
+			m_Token?.Cancel();
 		}
 
 		void Update() {
