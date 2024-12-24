@@ -39,7 +39,7 @@ public static class ListExt {
 	/// <summary> 리스트 내 값이 있으면 true, 없으면 false를 리턴 </summary>
 	public static bool TryGetValue<T>(this List<T> list, out T value, Predicate<T> predicate) {
 		int index = list.FindIndex(predicate);
-		value = list[index];
+		value = index > -1 ? list[index] : default;
 		return index != -1;
 	}
 
