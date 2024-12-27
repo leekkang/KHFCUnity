@@ -1,8 +1,10 @@
 ﻿
+#if KHFC_IAP
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing.Security;
@@ -262,3 +264,4 @@ namespace KHFC.IAP {
 		}
 	}
 }
+#endif

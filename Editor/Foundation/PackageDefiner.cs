@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEditor;
 using System.Linq;
-using UnityEngine;
 
 namespace KHFC.Editor {
 	/// <summary> 현재 프로젝트에서 특정 패키지를 사용하고 있는지 확인하고 디파인 심볼을 설정한다 </summary>
-	[InitializeOnLoad]	
+	[InitializeOnLoad]
 	public class PackageDefiner : UnityEditor.AssetModificationProcessor {
 		const string PREFIX = "KHFC_";
 		/// <summary> 설치되어 있는 어셈블리 종류. 어셈블리 이름과 직접 비교한다 (이름이 동일해야함) </summary>
@@ -15,7 +14,14 @@ namespace KHFC.Editor {
 		/// 설치되어 있는 패키지 이름.
 		/// <see cref="UnityEditor.PackageManager.PackageInfo.displayName"/> 과 비교한다 (이름이 동일해야함)
 		/// </summary>
-		static readonly HashSet<string> m_ArrPackage = new() { "Addressables" };
+		static readonly HashSet<string> m_ArrPackage = new() { "Addressables", "In App Purchasing" };
+
+		/// <summary> 디파인 심볼 이름, 키는 패키지의 이름과 동일함 </summary>
+		static readonly Dictionary<string, string> m_DicPackageName = new() {
+			{ "UniTask", "KHFC_UNITASK" },
+			{ "Addressables", "KHFC_ADDRESSABLES" },
+			{ "In App Purchasing", "KHFC_IAP" },
+		};
 		
 		static PackageDefiner() {
 			// Open the Easy Save 3 window the first time ES3 is installed.
@@ -88,7 +94,7 @@ namespace KHFC.Editor {
 			List<string> listSymbol = new();
 			foreach (string name in listName) {
 				if (m_ArrAssembly.Contains(name))
-					listSymbol.Add(PREFIX + name.ToUpper());
+					listSymbol.Add(m_DicPackageName[name]);
 			}
 			// Only update if the list has changed.
 			//for (int i = 0; i < currentAssemblyNames.Length; i++) {
@@ -110,19 +116,20 @@ namespace KHFC.Editor {
 			foreach (string name in m_ArrPackage) {
 				UnityEditor.PackageManager.PackageInfo info = GetPackageInfo(name);
 				if (info != null)
-					listSymbol.Add(PREFIX + name.ToUpper());
+					listSymbol.Add(m_DicPackageName[name]);
 			}
 			return listSymbol;
 		}
 
 		static UnityEditor.PackageManager.PackageInfo GetPackageInfo(string packageName) {
-			List<string> listPath = UnityEditor.AssetDatabase.FindAssets("package")
-					.Select(UnityEditor.AssetDatabase.GUIDToAssetPath)
-					.Where(x => UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(x) != null).ToList();
-			return 
-				listPath.Select(UnityEditor.PackageManager.PackageInfo.FindForAssetPath)
-						.Where(x => x != null)
-						.First(x => x.displayName.Contains(packageName));
+			IEnumerable<string> listPath = UnityEditor.AssetDatabase.FindAssets("package")
+				.Select(UnityEditor.AssetDatabase.GUIDToAssetPath)
+				.Where(x => UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.TextAsset>(x) != null);
+
+			List<UnityEditor.PackageManager.PackageInfo> list
+				= listPath.Select(UnityEditor.PackageManager.PackageInfo.FindForAssetPath)
+						  .Where(x => x != null).ToList();
+			return list.Find(x => x.displayName.Contains(packageName));
 		}
 
 		static void AddSymbol(string name, BuildTargetGroup group) {

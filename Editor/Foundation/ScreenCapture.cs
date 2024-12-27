@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿
+using UnityEngine;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	/// <summary> Assets 상위폴더에 [오늘날짜 + 시간 .png]로 생성 </summary>
 	public class ScreenCapture {
 		public static void TakeScreenCapture() {

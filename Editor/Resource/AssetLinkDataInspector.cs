@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	[CustomEditor(typeof(AssetLinkData), true)]
 	public class AssetLinkDataInspector : UnityEditor.Editor {
 

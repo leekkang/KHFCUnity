@@ -15,6 +15,11 @@ namespace KHFC {
 		public bool m_OnClickSound = true;
 		public bool m_OnHoverSound = false;
 
+		public string m_ClickSoundName = "efx_click";
+		[Range(0, 1f)] public float m_ClickSoundVolume = .5f;
+		public string m_HoverSoundName = "efx_hover";
+		[Range(0, 1f)] public float m_HoverSoundVolume = .5f;
+
 		protected override void Start() {
 			Transform parent = transform.parent;
 
@@ -60,7 +65,7 @@ namespace KHFC {
 			m_Parent.OnPreClickDefault();
 
 			if (m_OnClickSound)
-				SoundMgr.inst.PlayEfx(Consts.SOUND_EFX_BUTTON_OK, Consts.SOUND_BUTTON_VOLUME);
+				SoundMgr.inst.PlayEfx(m_ClickSoundName, m_ClickSoundVolume);
 
 			m_Click(this.gameObject);
 
@@ -73,7 +78,7 @@ namespace KHFC {
 				return;
 
 			if (m_OnHoverSound)
-				SoundMgr.inst.PlayEfx(Consts.SOUND_EFX_BUTTON_HOVER, Consts.SOUND_BUTTON_VOLUME);
+				SoundMgr.inst.PlayEfx(m_HoverSoundName, m_HoverSoundVolume);
 
 			m_Enter(this.gameObject);
 		}

@@ -1,12 +1,8 @@
-﻿using KHFC;
+﻿
+using KHFC;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.UIElements;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 /// <summary> 스프라이트 변경을 통해 애니메이션 흉내를 내는 오브젝트 </summary>
 public class SpriteMotion : MotionBase {

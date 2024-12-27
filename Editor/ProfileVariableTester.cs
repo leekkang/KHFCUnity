@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
+
+#if KHFC_ADDRESSABLES
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
-using UnityEngine;
+#endif
 
 class ProfileVariables {
 	public int count;
@@ -28,6 +31,7 @@ class ProfileVariables {
 }
 
 public class ProfileVariableTester {
+#if KHFC_ADDRESSABLES
 	[MenuItem("KHFC/Addressable/Test Profile Variable")]
 	private static void TestProfileVariable() {
 		AddressableAssetSettings addressableAssetSettings = AddressableAssetSettingsDefaultObject.Settings;
@@ -46,4 +50,5 @@ public class ProfileVariableTester {
 		}
 		Debug.Log(variables);
 	}
+#endif
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	public class ClipCacheKey {
 		/// <summary>
 		/// 현재 오브젝트의 상위 오브젝트에 <see cref="KHFC.CachedComponent"/>가 있는지 확인한 후 

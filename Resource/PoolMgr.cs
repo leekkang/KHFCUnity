@@ -16,8 +16,10 @@ using AsyncGO = System.Threading.Tasks.Task<UnityEngine.GameObject>;
 using AsyncObj = System.Threading.Tasks.Task<UnityEngine.Object>;
 #endif
 
+#if KHFC_ADDRESSABLES
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+#endif
 
 using Object = UnityEngine.Object;
 
@@ -26,6 +28,8 @@ namespace KHFC {
 		Prefab,
 		Audio,
 	}
+
+	// 주의 : Addressables 없으면 동작 안함
 
 	// TODO: async 비동기 코드 추가 - 버전 전처리기 : UNITY_2018_1_OR_NEWER && (NET_4_6 || NET_STANDARD_2_0)
 	// -> 코루틴도 충분히 성능이 좋아서 사용할 지는 의문, 대신 잡 시스템을 적용해보자
@@ -511,17 +515,21 @@ namespace KHFC {
 
 
 		public void ClearAsset() {
+#if KHFC_ADDRESSABLES
 			foreach (var pair in m_DicAsset) {
 				Addressables.Release(pair.Value);
 			}
+#endif
 			m_DicAsset.Clear();
 		}
 
 		public void ReleaseAsset(Object asset) {
+#if KHFC_ADDRESSABLES
 			Addressables.Release(asset);
+#endif
 		}
 
-		#endregion
+#endregion
 
 
 		/// <summary> 모든 게임 오브젝트, 애셋을 제거하는 함수 </summary>
@@ -550,8 +558,7 @@ namespace KHFC {
 
 
 
-
-
+#if KHFC_ADDRESSABLES
 		void LoadAssetPostProcess(ref AsyncOperationHandle<Object> handle, ref string assetName, System.Action<Object> onAfter) {
 			if (handle.Status == AsyncOperationStatus.Succeeded) {
 				//Debug.Log($"Async operation succeeded : {assetName}");
@@ -562,11 +569,13 @@ namespace KHFC {
 				onAfter?.Invoke(null);
 			}
 		}
+#endif
 
 		Object _LoadFromAddressable(string assetName) {
 			if (m_DicAsset.TryGetValue(assetName, out Object asset))
 				return asset;
 
+#if KHFC_ADDRESSABLES
 			AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(assetName);
 			if (!handle.IsValid()) {
 				Debug.LogError($"Invalid AsyncOperationHandle name : {assetName}");
@@ -576,13 +585,15 @@ namespace KHFC {
 
 			handle.WaitForCompletion();
 			LoadAssetPostProcess(ref handle, ref assetName, (obj) => asset = obj);
+#endif
 			return asset;
 		}
-		async AsyncObj _LoadFromAddressableAsync(string assetName) {
-			if (m_DicAsset.TryGetValue(assetName, out Object asset)) {
-				return asset;
-			}
 
+		async AsyncObj _LoadFromAddressableAsync(string assetName) {
+			if (m_DicAsset.TryGetValue(assetName, out Object asset))
+				return asset;
+
+#if KHFC_ADDRESSABLES
 			AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(assetName);
 			if (!handle.IsValid()) {
 				Debug.LogError($"Invalid AsyncOperationHandle name : {assetName}");
@@ -590,18 +601,23 @@ namespace KHFC {
 				return null;
 			}
 
-			if (handle.IsDone)
+			if (handle.IsDone) {
 				LoadAssetPostProcess(ref handle, ref assetName, (obj) => asset = obj);
-			else
+				if (asset != null)
+					Debug.Log($"LoadFromAddressable Complete : {asset.name}");
+				return asset;
+			} else
 				Debug.Log("Async operation still in progress");
 
 #if KHFC_UNITASK
-			Object obj = await handle.ToUniTask();
+			asset = await handle.ToUniTask();
 #else
-			Object obj = await handle;
+			asset = await handle;
 #endif
-			Debug.Log($"LoadFromAddressable Complete : {obj.name}");
-			return obj;
+			if (asset != null)
+				Debug.Log($"LoadFromAddressable Complete : {asset.name}");
+#endif
+			return asset;
 		}
 
 		void _LoadFromAddressableAsync(string assetName, System.Action<Object> onAfter) {
@@ -610,6 +626,7 @@ namespace KHFC {
 				onAfter(asset);
 				return;
 			}
+#if KHFC_ADDRESSABLES
 			AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(assetName);
 			if (!handle.IsValid()) {
 				Debug.LogError($"Invalid AsyncOperationHandle name : {assetName}");
@@ -632,6 +649,9 @@ namespace KHFC {
 				LoadAssetPostProcess(ref operation, ref assetName, onAfter);
 				//Debug.Log($"_LoadFromAddressable Complete : {operation.Result.name}");
 			};
+#else
+			onAfter(asset);
+#endif
 		}
 
 		GameObject _SpawnGameObject(string assetName, Transform parent,
