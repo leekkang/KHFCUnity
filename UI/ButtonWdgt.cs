@@ -38,6 +38,9 @@ namespace KHFC {
 			else
 				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, "OnClickDefault", false, false);
 
+			if (m_Click == null)
+				Debug.LogError($"Click Delegate has nullptr\nName : {delName}, Parent : {(parent != null ? parent.name : "")}");
+
 			if (m_EnableHover) {
 				delName = "OnEnter" + postfix;
 				info = m_Parent.GetType().GetMethod(delName, flag);
@@ -46,6 +49,7 @@ namespace KHFC {
 				else
 					m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
 			}
+
 
 			//delName = "OnExit" + postfix;
 			//info = m_Parent.GetType().GetMethod(delName, flag);
