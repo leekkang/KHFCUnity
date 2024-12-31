@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 using System.Threading.Tasks;
 #endif
 
-internal static class TaskEx {
+public static class TaskEx {
 #if KHFC_UNITASK
 	public async static void OnComplete<T>(this UniTask<T> task, Action action) {
 		await task;

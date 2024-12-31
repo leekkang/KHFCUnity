@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace KHFC.Editor {
-	// priority 순서 : 상단 메뉴바는 값이 클수록 위쪽에 배치, 나머지 오브젝트, 애셋 우클릭 메뉴는 값이 작을수록 위쪽에 배치
+	// priority 순서 : 값이 작을수록 위쪽에 배치, 기본값은 1000이다.
 	public class KHFCEditorMenu {
 		const string NAME_ASSET_LINK_OBJ = "AssetLinkData";
 
@@ -165,25 +165,25 @@ namespace KHFC.Editor {
 
 
 		/// <summary> 사용하지 않는 에셋을 할당 해제한다 </summary>
-		[MenuItem("KHFC/ETC/ClearProfilerMemory")]
+		[MenuItem("KHFC/ETC/ClearProfilerMemory", priority = 0)]
 		public static void ClearMemory() {
 			Resources.UnloadUnusedAssets();
 			EditorUtility.UnloadUnusedAssetsImmediate(true);
 		}
 
 		/// <summary> 게임창의 사이즈를 변경한다 </summary>
-		[MenuItem("KHFC/ETC/Open Resize Editor Window", false, 20)]
+		[MenuItem("KHFC/ETC/Open Resize Editor Window", priority = 1)]
 		static public void ResizeEditorWindow() {
 			EditorWindow.GetWindow<KHFC.ResizeEditorWindow>(false, "GameView Size", true);
 		}
 
 		/// <summary> 현재 화면을 png로 애셋 폴더에 저장한다 </summary>
-		[MenuItem("KHFC/ETC/Capture Current Screen #0")] // 단축키 : shift + 0
+		[MenuItem("KHFC/ETC/Capture Current Screen #0", priority = 1)] // 단축키 : shift + 0
 		public static void CaptureCurrentScreen() {
 			KHFC.Editor.ScreenCapture.TakeScreenCapture();
 		}
 
-		[MenuItem("KHFC/Shortcut/SetActive %e")]
+		[MenuItem("KHFC/Shortcut/SetActive %e", priority = 1001)]
 		public static void SetActive() {
 			foreach (GameObject obj in Selection.objects) {
 				obj.SetActive(!obj.activeSelf);

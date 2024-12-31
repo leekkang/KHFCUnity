@@ -1,9 +1,8 @@
-﻿using System.Collections;
+﻿
 using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
 
-public static class TransformEx {
+internal static class TransformEx {
 	/// <summary> 자식들 중 <paramref name="name"/> 이름을 가진 게임 오브젝트를 반환한다. (DFS) </summary>
 	public static Transform FindRecursively(this Transform target, string name) {
 		if (target.name == name)

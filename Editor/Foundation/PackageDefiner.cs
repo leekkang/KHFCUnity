@@ -36,7 +36,19 @@ namespace KHFC.Editor {
 #endif
 		}
 
-		[InitializeOnLoadMethod]
+		/// <summary> 필요한 KHFC 디파인 심볼을 확인하고 업데이트 한다. </summary>
+		[MenuItem("KHFC/Definer/Update Define Symbol", priority = 1)]
+		public static void UpdateNeededDefineSymbol() {
+			UpdateSymbol();
+		}
+
+		/// <summary> 현재 빌드타겟의 KHFC 디파인 심볼을 전부 제거한다 </summary>
+		[MenuItem("KHFC/Definer/Remove All Package Define Symbol", priority = 2)]
+		public static void RemoveAllPackageDefine() {
+			RemoveSymbol(EditorUserBuildSettings.activeBuildTarget);
+		}
+
+		//[InitializeOnLoadMethod]
 		static void UpdateSymbol() {
 			//PlayerPrefs.SetInt
 			BuildTarget target = EditorUserBuildSettings.activeBuildTarget;

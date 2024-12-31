@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 
-internal static class CommonEx {
+public static class CommonEx {
 	public static void SetAlpha(this Graphic graphic, float alpha) {
 		Color color = graphic.color;
 		color.a = alpha;
