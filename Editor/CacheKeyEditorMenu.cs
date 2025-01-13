@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	public class CachedKeyEditorMenu {
 		const string PREFAB_ROOT_PATH = "Assets/Media/Prefab";
 
@@ -11,7 +11,7 @@ namespace KHFC {
 		/// <see cref="KHFC.CachedComponent"/>를 상속받은 모든 오브젝트의 캐시 키를 업데이트하는 함수
 		/// </summary>
 		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
-		[MenuItem("KHFC/Cached Key/Update All GameObject")]
+		[MenuItem("KHFC/Cached Key/Update All GameObject", priority = (int)MenuPriority.CacheKey)]
 		static public void UpdateAllCachedGameObject() {
 #if UNITY_EDITOR
 			UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
@@ -32,7 +32,7 @@ namespace KHFC {
 		/// <see cref="KHFC.CachedComponent"/>를 상속받은 모든 오브젝트의 캐시 키를 업데이트하는 함수
 		/// </summary>
 		/// <remarks> 폴더 내에 프리팹화 된 오브젝트만을 대상으로 한다. </remarks>
-		[MenuItem("KHFC/Cached Key/Update All Prefab")]
+		[MenuItem("KHFC/Cached Key/Update All Prefab", priority = (int)MenuPriority.CacheKey + 1)]
 		static public void UpdateAllCachedPrefab() {
 #if UNITY_EDITOR
 			string[] arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
@@ -53,7 +53,7 @@ namespace KHFC {
 
 		/// <summary> <see cref="KHFC.CachedComponent"/>를 상속받은 오브젝트의 캐시 키를 업데이트하는 함수 </summary>
 		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
-		[MenuItem("GameObject/KHFC/Update Cache Key (GO)", false, -90)]
+		[MenuItem("GameObject/KHFC/Update Cache Key (GO)", priority = (int)MenuPriority.GameObject)]
 		private static void UpdateCachedGameObject() {
 #if UNITY_EDITOR
 			int count = Selection.gameObjects.Length;
@@ -74,7 +74,7 @@ namespace KHFC {
 
 		/// <summary> <see cref="KHFC.CachedComponent"/>를 상속받은 오브젝트의 캐시 키를 업데이트하는 함수 </summary>
 		/// <remarks> 폴더 내에 프리팹화 된 오브젝트만을 대상으로 한다. </remarks>
-		[MenuItem("Assets/KHFC/Update Cache Key (P)", false, -100)]
+		[MenuItem("Assets/KHFC/Update Cache Key (P)", true)]
 		private static void UpdateCachedPrefab() {
 #if UNITY_EDITOR
 			int count = Selection.gameObjects.Length;

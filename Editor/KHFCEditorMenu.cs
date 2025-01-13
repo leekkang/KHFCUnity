@@ -8,13 +8,25 @@ using System.Text;
 
 namespace KHFC.Editor {
 	// priority 순서 : 값이 작을수록 위쪽에 배치, 기본값은 1000이다.
+	enum MenuPriority {
+		Definer = 10,
+		ETC = 0,
+		UGUI = 800,
+		CacheKey = 900,
+		Shortcut = 1010,
+		Others = 1100,
+
+		GameObject = -100,
+		Assets = 1000,
+	}
+
 	public class KHFCEditorMenu {
 		const string NAME_ASSET_LINK_OBJ = "AssetLinkData";
 
 		/// <summary>
 		/// 실제 게임에서 사용하는 프리팹 경로를 <see cref="AssetLinkData"/> 오브젝트에 저장하는 함수
 		/// </summary>
-		[MenuItem("KHFC/Fill Asset Link Data")]
+		[MenuItem("KHFC/Create and Fill Asset Link Data", priority = (int)MenuPriority.Others)]
 		public static void FillAssetLinkData() {
 #if UNITY_EDITOR
 			UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
@@ -103,7 +115,7 @@ namespace KHFC.Editor {
 		//#endif
 		//	}
 
-		[MenuItem("KHFC/Add X 90 degree")]
+		[MenuItem("KHFC/Add X 90 degree", priority = (int)MenuPriority.Others + 10)]
 		public static void AddXdegree() {
 #if UNITY_EDITOR
 			GameObject root = GameObject.Find("TestPlane");
@@ -123,7 +135,7 @@ namespace KHFC.Editor {
 #endif
 		}
 
-		[MenuItem("KHFC/Show All Assembly")]
+		[MenuItem("KHFC/Show All Assembly", priority = (int)MenuPriority.Others + 1)]
 		static void ShowAllAssembly() {
 			UnityEditor.Compilation.Assembly[] assemblies = UnityEditor.Compilation.CompilationPipeline.GetAssemblies();
 
@@ -147,7 +159,7 @@ namespace KHFC.Editor {
 		}
 
 		/// <summary> 씬 내의 모든 버튼 컴포넌트를 버튼위젯 컴포넌트로 변경한다. </summary>
-		[MenuItem("KHFC/UGUI/Change UI.Button To KHFC.ButtonWdgt")]
+		[MenuItem("KHFC/UGUI/Change UI.Button To KHFC.ButtonWdgt", priority = (int)MenuPriority.UGUI)]
 		public static void ChangeButtonToButtonWdgt() {
 #if UNITY_EDITOR
 			UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
@@ -165,25 +177,25 @@ namespace KHFC.Editor {
 
 
 		/// <summary> 사용하지 않는 에셋을 할당 해제한다 </summary>
-		[MenuItem("KHFC/ETC/ClearProfilerMemory", priority = 0)]
+		[MenuItem("KHFC/ETC/ClearProfilerMemory", priority = (int)MenuPriority.ETC)]
 		public static void ClearMemory() {
 			Resources.UnloadUnusedAssets();
 			EditorUtility.UnloadUnusedAssetsImmediate(true);
 		}
 
-		/// <summary> 게임창의 사이즈를 변경한다 </summary>
-		[MenuItem("KHFC/ETC/Open Resize Editor Window", priority = 1)]
-		static public void ResizeEditorWindow() {
-			EditorWindow.GetWindow<KHFC.ResizeEditorWindow>(false, "GameView Size", true);
-		}
-
 		/// <summary> 현재 화면을 png로 애셋 폴더에 저장한다 </summary>
-		[MenuItem("KHFC/ETC/Capture Current Screen #0", priority = 1)] // 단축키 : shift + 0
+		[MenuItem("KHFC/ETC/Capture Current Screen #0", priority = (int)MenuPriority.ETC + 1)] // 단축키 : shift + 0
 		public static void CaptureCurrentScreen() {
 			KHFC.Editor.ScreenCapture.TakeScreenCapture();
 		}
 
-		[MenuItem("KHFC/Shortcut/SetActive %e", priority = 1001)]
+		/// <summary> 게임창의 사이즈를 변경한다 </summary>
+		[MenuItem("KHFC/ETC/Open Resize Editor Window", priority = (int)MenuPriority.ETC + 2)]
+		static public void ResizeEditorWindow() {
+			EditorWindow.GetWindow<KHFC.ResizeEditorWindow>(false, "GameView Size", true);
+		}
+
+		[MenuItem("KHFC/Shortcut/SetActive %e", priority = (int)MenuPriority.Shortcut)]
 		public static void SetActive() {
 			foreach (GameObject obj in Selection.objects) {
 				obj.SetActive(!obj.activeSelf);
@@ -194,7 +206,7 @@ namespace KHFC.Editor {
 
 		/// <summary> 자식 오브젝트에 붙어있는 컴포넌트에 따라 접두사를 붙이는 함수 </summary>
 		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
-		[MenuItem("GameObject/KHFC/Prefixing by Component Type (GO)")]
+		[MenuItem("GameObject/KHFC/Prefixing by Component Type (GO)", priority = (int)MenuPriority.GameObject + 5)]
 		static void UpdateCachedGameObject() {
 #if UNITY_EDITOR
 			int count = Selection.gameObjects.Length;
@@ -223,7 +235,7 @@ namespace KHFC.Editor {
 		}
 
 		/// <summary> 캔버스 아래의 모든 <see cref="MaskableGraphic"/>의 RaycastTarget 옵션을 끈다. </summary>
-		[MenuItem("GameObject/KHFC/Disable Raycast Under Canvas", false, -99)]
+		[MenuItem("GameObject/KHFC/Disable Raycast Under Canvas", priority = (int)MenuPriority.GameObject + 5)]
 		public static void DisableRaycast() {
 			GameObject go = Selection.activeGameObject;
 
@@ -256,7 +268,7 @@ namespace KHFC.Editor {
 					Selection.activeGameObject.TryGetComponent(out CanvasRenderer renderer));
 		}
 
-		[MenuItem("Assets/KHFC/Create KHFCSetting Scriptable Object")]
+		[MenuItem("Assets/KHFC/Create KHFCSetting Scriptable Object", priority = (int)MenuPriority.Assets)]
 		public static void CreateMyAsset() {
 			KHFCSetting asset = ScriptableObject.CreateInstance<KHFCSetting>();
 			string[] arrGUID = AssetDatabase.FindAssets(string.Format("{0} t:script", "KHFCSetting"));

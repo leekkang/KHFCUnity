@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
@@ -81,7 +80,7 @@ namespace KHFC.IAP {
 				await UnityServices.InitializeAsync(options);
 			} catch (Exception e) {
 				// An error occurred during initialization.
-				Debug.LogError($"UnityServices Initialize Failed : {e}");
+				UnityEngine.Debug.LogError($"UnityServices Initialize Failed : {e}");
 			}
 
 			InitializePurchasing();
@@ -95,7 +94,7 @@ namespace KHFC.IAP {
 				UnityServices.InitializeAsync(options).Wait();
 			} catch (Exception e) {
 				// An error occurred during initialization.
-				Debug.LogError($"UnityServices Initialize Failed : {e}");
+				UnityEngine.Debug.LogError($"UnityServices Initialize Failed : {e}");
 			}
 			InitializePurchasing();
 		}
@@ -107,7 +106,7 @@ namespace KHFC.IAP {
 			ConfigurationBuilder builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 			foreach (IAPProduct shopData in m_ListProduct) {
 				builder.AddProduct(shopData.ID, shopData.Type);
-				Debug.Log($"IAP AddProduct:{shopData.ID}, {shopData.Type}");
+				UnityEngine.Debug.Log($"IAP AddProduct:{shopData.ID}, {shopData.Type}");
 			}
 
 			UnityPurchasing.Initialize(this, builder);
@@ -168,7 +167,8 @@ namespace KHFC.IAP {
 			//}
 
 
-			CrossPlatformValidator validator = new(GooglePlayTangle.Data(), AppleTangle.Data(), Application.identifier);
+			CrossPlatformValidator validator
+				= new(GooglePlayTangle.Data(), AppleTangle.Data(), UnityEngine.Application.identifier);
 			UnityEngine.Debug.Log("[ProcessPurchase]try0");
 			try {
 				// On Google Play, result has a single product ID.
@@ -195,7 +195,6 @@ namespace KHFC.IAP {
 			}
 
 			m_OnPurchaseSucceed?.Invoke(product);
-
 			m_PurchaseProcess = false;
 
 			return PurchaseProcessingResult.Complete;
@@ -203,7 +202,8 @@ namespace KHFC.IAP {
 
 		public string GetGooglePurchaseToken(Product purchasedProduct) {
 			if (purchasedProduct.hasReceipt) {
-				CrossPlatformValidator validator = new(GooglePlayTangle.Data(), AppleTangle.Data(), Application.identifier);
+				CrossPlatformValidator validator
+					= new(GooglePlayTangle.Data(), AppleTangle.Data(), UnityEngine.Application.identifier);
 				try {
 					IPurchaseReceipt[] result = validator.Validate(purchasedProduct.receipt);
 					foreach (IPurchaseReceipt productReceipt in result) {
@@ -211,7 +211,7 @@ namespace KHFC.IAP {
 							return google.purchaseToken;
 					}
 				} catch (IAPSecurityException) {
-					Debug.Log("Invalid receipt, not unlocking content");
+					UnityEngine.Debug.Log("Invalid receipt, not unlocking content");
 				}
 			}
 
@@ -241,8 +241,8 @@ namespace KHFC.IAP {
 			}
 
 			// If we are running on an Apple device ... 
-			if (Application.platform == RuntimePlatform.IPhonePlayer ||
-				Application.platform == RuntimePlatform.OSXPlayer) {
+			if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.IPhonePlayer ||
+				UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXPlayer) {
 				// ... begin restoring purchases
 				UnityEngine.Debug.Log("RestorePurchases started ...");
 
@@ -259,7 +259,7 @@ namespace KHFC.IAP {
 			// Otherwise
 			else {
 				// We are not running on an Apple device. No work is necessary to restore purchases.
-				UnityEngine.Debug.Log("RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
+				UnityEngine.Debug.Log("RestorePurchases FAIL. Not supported on this platform. Current = " + UnityEngine.Application.platform);
 			}
 		}
 	}
