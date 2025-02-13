@@ -22,40 +22,42 @@ namespace KHFC {
 			mLog = new System.Text.StringBuilder();
 			mLog.Remove(0, mLog.Length);
 		}
-
 		[System.Diagnostics.Conditional("UNITY_EDITOR")]
-		public static void CheckTimeStart(string msg) {
-			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+		public static void CheckTimeStart(string timerName) {
+			System.Diagnostics.Stopwatch watch;
 
 #if UNITY_EDITOR
-			if (!mDicWatch.ContainsKey(msg))
-				mDicWatch.Add(msg, watch);
+			if (!mDicWatch.ContainsKey(timerName))
+				mDicWatch.Add(timerName, new System.Diagnostics.Stopwatch());
 
+			watch = mDicWatch[timerName];
 			watch.Reset();
 			watch.Start();
 
-			string resultMsg = $"StopWatch : {msg} START";
+            string resultMsg = $"StopWatch : {timerName} START";
 			UnityEngine.Debug.Log(resultMsg);
 
 			if (!mUseLog)
 				return;
 
-			mLog ??= new System.Text.StringBuilder();
+			if (mLog == null)
+				mLog = new System.Text.StringBuilder();
+
 			mLog.AppendLine(resultMsg);
 #endif
 		}
 
 		[System.Diagnostics.Conditional("UNITY_EDITOR")]
-		public static void CheckTimeEnd(string msg) {
+		public static void CheckTimeEnd(string timerName) {
 #if UNITY_EDITOR
-			if (!mDicWatch.ContainsKey(msg))
+			if (!mDicWatch.ContainsKey(timerName))
 				return;
 
-			System.Diagnostics.Stopwatch watch = mDicWatch[msg];
+			System.Diagnostics.Stopwatch watch = mDicWatch[timerName];
 
 			watch.Stop();
 
-			string resultMsg = $"StopWatch : {msg} End, Time : {watch.Elapsed.TotalSeconds}";
+            string resultMsg = $"StopWatch : {timerName} End, Time : {watch.Elapsed.TotalSeconds}";
 			UnityEngine.Debug.Log(resultMsg);
 
 			if (mUseLog)

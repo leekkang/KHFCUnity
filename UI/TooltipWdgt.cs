@@ -10,6 +10,11 @@ namespace KHFC {
 		DelHover m_Enter;
 		DelHover m_Exit;
 
+		[ReadOnly][FieldName("HoverEnter 버튼 연결")][SerializeField]
+		AllocatedType m_EnterAllocated;
+		[ReadOnly][FieldName("HoverExit 클릭 버튼 연결")][SerializeField]
+		AllocatedType m_ExitAllocated;
+
 		protected override void Start() {
 			base.Awake();
 
@@ -23,17 +28,23 @@ namespace KHFC {
 													System.Reflection.BindingFlags.NonPublic;
 			string delName = "OnEnter" + gameObject.name;
 			System.Reflection.MethodInfo info = m_Parent.GetType().GetMethod(delName, flag);
-			if (info != null)
+			if (info != null) {
 				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
-			else
+				m_EnterAllocated = AllocatedType.Custom;
+			} else {
 				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
+				m_EnterAllocated = AllocatedType.Default;
+			}
 
 			delName = "OnExit" + gameObject.name;
 			info = m_Parent.GetType().GetMethod(delName, flag);
-			if (info != null)
+			if (info != null) {
 				m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
-			else
+				m_ExitAllocated = AllocatedType.Custom;
+			} else {
 				m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnExitDefault");
+				m_ExitAllocated = AllocatedType.Default;
+			}
 		}
 
 		public override void OnPointerEnter(PointerEventData eventData) {
