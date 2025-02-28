@@ -6,7 +6,7 @@ using UnityEditor;
 namespace KHFC {
 	[CustomEditor(typeof(TooltipWdgt), true)]
 	[CanEditMultipleObjects]
-	public class TooltipWdgtWdgtInspector : UnityEditor.UI.ButtonEditor {
+	public class TooltipWdgtInspector : UnityEditor.UI.SelectableEditor {
 		//ButtonWdgt m_Target;
 		SerializedProperty m_EnterFuncName;
 		SerializedProperty m_ExitFuncName;
