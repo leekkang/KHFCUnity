@@ -53,7 +53,7 @@ namespace KHFC {
 				return m_Instance;
 			}
 		}
-		//public static KHFCSetting Instance {
+		//public static KHFCSetting inst {
 		//	get {
 		//		m_Instance = NullableInstance;
 

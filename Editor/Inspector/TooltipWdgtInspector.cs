@@ -4,52 +4,33 @@ using UnityEngine;
 using UnityEditor;
 
 namespace KHFC {
-	[CustomEditor(typeof(ButtonWdgt), true)]
+	[CustomEditor(typeof(TooltipWdgt), true)]
 	[CanEditMultipleObjects]
-	public class ButtonWdgtInspector : UnityEditor.UI.ButtonEditor {
+	public class TooltipWdgtWdgtInspector : UnityEditor.UI.ButtonEditor {
 		//ButtonWdgt m_Target;
-		SerializedProperty m_EnableHover;
-		SerializedProperty m_OnClickSound;
 		SerializedProperty m_OnHoverSound;
-
-		SerializedProperty m_ClickAllocated;
 		SerializedProperty m_EnterAllocated;
 		SerializedProperty m_ExitAllocated;
 
-		SerializedProperty m_ClickSoundName;
-		SerializedProperty m_ClickSoundVolume;
 		SerializedProperty m_HoverSoundName;
 		SerializedProperty m_HoverSoundVolume;
 
 		protected override void OnEnable() {
 			base.OnEnable();
 			//m_Target = (ButtonWdgt)target;
-			m_EnableHover = serializedObject.FindProperty("m_EnableHover");
-			m_OnClickSound = serializedObject.FindProperty("m_OnClickSound");
 			m_OnHoverSound = serializedObject.FindProperty("m_OnHoverSound");
-			m_ClickAllocated = serializedObject.FindProperty("m_ClickAllocated");
 			m_EnterAllocated = serializedObject.FindProperty("m_EnterAllocated");
 			m_ExitAllocated = serializedObject.FindProperty("m_ExitAllocated");
 
-			m_ClickSoundName = serializedObject.FindProperty("m_ClickSoundName");
-			m_ClickSoundVolume = serializedObject.FindProperty("m_ClickSoundVolume");
 			m_HoverSoundName = serializedObject.FindProperty("m_HoverSoundName");
 			m_HoverSoundVolume = serializedObject.FindProperty("m_HoverSoundVolume");
 		}
 
 		public override void OnInspectorGUI() {
 			serializedObject.Update();
-			EditorGUILayout.PropertyField(m_EnableHover);
-			EditorGUILayout.PropertyField(m_OnClickSound);
 			EditorGUILayout.PropertyField(m_OnHoverSound);
-			EditorGUILayout.PropertyField(m_ClickAllocated);
 			EditorGUILayout.PropertyField(m_EnterAllocated);
 			EditorGUILayout.PropertyField(m_ExitAllocated);
-
-			if (m_OnClickSound.boolValue) {
-				EditorGUILayout.PropertyField(m_ClickSoundName);
-				EditorGUILayout.PropertyField(m_ClickSoundVolume);
-			}
 			if (m_OnHoverSound.boolValue) {
 				EditorGUILayout.PropertyField(m_HoverSoundName);
 				EditorGUILayout.PropertyField(m_HoverSoundVolume);

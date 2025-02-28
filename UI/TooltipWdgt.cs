@@ -10,10 +10,17 @@ namespace KHFC {
 		DelHover m_Enter;
 		DelHover m_Exit;
 
-		[ReadOnly][FieldName("HoverEnter 버튼 연결")][SerializeField]
+		[SerializeField][ReadOnly][FieldName("HoverEnter Method 연결")]
 		AllocatedType m_EnterAllocated;
-		[ReadOnly][FieldName("HoverExit 클릭 버튼 연결")][SerializeField]
+		[SerializeField][ReadOnly][FieldName("HoverExit Method 연결")]
 		AllocatedType m_ExitAllocated;
+
+		public bool m_EnableHover = false;
+		public bool m_OnClickSound = true;
+		public bool m_OnHoverSound = false;
+
+		public string m_HoverSoundName = "efx_hover";
+		[Range(0, 1f)] public float m_HoverSoundVolume = .5f;
 
 		protected override void Start() {
 			base.Awake();
@@ -49,6 +56,9 @@ namespace KHFC {
 
 		public override void OnPointerEnter(PointerEventData eventData) {
 			base.OnPointerEnter(eventData);
+
+			if (m_OnHoverSound)
+				SoundMgr.inst.PlayEfx(m_HoverSoundName, m_HoverSoundVolume);
 
 			m_Enter(this.gameObject);
 		}
