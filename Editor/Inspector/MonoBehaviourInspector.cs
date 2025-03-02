@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	[CustomEditor(typeof(MonoBehaviour), true)]
 	public class MonoBehaviourInspector : UnityEditor.Editor {
 		[SerializeField] private List<MethodInfo> m_ListMethod;

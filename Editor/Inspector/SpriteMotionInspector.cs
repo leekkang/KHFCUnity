@@ -7,16 +7,16 @@
 //[CanEditMultipleObjects]
 //[CustomEditor(typeof(SpriteMotion))]
 //public class SpriteMotionInspector : Editor {
-//	SpriteMotion m_Target;
+//	SpriteMotion m_Source;
 //	public void OnEnable() {
-//		m_Target = target as SpriteMotion;
+//		m_Source = target as SpriteMotion;
 //	}
 //	bool test;
 
 //	public override void OnInspectorGUI() {
 //		//base.OnInspectorGUI();
-//		serializedObject.Update();
-//		DrawPropertiesExcluding(serializedObject, GetVariables());
+//		m_SerializedObj.Update();
+//		DrawPropertiesExcluding(m_SerializedObj, GetVariables());
 
 //		// Insert custom inspector code here
 
@@ -53,11 +53,11 @@
 //		//}
 
 //		if (GUILayout.Button("Update Sprite List")) {
-//			m_Target.UpdateSpriteList();
+//			m_Source.UpdateSpriteList();
 //		}
 
 
-//		serializedObject.ApplyModifiedProperties();
+//		m_SerializedObj.ApplyModifiedProperties();
 //		EditorGUILayout.EndVertical();
 //	}
 

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	[CustomEditor(typeof(ButtonWdgt), true)]
 	[CanEditMultipleObjects]
 	public class ButtonWdgtInspector : UnityEditor.UI.SelectableEditor {
-		//ButtonWdgt m_Target;
+		//ButtonWdgt m_Source;
 		SerializedProperty m_EnableHover;
 		SerializedProperty m_OnClickSound;
 		SerializedProperty m_OnHoverSound;
@@ -25,13 +25,13 @@ namespace KHFC {
 
 		protected override void OnEnable() {
 			base.OnEnable();
-			//m_Target = (ButtonWdgt)target;
+			//m_Source = (ButtonWdgt)target;
 			m_EnableHover = serializedObject.FindProperty("m_EnableHover");
 			m_OnClickSound = serializedObject.FindProperty("m_OnClickSound");
 			m_OnHoverSound = serializedObject.FindProperty("m_OnHoverSound");
 			m_ClickFuncName = serializedObject.FindProperty("m_ClickFuncName");
 			m_EnterFuncName = serializedObject.FindProperty("m_EnterFuncName");
-			//m_ExitFuncName = serializedObject.FindProperty("m_ExitFuncName");
+			//m_ExitFuncName = m_SerializedObj.FindProperty("m_ExitFuncName");
 
 			m_ClickSoundName = serializedObject.FindProperty("m_ClickSoundName");
 			m_ClickSoundVolume = serializedObject.FindProperty("m_ClickSoundVolume");
@@ -78,8 +78,8 @@ namespace KHFC {
 			EditorGUILayout.Space(12f);
 			base.OnInspectorGUI();
 
-			//m_Target.m_OnClickSound = EditorGUILayout.Toggle("Enable ClickSound", m_Target.m_OnClickSound);
-			//m_Target.m_OnHoverSound = EditorGUILayout.Toggle("Enable HoverSound", m_Target.m_OnHoverSound);
+			//m_Source.m_OnClickSound = EditorGUILayout.Toggle("Enable ClickSound", m_Source.m_OnClickSound);
+			//m_Source.m_OnHoverSound = EditorGUILayout.Toggle("Enable HoverSound", m_Source.m_OnHoverSound);
 		}
 	}
 }

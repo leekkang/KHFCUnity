@@ -7,30 +7,31 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 #endif
 
-class ProfileVariables {
-	public int count;
-	public List<string> names;
-	public List<string> values;
-	public List<string> editorValues;
+namespace KHFC.Editor {
+	class ProfileVariables {
+		public int count;
+		public List<string> names;
+		public List<string> values;
+		public List<string> editorValues;
 
-	public ProfileVariables(List<string> names) {
-		this.count = names.Count;
-		this.names = names;
-		values = new List<string>(count);
-		editorValues = new List<string>(count);
-	}
-
-	public override string ToString() {
-		string message = string.Empty;
-		for (int i = 0; i < count; i++) {
-			message += $"{names[i]} = '{values[i]}' -> '{editorValues[i]}'\n";
+		public ProfileVariables(List<string> names) {
+			this.count = names.Count;
+			this.names = names;
+			values = new List<string>(count);
+			editorValues = new List<string>(count);
 		}
 
-		return message;
-	}
-}
+		public override string ToString() {
+			string message = string.Empty;
+			for (int i = 0; i < count; i++) {
+				message += $"{names[i]} = '{values[i]}' -> '{editorValues[i]}'\n";
+			}
 
-public class ProfileVariableTester {
+			return message;
+		}
+	}
+
+	public class ProfileVariableTester {
 #if KHFC_ADDRESSABLES
 	[MenuItem("KHFC/Addressable/Test Profile Variable")]
 	private static void TestProfileVariable() {
@@ -51,4 +52,5 @@ public class ProfileVariableTester {
 		Debug.Log(variables);
 	}
 #endif
+	}
 }

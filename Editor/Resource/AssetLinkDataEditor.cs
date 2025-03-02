@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	// TODO : AssetLinkData를 제네릭하게 만들면 해당 코드 전부 AssetLinkData로 옮겨도 될 듯
 	// TODO : Addressables 도입으로 필요없어짐. Addressables를 사용하지 않는 시스템에서만 사용
 	public class AssetLinkDataEditor {

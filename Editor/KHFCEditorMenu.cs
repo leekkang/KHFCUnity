@@ -5,12 +5,14 @@ using UnityEditor.SceneManagement;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Text;
+using Unity.Collections;
 
 namespace KHFC.Editor {
 	// priority 순서 : 값이 작을수록 위쪽에 배치, 기본값은 1000이다.
 	enum MenuPriority {
+		Window = 0,
 		Definer = 10,
-		ETC = 0,
+		ETC = 100,
 		UGUI = 800,
 		CacheKey = 900,
 		Shortcut = 1010,
@@ -26,9 +28,9 @@ namespace KHFC.Editor {
 		/// <summary>
 		/// 실제 게임에서 사용하는 프리팹 경로를 <see cref="AssetLinkData"/> 오브젝트에 저장하는 함수
 		/// </summary>
-		[MenuItem("KHFC/Create and Fill Asset Link Data", priority = (int)MenuPriority.Others)]
+		[MenuItem("KHFC/Create and Fill Asset Link Data",
+			priority = (int)MenuPriority.Others)]
 		public static void FillAssetLinkData() {
-#if UNITY_EDITOR
 			UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
 			GameObject[] arrObj = curScene.GetRootGameObjects();
 			foreach (var obj in arrObj) {
@@ -45,7 +47,6 @@ namespace KHFC.Editor {
 			AssetLinkData component = linkObj.AddComponent<AssetLinkData>();
 			component.Awake();
 			AssetLinkDataEditor.SetAllData();
-#endif
 		}
 		//	[MenuItem("KHFC/Fill Asset Link Data", isValidateFunction:true)]
 		//	static bool ValidateFillAssetLinkData() {
@@ -61,63 +62,8 @@ namespace KHFC.Editor {
 		//#endif
 		//	}
 
-		/// <summary>
-		/// 배치 제작용. 3DMerge 프로젝트에서만 사용
-		/// </summary>
-		//	[MenuItem("KHFC/Make Model To Object")]
-		//	static public void MakeModelToObject() {
-		//#if UNITY_EDITOR
-		//		// base gameobject
-		//		GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Media/Prefab/Empty.prefab");
-		//		//string folderPath = "Assets/3D Props - Adorable Items/Adorable 3D Items";
-		//		string folderPath = "Assets/Media/Mesh/LowpolyHats";
-		//		string[] arrGUID = AssetDatabase.FindAssets("t:Prefab", new string[] { folderPath });
-		//		CreateAssetFromGUID(arrGUID, 15f);	// 1 / 모델 스케일 팩터 -> 0.01이면 100
-
-		//		void CreateAssetFromGUID(string[] arrGUID, float scale) {
-		//			for (int i = 0; i < arrGUID.Length; i++) {
-		//				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
-		//				string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
-
-		//				//AssetDatabase.CopyAsset( )
-		//				GameObject go = PrefabUtility.InstantiatePrefab(basePrefab) as GameObject;
-		//				PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
-
-		//				GameObject prefab = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
-		//				prefab = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-		//				PrefabUtility.UnpackPrefabInstance(prefab, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
-		//				prefab.RemoveComponent<Animator>();
-		//				prefab.SafeAddComponent<cakeslice.Outline>();
-
-		//				MeshCollider col = prefab.SafeAddComponent<MeshCollider>();
-		//				col.convex = true;
-		//				col.isTrigger = false;
-		//				col.cookingOptions = MeshColliderCookingOptions.CookForFasterSimulation
-		//									| MeshColliderCookingOptions.EnableMeshCleaning
-		//									| MeshColliderCookingOptions.WeldColocatedVertices
-		//									| MeshColliderCookingOptions.UseFastMidphase;
-
-		//				Transform parent = go.transform.GetChild(0).GetChild(0);
-		//				prefab.transform.position = Vector3.zero;
-		//				//prefab.transform.rotation = Quaternion.identity;
-		//				prefab.transform.localEulerAngles = new Vector3(0f, 180, 0f);
-		//				prefab.transform.localScale *= scale;
-		//				prefab.transform.SetParent(parent, false);
-
-		//				go.ChangeLayerRecursivley(LayerMask.NameToLayer("Object"));
-		//				PrefabUtility.SaveAsPrefabAsset(go, $"Assets/Media/Prefab/CreatedByEditor/{prefab.name}.prefab");
-		//				GameObject.DestroyImmediate(go);
-
-		//				//AssetDatabase.CreateAsset
-		//			}
-		//		}
-		//		AssetDatabase.Refresh();
-		//#endif
-		//	}
-
 		[MenuItem("KHFC/Add X 90 degree", priority = (int)MenuPriority.Others + 10)]
 		public static void AddXdegree() {
-#if UNITY_EDITOR
 			GameObject root = GameObject.Find("TestPlane");
 			if (root == null) {
 				Debug.LogError("testplane is not exist");
@@ -132,7 +78,6 @@ namespace KHFC.Editor {
 				angle.y = 180f;
 				target.localEulerAngles = angle;
 			}
-#endif
 		}
 
 		[MenuItem("KHFC/Show All Assembly", priority = (int)MenuPriority.Others + 1)]
@@ -158,10 +103,11 @@ namespace KHFC.Editor {
 			EditorUtility.DisplayDialog("All Assemblies", sb.ToString(), "close");
 		}
 
+
 		/// <summary> 씬 내의 모든 버튼 컴포넌트를 버튼위젯 컴포넌트로 변경한다. </summary>
-		[MenuItem("KHFC/UGUI/Change UI.Button To KHFC.ButtonWdgt", priority = (int)MenuPriority.UGUI)]
+		[MenuItem("KHFC/UGUI/Change UI.Button To KHFC.ButtonWdgt",
+			priority = (int)MenuPriority.UGUI)]
 		public static void ChangeButtonToButtonWdgt() {
-#if UNITY_EDITOR
 			UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
 			GameObject[] arrObj = curScene.GetRootGameObjects();
 			foreach (var obj in arrObj) {
@@ -172,7 +118,6 @@ namespace KHFC.Editor {
 					}
 				});
 			}
-#endif
 		}
 
 
@@ -189,12 +134,6 @@ namespace KHFC.Editor {
 			KHFC.Editor.ScreenCapture.TakeScreenCapture();
 		}
 
-		/// <summary> 게임창의 사이즈를 변경한다 </summary>
-		[MenuItem("KHFC/ETC/Open Resize Editor Window", priority = (int)MenuPriority.ETC + 2)]
-		static public void ResizeEditorWindow() {
-			EditorWindow.GetWindow<KHFC.ResizeEditorWindow>(false, "GameView Size", true);
-		}
-
 		[MenuItem("KHFC/Shortcut/SetActive %e", priority = (int)MenuPriority.Shortcut)]
 		public static void SetActive() {
 			foreach (GameObject obj in Selection.objects) {
@@ -204,11 +143,11 @@ namespace KHFC.Editor {
 		}
 
 
+
 		/// <summary> 자식 오브젝트에 붙어있는 컴포넌트에 따라 접두사를 붙이는 함수 </summary>
 		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("GameObject/KHFC/Prefixing by Component Type (GO)", priority = (int)MenuPriority.GameObject + 5)]
 		static void UpdateCachedGameObject() {
-#if UNITY_EDITOR
 			int count = Selection.gameObjects.Length;
 			if (count == 0)
 				return;
@@ -231,7 +170,6 @@ namespace KHFC.Editor {
 
 			//if (changed)
 			//	EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-#endif
 		}
 
 		/// <summary> 캔버스 아래의 모든 <see cref="MaskableGraphic"/>의 RaycastTarget 옵션을 끈다. </summary>
@@ -272,10 +210,7 @@ namespace KHFC.Editor {
 		public static void CreateMyAsset() {
 			KHFCSetting asset = ScriptableObject.CreateInstance<KHFCSetting>();
 			string[] arrGUID = AssetDatabase.FindAssets(string.Format("{0} t:script", "KHFCSetting"));
-			if (arrGUID == null || arrGUID.Length <= 0) {
-				Debug.Log("KHFCSetting script is not found");
-				return;
-			}
+
 			string assetPath = AssetDatabase.GUIDToAssetPath(arrGUID[0]).Replace("KHFCSetting.cs", "Resources/KHFCSetting.asset");
 			KHFC.Util.CreateDir(System.IO.Path.GetDirectoryName(assetPath));
 			AssetDatabase.CreateAsset(asset, assetPath);
@@ -285,5 +220,65 @@ namespace KHFC.Editor {
 
 			Selection.activeObject = asset;
 		}
+		[MenuItem("Assets/KHFC/Create KHFCSetting Scriptable Object", isValidateFunction: true)]
+		static bool ValidateCreateMyAsset() {
+			string[] arrGUID = AssetDatabase.FindAssets(string.Format("{0} t:script", "KHFCSetting"));
+			return Selection.gameObjects.Length == 1 
+				&& (arrGUID != null && arrGUID.Length > 0);
+		}
+
+		/// <summary>
+		/// 배치 제작용. 3DMerge 프로젝트에서만 사용
+		/// </summary>
+		//		[MenuItem("KHFC/Make Model To Object")]
+		//		static public void MakeModelToObject() {
+		//#if UNITY_EDITOR
+		//			// base gameobject
+		//			GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Media/Prefab/Empty.prefab");
+		//			//string folderPath = "Assets/3D Props - Adorable Items/Adorable 3D Items";
+		//			string folderPath = "Assets/Media/Mesh/LowpolyHats";
+		//			string[] arrGUID = AssetDatabase.FindAssets("t:Prefab", new string[] { folderPath });
+		//			CreateAssetFromGUID(arrGUID, 15f);  // 1 / 모델 스케일 팩터 -> 0.01이면 100
+
+		//			void CreateAssetFromGUID(string[] arrGUID, float scale) {
+		//				for (int i = 0; i < arrGUID.Length; i++) {
+		//					string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
+		//					string prefabName = System.IO.Path.GetFileNameWithoutExtension(prefabPath);
+
+		//					//AssetDatabase.CopyAsset( )
+		//					GameObject go = PrefabUtility.InstantiatePrefab(basePrefab) as GameObject;
+		//					PrefabUtility.UnpackPrefabInstance(go, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
+
+		//					GameObject prefab = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
+		//					prefab = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+		//					PrefabUtility.UnpackPrefabInstance(prefab, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
+		//					prefab.RemoveComponent<Animator>();
+		//					prefab.SafeAddComponent<cakeslice.Outline>();
+
+		//					MeshCollider col = prefab.SafeAddComponent<MeshCollider>();
+		//					col.convex = true;
+		//					col.isTrigger = false;
+		//					col.cookingOptions = MeshColliderCookingOptions.CookForFasterSimulation
+		//										| MeshColliderCookingOptions.EnableMeshCleaning
+		//										| MeshColliderCookingOptions.WeldColocatedVertices
+		//										| MeshColliderCookingOptions.UseFastMidphase;
+
+		//					Transform parent = go.transform.GetChild(0).GetChild(0);
+		//					prefab.transform.position = Vector3.zero;
+		//					//prefab.transform.rotation = Quaternion.identity;
+		//					prefab.transform.localEulerAngles = new Vector3(0f, 180, 0f);
+		//					prefab.transform.localScale *= scale;
+		//					prefab.transform.SetParent(parent, false);
+
+		//					go.ChangeLayerRecursivley(LayerMask.NameToLayer("Object"));
+		//					PrefabUtility.SaveAsPrefabAsset(go, $"Assets/Media/Prefab/CreatedByEditor/{prefab.name}.prefab");
+		//					GameObject.DestroyImmediate(go);
+
+		//					//AssetDatabase.CreateAsset
+		//				}
+		//			}
+		//			AssetDatabase.Refresh();
+		//#endif
+		//		}
 	}
 }

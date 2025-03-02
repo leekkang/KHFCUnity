@@ -13,7 +13,6 @@ namespace KHFC.Editor {
 		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("KHFC/Cached Key/Update All GameObject", priority = (int)MenuPriority.CacheKey)]
 		static public void UpdateAllCachedGameObject() {
-#if UNITY_EDITOR
 			UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
 			GameObject[] arrObj = curScene.GetRootGameObjects();
 			bool changed = false;
@@ -25,7 +24,6 @@ namespace KHFC.Editor {
 
 			if (changed)
 				EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-#endif
 		}
 
 		/// <summary>
@@ -34,7 +32,6 @@ namespace KHFC.Editor {
 		/// <remarks> 폴더 내에 프리팹화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("KHFC/Cached Key/Update All Prefab", priority = (int)MenuPriority.CacheKey + 1)]
 		static public void UpdateAllCachedPrefab() {
-#if UNITY_EDITOR
 			string[] arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
 			for (int i = 0; i < arrGUID.Length; i++) {
 				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
@@ -47,7 +44,6 @@ namespace KHFC.Editor {
 				//PrefabUtility.ApplyPrefabInstance(go, InteractionMode.AutomatedAction);
 			}
 			AssetDatabase.Refresh();
-#endif
 		}
 
 
@@ -55,7 +51,6 @@ namespace KHFC.Editor {
 		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("GameObject/KHFC/Update Cache Key (GO)", priority = (int)MenuPriority.GameObject)]
 		private static void UpdateCachedGameObject() {
-#if UNITY_EDITOR
 			int count = Selection.gameObjects.Length;
 			if (count == 0)
 				return;
@@ -69,14 +64,12 @@ namespace KHFC.Editor {
 
 			//if (changed)
 			//	EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-#endif
 		}
 
 		/// <summary> <see cref="KHFC.CachedComponent"/>를 상속받은 오브젝트의 캐시 키를 업데이트하는 함수 </summary>
 		/// <remarks> 폴더 내에 프리팹화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("Assets/KHFC/Update Cache Key (P)", true)]
 		private static void UpdateCachedPrefab() {
-#if UNITY_EDITOR
 			int count = Selection.gameObjects.Length;
 			if (count == 0)
 				return;
@@ -94,13 +87,9 @@ namespace KHFC.Editor {
 				}
 			}
 			AssetDatabase.Refresh();
-#endif
 		}
 
 
-
-
-#if UNITY_EDITOR
 		/// <summary> <see cref="CachedComponent"/> 가 있는 오브젝트를 찾아 캐시키를 리스트에 저장 </summary>
 		/// <remarks> 부모 오브젝트에 컴포넌트가 있으면 자식 오브젝트는 건너뛴다. </remarks>
 		static bool UpdateCacheKeyRecursive(Transform target) {
@@ -115,5 +104,4 @@ namespace KHFC.Editor {
 			return changed;
 		}
 	}
-#endif
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	[CustomEditor(typeof(TooltipWdgt), true)]
 	[CanEditMultipleObjects]
 	public class TooltipWdgtInspector : UnityEditor.UI.SelectableEditor {
-		//ButtonWdgt m_Target;
+		//ButtonWdgt m_Source;
 		SerializedProperty m_EnterFuncName;
 		SerializedProperty m_ExitFuncName;
 
@@ -17,7 +17,7 @@ namespace KHFC {
 
 		protected override void OnEnable() {
 			base.OnEnable();
-			//m_Target = (ButtonWdgt)target;
+			//m_Source = (ButtonWdgt)target;
 			m_EnterFuncName = serializedObject.FindProperty("m_EnterFuncName");
 			m_ExitFuncName = serializedObject.FindProperty("m_ExitFuncName");
 
@@ -43,8 +43,8 @@ namespace KHFC {
 			EditorGUILayout.Space(12f);
 			base.OnInspectorGUI();
 
-			//m_Target.m_OnClickSound = EditorGUILayout.Toggle("Enable ClickSound", m_Target.m_OnClickSound);
-			//m_Target.m_OnHoverSound = EditorGUILayout.Toggle("Enable HoverSound", m_Target.m_OnHoverSound);
+			//m_Source.m_OnClickSound = EditorGUILayout.Toggle("Enable ClickSound", m_Source.m_OnClickSound);
+			//m_Source.m_OnHoverSound = EditorGUILayout.Toggle("Enable HoverSound", m_Source.m_OnHoverSound);
 		}
 	}
 }

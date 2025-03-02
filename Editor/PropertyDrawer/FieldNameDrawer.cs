@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace KHFC {
+namespace KHFC.Editor {
 	[CustomPropertyDrawer(typeof(FieldNameAttribute))]
 	public class FieldNameDrawer : PropertyDrawer {
 		// 자식을 가지고 있는 필드의 경우 제대로 표시해주기 위해 재정의가 필요하다.
