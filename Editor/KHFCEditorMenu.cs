@@ -120,6 +120,23 @@ namespace KHFC.Editor {
 			}
 		}
 
+		/// <summary> 특정 머테리얼의 모든 링크를 찾아주는 윈도우를 연다 </summary>
+		[MenuItem("KHFC/Window/Open Material Finder Window", priority = (int)MenuPriority.Window)]
+		static public void OpenMaterialFinderEditorWindow() {
+			Material mat = null;
+			if (Selection.activeObject is Material)
+				mat = Selection.activeObject as Material;
+			if (mat != null)
+				MaterialFinderEditorWindow.ShowWindow(mat);
+			else
+				MaterialFinderEditorWindow.ShowWindow();
+		}
+
+		/// <summary> 게임창의 사이즈를 변경한다 </summary>
+		[MenuItem("KHFC/Window/Open Resize Editor Window", priority = (int)MenuPriority.Window + 2)]
+		static public void OpenResizeEditorWindow() {
+			EditorWindow.GetWindow<ResizeEditorWindow>(false, "GameView Size", true);
+		}
 
 		/// <summary> 사용하지 않는 에셋을 할당 해제한다 </summary>
 		[MenuItem("KHFC/ETC/ClearProfilerMemory", priority = (int)MenuPriority.ETC)]
@@ -225,6 +242,18 @@ namespace KHFC.Editor {
 			string[] arrGUID = AssetDatabase.FindAssets(string.Format("{0} t:script", "KHFCSetting"));
 			return Selection.gameObjects.Length == 1 
 				&& (arrGUID != null && arrGUID.Length > 0);
+		}
+
+		/// <summary>
+		/// 선택한 머테리얼을 사용하는 모든 파티클을 찾는 함수
+		/// </summary>
+		[MenuItem("Assets/KHFC/Find All Particles That Use This", priority = (int)MenuPriority.Assets)]
+		public static void FindAllParticlesThatUseThisMaterial() {
+			MaterialFinderEditorWindow.ShowWindow(Selection.activeObject as Material);
+		}
+		[MenuItem("Assets/KHFC/Find All Particles That Use This", isValidateFunction: true)]
+		static bool ValidateFindAllParticlesThatUseThisMaterial() {
+			return Selection.activeObject is Material;
 		}
 
 		/// <summary>
