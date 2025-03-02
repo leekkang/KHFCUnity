@@ -101,7 +101,7 @@ namespace KHFC.Editor {
 				GUILayout.BeginHorizontal();
 				EditorGUILayout.LabelField("Source", s_NameWidthOption);
 				Material tmp = null;
-				tmp = (Material)EditorGUILayout.ObjectField(m_Source, typeof(Material), true);
+				tmp = (Material)EditorGUILayout.ObjectField(m_Source, typeof(Material), false);
 				//EditorGUILayout.PropertyField(m_SourceMat);
 				GUILayout.EndHorizontal();
 
@@ -109,7 +109,7 @@ namespace KHFC.Editor {
 				EditorGUILayout.LabelField("변경 후 머테리얼", headerLabelStyle);
 				GUILayout.BeginHorizontal();
 				EditorGUILayout.LabelField("Dest", s_NameWidthOption);
-				m_Dest = (Material)EditorGUILayout.ObjectField(m_Dest, typeof(Material), true);
+				m_Dest = (Material)EditorGUILayout.ObjectField(m_Dest, typeof(Material), false);
 				//EditorGUILayout.PropertyField(m_DestMat);
 				GUILayout.EndHorizontal();
 
