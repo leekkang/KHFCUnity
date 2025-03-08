@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿
 
 namespace KHFC {
 	public class Util {
@@ -14,8 +11,8 @@ namespace KHFC {
 
 		/// <summary> y축 기준 <paramref name="vec"/> 와의 사이각을 반환한다. </summary>
 		/// <remarks> 왼손좌표계 기준 반시계 방향이 + 이다 -> 왼쪽을 보고있으면 +값, 오른쪽을 보고있으면 -값을 반환한다. </remarks>
-		public static float GetLookAngle(Vector2 vec) {
-			return Mathf.Atan2(vec.y, vec.x) * Mathf.Rad2Deg;
+		public static float GetLookAngle(UnityEngine.Vector2 vec) {
+			return UnityEngine.Mathf.Atan2(vec.y, vec.x) * UnityEngine.Mathf.Rad2Deg;
 		}
 
 		/// <summary> Transform의 값으로 사용하기 위해 각도를 <paramref name="min"/> ~ <paramref name="min"/>+360도 범위 내 값으로 만든다 </summary>
@@ -37,14 +34,14 @@ namespace KHFC {
 		/// <param name="range"> 값 표현 범위, 그래프의 절반 범위 </param>
 		/// <param name="variance"> 분산에 사용하는 로그의 밑(base) </param>
 		public static int DistributionRandom(int middleValue, float range, int variance = 1) {
-			variance = Mathf.Max(1, variance);
-			variance = (int)Math.Pow(10, variance);
+			variance = UnityEngine.Mathf.Max(1, variance);
+			variance = (int)System.Math.Pow(10, variance);
 
 			float u;
 			int ret;
 			do {
-				u = UnityEngine.Random.Range(0.0f, 1.0f - Mathf.Epsilon);
-				ret = (int)(Mathf.Log(u / (1 - u), variance) * range + middleValue);
+				u = UnityEngine.Random.Range(0.0f, 1.0f - UnityEngine.Mathf.Epsilon);
+				ret = (int)(UnityEngine.Mathf.Log(u / (1 - u), variance) * range + middleValue);
 			} while (ret < middleValue - range || ret > middleValue + range);
 			return ret;
 		}
@@ -102,16 +99,13 @@ namespace KHFC {
 			System.IO.DirectoryInfo dir = new(sourceDirName);
 			System.IO.DirectoryInfo[] dirs = dir.GetDirectories();
 
-			if (!dir.Exists) {
+			if (!dir.Exists)
 				throw new System.IO.DirectoryNotFoundException(
-					"Source directory does not exist or could not be found: "
-					+ sourceDirName);
-			}
+					$"Source directory does not exist or could not be found: {sourceDirName}");
 
 			// If the destination directory doesn't exist, create it
-			if (!System.IO.Directory.Exists(destDirName)) {
+			if (!System.IO.Directory.Exists(destDirName))
 				System.IO.Directory.CreateDirectory(destDirName);
-			}
 
 			// Get the files in the directory and copy them to the new location
 			System.IO.FileInfo[] files = dir.GetFiles();
@@ -130,6 +124,18 @@ namespace KHFC {
 		}
 
 		#endregion
+
+		/// <summary> <paramref name="cam"/> 카메라에 비치는 2d좌표를 월드좌표로 변경 </summary>
+		public static UnityEngine.Vector3 UIToRealPos(UnityEngine.Vector2 uiPos, UnityEngine.Camera cam = null) {
+			cam = cam != null ? cam : UnityEngine.Camera.main;
+			return cam.ScreenToWorldPoint(new UnityEngine.Vector3(uiPos.x, uiPos.y, (cam.nearClipPlane + cam.farClipPlane) * 0.5f));
+		}
+
+		/// <summary> 월드좌표를 <paramref name="cam"/> 카메라에 비치는 2d좌표로 변경 </summary>
+		public static UnityEngine.Vector2 RealPosToUI(UnityEngine.Vector3 realPos, UnityEngine.Camera cam = null) {
+			cam = cam != null ? cam : UnityEngine.Camera.main;
+			return cam.WorldToScreenPoint(realPos);
+		}
 
 		/// <summary> 메모리 복사, 주의 : Serialized Field만 복사됨 </summary>
 		public static T DeepClone<T>(T obj) {
@@ -155,33 +161,23 @@ namespace KHFC {
 			return new string(chars);
 		}
 
-		public static Vector3 UIToRealPos(Vector2 uiPos, Camera cam = null) {
-			cam = cam != null ? cam : Camera.main;
-			return cam.ScreenToWorldPoint(new Vector3(uiPos.x, uiPos.y, (cam.nearClipPlane + cam.farClipPlane) * 0.5f));
-		}
-
-		public static Vector2 RealPosToUI(Vector3 realPos, Camera cam = null) {
-			cam = cam != null ? cam : Camera.main;
-			return cam.WorldToScreenPoint(realPos);
-		}
-
 		#region Color
 
-		public static Color ColorFromInt(int r, int g, int b) {
-			return new Color(r / 255.0f, g / 255.0f, b / 255.0f);
+		public static UnityEngine.Color ColorFromInt(int r, int g, int b) {
+			return new UnityEngine.Color(r / 255.0f, g / 255.0f, b / 255.0f);
 		}
-		public static Color ColorFromInt(int r, int g, int b, int a) {
-			return new Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+		public static UnityEngine.Color ColorFromInt(int r, int g, int b, int a) {
+			return new UnityEngine.Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 		}
 
 		// for just ngui button, enable, disable
-		public static Color FromHex(string color) {
+		public static UnityEngine.Color FromHex(string color) {
 
 			color = color.TrimStart('#');
 			float red = (HexToInt(color[1]) + HexToInt(color[0]) * 16f) / 255f;
 			float green = (HexToInt(color[3]) + HexToInt(color[2]) * 16f) / 255f;
 			float blue = (HexToInt(color[5]) + HexToInt(color[4]) * 16f) / 255f;
-			Color finalColor = new Color { r = red, g = green, b = blue, a = 1 };
+			UnityEngine.Color finalColor = new() { r = red, g = green, b = blue, a = 1 };
 			return finalColor;
 		}
 

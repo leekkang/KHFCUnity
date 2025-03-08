@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 
 public static class ListExt {
@@ -51,8 +52,6 @@ public static class ListExt {
 			(list[k], list[i]) = (list[i], list[k]);
 		}
 	}
-
-
 
 	/// <summary> 리스트를 <paramref name="size"/> 크기로 변경하고 값을 넣어준다 </summary>
 	//public static void Resize<T>(this List<T> list, int size) where T : class {

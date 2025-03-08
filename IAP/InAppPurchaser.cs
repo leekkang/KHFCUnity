@@ -10,6 +10,7 @@ using UnityEngine.Purchasing.Security;
 using Unity.Services.Core;
 using Unity.Services.Core.Environments;
 
+
 #if KHFC_UNITASK
 using AsyncVoid = Cysharp.Threading.Tasks.UniTaskVoid;
 #else
@@ -41,9 +42,7 @@ namespace KHFC.IAP {
 
 		//async void Start() {
 		//	try {
-		//		var options = new InitializationOptions()
-		//			.SetEnvironmentName(environment);
-
+		//		var options = new InitializationOptions().SetEnvironmentName(environment);
 		//		await UnityServices.InitializeAsync(options);
 		//	} catch (Exception e) {
 		//		// An error occurred during initialization.
@@ -74,23 +73,18 @@ namespace KHFC.IAP {
 
 		async AsyncVoid InitializeProcess() {
 			try {
-				InitializationOptions options = new InitializationOptions()
-					.SetEnvironmentName(ENV_NAME);
-
+				var options = new InitializationOptions().SetEnvironmentName(ENV_NAME);
 				await UnityServices.InitializeAsync(options);
 			} catch (Exception e) {
 				// An error occurred during initialization.
 				UnityEngine.Debug.LogError($"UnityServices Initialize Failed : {e}");
 			}
-
 			InitializePurchasing();
 		}
 
 		void InitializeProcessSync() {
 			try {
-				InitializationOptions options = new InitializationOptions()
-					.SetEnvironmentName(ENV_NAME);
-
+				var options = new InitializationOptions().SetEnvironmentName(ENV_NAME);
 				UnityServices.InitializeAsync(options).Wait();
 			} catch (Exception e) {
 				// An error occurred during initialization.
@@ -135,20 +129,20 @@ namespace KHFC.IAP {
 			m_OnPurchaseSucceed?.Invoke(null);
 			return true;
 #endif
-
-			if (initialized) {
-				Product product = m_StoreController.products.WithID(productID);
-				m_PurchaseProcess = true;
-
-				if (product != null && product.availableToPurchase) {
-					UnityEngine.Debug.Log(string.Format("Purchasing product asychronously: '{0}'", product.definition.id));
-					m_StoreController.InitiatePurchase(product);
-				} else {
-					UnityEngine.Debug.Log($"BuyProductID {productID} : FAIL. Not purchasing product, either is not found or is not available for purchase");
-					m_PurchaseProcess = false;
-				}
-			} else {
+			if (!initialized) {
 				UnityEngine.Debug.Log($"BuyProductID {productID}  FAIL. Not initialized.");
+				m_PurchaseProcess = false;
+				return false;
+			}
+
+			Product product = m_StoreController.products.WithID(productID);
+			m_PurchaseProcess = true;
+
+			if (product != null && product.availableToPurchase) {
+				UnityEngine.Debug.Log(string.Format("Purchasing product asychronously: '{0}'", product.definition.id));
+				m_StoreController.InitiatePurchase(product);
+			} else {
+				UnityEngine.Debug.Log($"BuyProductID {productID} : FAIL. Not purchasing product, either is not found or is not available for purchase");
 				m_PurchaseProcess = false;
 			}
 
@@ -166,10 +160,8 @@ namespace KHFC.IAP {
 			//	return PurchaseProcessingResult.Complete;
 			//}
 
-
 			CrossPlatformValidator validator
 				= new(GooglePlayTangle.Data(), AppleTangle.Data(), UnityEngine.Application.identifier);
-			UnityEngine.Debug.Log("[ProcessPurchase]try0");
 			try {
 				// On Google Play, result has a single product ID.
 				// On Apple stores, receipts contain multiple products.
@@ -201,23 +193,24 @@ namespace KHFC.IAP {
 		}
 
 		public string GetGooglePurchaseToken(Product purchasedProduct) {
-			if (purchasedProduct.hasReceipt) {
-				CrossPlatformValidator validator
-					= new(GooglePlayTangle.Data(), AppleTangle.Data(), UnityEngine.Application.identifier);
-				try {
-					IPurchaseReceipt[] result = validator.Validate(purchasedProduct.receipt);
-					foreach (IPurchaseReceipt productReceipt in result) {
-						if (productReceipt is GooglePlayReceipt google)
-							return google.purchaseToken;
-					}
-				} catch (IAPSecurityException) {
-					UnityEngine.Debug.Log("Invalid receipt, not unlocking content");
-				}
-			}
+#if UNITY_ANDROID
+			if (!purchasedProduct.hasReceipt)
+				return string.Empty;
 
+			CrossPlatformValidator validator
+				= new(GooglePlayTangle.Data(), AppleTangle.Data(), UnityEngine.Application.identifier);
+			try {
+				IPurchaseReceipt[] result = validator.Validate(purchasedProduct.receipt);
+				foreach (IPurchaseReceipt productReceipt in result) {
+					if (productReceipt is GooglePlayReceipt google)
+						return google.purchaseToken;
+				}
+			} catch (IAPSecurityException) {
+				UnityEngine.Debug.Log("Invalid receipt, not unlocking content");
+			}
+#endif
 			return string.Empty;
 		}
-
 
 		public void OnPurchaseFailed(Product product, PurchaseFailureDescription desc) {
 			m_PurchaseProcess = false;
@@ -233,6 +226,7 @@ namespace KHFC.IAP {
 
 		/// <summary> 구매 복구, IOS에서만 지원하는 기능 </summary>
 		public void RestorePurchases() {
+#if UNITY_IOS
 			// If Purchasing has not yet been set up ...
 			if (!initialized) {
 				// ... report the situation and stop restoring. Consider either waiting longer, or retrying initialization.
@@ -240,27 +234,27 @@ namespace KHFC.IAP {
 				return;
 			}
 
-			// If we are running on an Apple device ... 
-			if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.IPhonePlayer ||
-				UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXPlayer) {
-				// ... begin restoring purchases
-				UnityEngine.Debug.Log("RestorePurchases started ...");
-
-				// Fetch the Apple store-specific subsystem.
-				IAppleExtensions apple = m_ExtensionProvider.GetExtension<IAppleExtensions>();
-				// Begin the asynchronous process of restoring purchases. Expect a confirmation response in 
-				// the Action<bool> below, and ProcessPurchase if there are previously purchased products to restore.
-				apple.RestoreTransactions((result, code) => {
-					// The first phase of restoration. If no more responses are received on ProcessPurchase then 
-					// no purchases are available to be restored.
-					UnityEngine.Debug.Log("RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore.");
-				});
-			}
-			// Otherwise
-			else {
+			// If we are running on an Apple device ...
+			if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.IPhonePlayer &&
+				UnityEngine.Application.platform != UnityEngine.RuntimePlatform.OSXPlayer) {
 				// We are not running on an Apple device. No work is necessary to restore purchases.
-				UnityEngine.Debug.Log("RestorePurchases FAIL. Not supported on this platform. Current = " + UnityEngine.Application.platform);
+				UnityEngine.Debug.Log("RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
+				return;
 			}
+
+			// ... begin restoring purchases
+			UnityEngine.Debug.Log("RestorePurchases started ...");
+
+			// Fetch the Apple store-specific subsystem.
+			IAppleExtensions apple = m_ExtensionProvider.GetExtension<IAppleExtensions>();
+			// Begin the asynchronous process of restoring purchases. Expect a confirmation response in 
+			// the Action<bool> below, and ProcessPurchase if there are previously purchased products to restore.
+			apple.RestoreTransactions((result, code) => {
+				// The first phase of restoration. If no more responses are received on ProcessPurchase then 
+				// no purchases are available to be restored.
+				UnityEngine.Debug.Log("RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore.");
+			});
+#endif
 		}
 	}
 }

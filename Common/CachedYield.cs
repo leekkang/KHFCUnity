@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace KHFC {
@@ -8,8 +9,8 @@ namespace KHFC {
 		readonly static Dictionary<float, WaitForSeconds> DicCachedWFS = new();
 		readonly static Dictionary<float, WaitForSecondsRealtime> DicCachedWFSR = new();
 
-		public static WaitForEndOfFrame waitForEOF = new(); // c# 9.0: Target-typed new expressions
-		public static WaitForFixedUpdate waitFixed = new();
+		public static readonly WaitForEndOfFrame waitForEOF = new(); // c# 9.0: Target-typed new expressions
+		public static readonly WaitForFixedUpdate waitFixed = new();
 
 		/// <summary> 캐시되어 있는 <see cref="WaitForSeconds"/>를 반환 </summary>
 		public static WaitForSeconds GetWFS(float time) {

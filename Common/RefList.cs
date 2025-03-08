@@ -1,7 +1,4 @@
 ﻿
-using System.Collections.Generic;
-using System;
-using System.Collections;
 
 namespace KHFC {
 	public class RefList<T> where T : class {
@@ -14,8 +11,8 @@ namespace KHFC {
 		/// <summary> 현재 참조 횟수를 리턴한다. </summary>
 		public int Add(T item) {
 			if (m_List == null) {
-				m_List = new List<RefItem> {
-					new RefItem { refCount = 1, item = item }
+				m_List = new System.Collections.Generic.List<RefItem> {
+					new() { refCount = 1, item = item }
 				};
 				return 1;
 			}
@@ -26,47 +23,45 @@ namespace KHFC {
 			}
 
 			m_List.Add(new RefItem { refCount = 1, item = item });
-
 			return 1;
 		}
 
 		/// <summary> 리스트에서 제거되면 true, 아니면 false </summary>
 		public bool Remove(T item) {
 			for (int i = 0; i < m_List.Count; i++) {
-				if (m_List[i].item == item) {
-					if (m_List[i].refCount <= 1) {
-						m_List.RemoveAtBySwap(i);
-						return true;
-					} else {
-						--m_List[i].refCount;
-						return false;
-					}
-				}
+				if (m_List[i].item != item)
+					continue;
+
+				bool remove = m_List[i].refCount <= 1;
+				if (remove)
+					m_List.RemoveAtBySwap(i);
+				else
+					--m_List[i].refCount;
+				return remove;
 			}
 			return false;
 		}
 
 		/// <summary> 리스트에서 제거되면 true, 아니면 false </summary>
-		public bool Remove(Predicate<T> match) {
+		public bool Remove(System.Predicate<T> match) {
 			for (int i = 0; i < m_List.Count; i++) {
-				if (match(m_List[i].item)) {
-					if (m_List[i].refCount <= 1) {
-						m_List.RemoveAtBySwap(i);
-						return true;
-					} else {
-						--m_List[i].refCount;
-						return false;
-					}
-				}
+				if (!match(m_List[i].item))
+					continue;
+				
+				bool remove = m_List[i].refCount <= 1;
+				if (remove)
+					m_List.RemoveAtBySwap(i);
+				else
+					--m_List[i].refCount;
+				return remove;
 			}
 			return false;
 		}
 
-		public T Find(Predicate<T> match) {
+		public T Find(System.Predicate<T> match) {
 			for (int i = 0; i < m_List.Count; i++) {
-				if (match(m_List[i].item)) {
+				if (match(m_List[i].item))
 					return m_List[i].item;
-				}
 			}
 			return null;
 		}
