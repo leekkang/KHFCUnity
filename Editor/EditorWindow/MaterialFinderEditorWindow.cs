@@ -260,6 +260,7 @@ namespace KHFC.Editor {
 			m_Source = m_Dest;
 			m_Dest = null;
 
+			GetAllParticlesUseMaterial(m_Source);
 			AssetDatabase.Refresh();
 		}
 
