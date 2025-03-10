@@ -1,20 +1,19 @@
 ﻿
 #if UNITY_EDITOR
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace KHFC {
 	public class AssetUtility {
-        // Supports the following syntax:
-        // 't:type' syntax (e.g 't:Texture2D' will show Texture2D objects)
-        // 'l:assetlabel' syntax (e.g 'l:architecture' will show assets with AssetLabel 'architecture')
-        // 'ref[:id]:path' syntax (e.g 'ref:1234' will show objects that references the object with instanceID 1234)
-        // 'v:versionState' syntax (e.g 'v:modified' will show objects that are modified locally)
-        // 's:softLockState' syntax (e.g 's:inprogress' will show objects that are modified by anyone (except you))
-        // 'a:area' syntax (e.g 'a:all' will s search in all assets, 'a:assets' will s search in assets folder only and 'a:packages' will s search in packages folder only)
-        // 'glob:path' syntax (e.g 'glob:Assets/**/*.{png|PNG}' will show objects in any subfolder with name ending by .png or .PNG)
+		// Supports the following syntax:
+		// 't:type' syntax (e.g 't:Texture2D' will show Texture2D objects)
+		// 'l:assetlabel' syntax (e.g 'l:architecture' will show assets with AssetLabel 'architecture')
+		// 'ref[:id]:path' syntax (e.g 'ref:1234' will show objects that references the object with instanceID 1234)
+		// 'v:versionState' syntax (e.g 'v:modified' will show objects that are modified locally)
+		// 's:softLockState' syntax (e.g 's:inprogress' will show objects that are modified by anyone (except you))
+		// 'a:area' syntax (e.g 'a:all' will s search in all assets, 'a:assets' will s search in assets folder only and 'a:packages' will s search in packages folder only)
+		// 'glob:path' syntax (e.g 'glob:Assets/**/*.{png|PNG}' will show objects in any subfolder with name ending by .png or .PNG)
 		public static Sprite[] LoadAllSprites(string path = "") {
 			string[] arrGUID;
 			if (path == "")
@@ -26,7 +25,7 @@ namespace KHFC {
 				arrGUID = UnityEditor.AssetDatabase.FindAssets(/*"glob:*.{png|PNG}"*/"", new string[] { path });
 			}
 
-			List<Sprite> listSprite = new List<Sprite>(arrGUID.Length);
+			List<Sprite> listSprite = new(arrGUID.Length);
 			for (int i = 0; i < arrGUID.Length; i++) {
 				string guid = arrGUID[i];
 				string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
@@ -76,8 +75,7 @@ namespace KHFC {
 				arrGUID = UnityEditor.AssetDatabase.FindAssets("t:" + typeof(T).ToString(), new string[] { path });
 			}
 
-			List<T> listSprite = new List<T>(arrGUID.Length);
-
+			List<T> listSprite = new(arrGUID.Length);
 			for (int i = 0; i < arrGUID.Length; i++) {
 				string guid = arrGUID[i];
 				string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
@@ -86,7 +84,6 @@ namespace KHFC {
 			}
 
 			listSprite.Capacity = listSprite.Count;
-
 			return listSprite.ToArray();
 		}
 	}

@@ -1,9 +1,7 @@
 ﻿
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading.Tasks;
 
 public static class CommonEx {
 	public static void SetAlpha(this Graphic graphic, float alpha) {

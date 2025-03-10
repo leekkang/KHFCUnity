@@ -31,10 +31,9 @@ namespace KHFC {
 		/// <summary> 카운트 종료 이후 호출한다 </summary>
 		Callback m_OnAfter;
 
+		bool m_IsPlaying;
 		/// <summary> 현재 카운팅을 하고 있는가? </summary>
-		public bool counting {
-			get; private set;
-		}
+		public bool isPlaying => m_IsPlaying;
 		/// <summary> 카운팅 일시 중지 </summary>
 		public bool m_Pause;
 
@@ -42,7 +41,7 @@ namespace KHFC {
 
 		public EaseCount(EasingFunction.Ease type) {
 			mFunc = EasingFunction.GetEasingFunction(type);
-			counting = false;
+			m_IsPlaying = false;
 		}
 
 		/// <summary> 카운트를 세팅한다. 파라미터를 제외한 다른 모든 기능들도 초기화한다. </summary>
@@ -53,7 +52,6 @@ namespace KHFC {
 			m_Delay = delay;
 
 			Reset();
-
 			return this;
 		}
 
@@ -78,13 +76,13 @@ namespace KHFC {
 		}
 
 		public void ForceEnd() {
-			counting = false;
+			m_IsPlaying = false;
 			m_Pause = false;
 			m_OnAfter?.Invoke();
 		}
 
 		public float Update(float deltaTime) {
-			if (!counting)
+			if (!m_IsPlaying)
 				return m_Dest;
 
 			if (!m_Pause) {
@@ -106,7 +104,7 @@ namespace KHFC {
 		}
 
 		void Reset() {
-			counting = true;
+			m_IsPlaying = true;
 			m_Pause = false;
 			m_Count = 0f;
 
