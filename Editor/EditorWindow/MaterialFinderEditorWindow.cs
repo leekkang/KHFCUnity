@@ -182,7 +182,7 @@ namespace KHFC.Editor {
 			GameObject[] rootObjects = activeScene.GetRootGameObjects();
 			foreach (GameObject go in rootObjects) {
 				// 각 GameObject에서 모든 ParticleSystem 컴포넌트를 찾음
-				ParticleSystem[] arrParticle = go.GetComponentsInChildren<ParticleSystem>();
+				ParticleSystem[] arrParticle = go.GetComponentsInChildren<ParticleSystem>(true);
 				FindAllParticleInstance(go, arrParticle, false);
 			}
 
@@ -196,7 +196,7 @@ namespace KHFC.Editor {
 			for (int i = 0; i < arrGUID.Length; i++) {
 				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
 				GameObject go = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
-				ParticleSystem[] arrParticle = go.GetComponentsInChildren<ParticleSystem>();
+				ParticleSystem[] arrParticle = go.GetComponentsInChildren<ParticleSystem>(true);
 				FindAllParticleInstance(go, arrParticle, true);
 			}
 
