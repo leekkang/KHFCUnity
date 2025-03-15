@@ -197,12 +197,12 @@ internal static class TransformEx {
 		pos.z = z;
 		tr.localPosition = pos;
 	}
+
 	public static void AddPosX(this Transform tr, float x) {
 		Vector3 pos = tr.position;
 		pos.x += x;
 		tr.position = pos;
 	}
-
 	public static void AddPosY(this Transform tr, float y) {
 		Vector3 pos = tr.position;
 		pos.y += y;
@@ -228,6 +228,7 @@ internal static class TransformEx {
 		pos.z += z;
 		tr.localPosition = pos;
 	}
+
 	public static void SetScaleX(this Transform tr, float x) {
 		Vector3 scale = tr.localScale;
 		scale.x = x;

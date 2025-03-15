@@ -14,22 +14,16 @@ namespace KHFC {
 
 		/// <summary> 캐시되어 있는 <see cref="WaitForSeconds"/>를 반환 </summary>
 		public static WaitForSeconds GetWFS(float time) {
-			if (time <= 0f)
-				return null;
-
-			if (DicCachedWFS.TryGetValue(time, out WaitForSeconds wfs))
-				return wfs;
-			return DicCachedWFS[time] = new WaitForSeconds(time);
+			return time <= 0f ? null
+				: DicCachedWFS.TryGetValue(time, out WaitForSeconds wfs)
+				? wfs : (DicCachedWFS[time] = new WaitForSeconds(time));
 		}
 
 		/// <summary> 캐시되어 있는 <see cref="WaitForSecondsRealtime"/>를 반환 </summary>
 		public static WaitForSecondsRealtime GetWFSR(float time) {
-			if (time <= 0f)
-				return null;
-
-			if (DicCachedWFSR.TryGetValue(time, out WaitForSecondsRealtime wfsr))
-				return wfsr;
-			return DicCachedWFSR[time] = new WaitForSecondsRealtime(time);
+			return time <= 0f ? null
+				: DicCachedWFSR.TryGetValue(time, out WaitForSecondsRealtime wfsr)
+				? wfsr : (DicCachedWFSR[time] = new WaitForSecondsRealtime(time));
 		}
 
 		/// <summary> 캐시되어 있는 <see cref="WaitForSeconds"/> 딕셔너리를 정리 </summary>

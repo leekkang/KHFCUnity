@@ -20,9 +20,8 @@ namespace KHFC {
 
 						if (m_Instance == null) {
 							// Need to create a new GameObject to attach the singleton to
-							GameObject obj = new GameObject();
+							GameObject obj = new GameObject(typeof(T).ToString());
 							m_Instance = obj.AddComponent<T>();
-							obj.name = typeof(T).ToString();
 
 							// Make instance persistent
 							DontDestroyOnLoad(obj);

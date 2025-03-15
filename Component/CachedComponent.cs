@@ -38,7 +38,7 @@ namespace KHFC {
 			}
 
 			//int aliasIndex = Convert.ToInt32(alias);
-			int index = (int)((object)alias);
+			int index = (int)(object)alias;
 
 			if (m_ListCachedObject.Count > index)
 				return m_ListCachedObject[index];
@@ -77,7 +77,7 @@ namespace KHFC {
 			if (typeof(T) == typeof(GameObject))
 				Debug.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
 
-			return (T)cachedGo.GetComponent<T>();
+			return cachedGo.GetComponent<T>();
 		}
 
 		/// <summary> 인덱스로 캐싱된 오브젝트에 지정한 컴포넌트를 찾아 반환하는 함수 </summary>
@@ -90,7 +90,7 @@ namespace KHFC {
 			if (typeof(T) == typeof(GameObject))
 				Debug.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
 
-			return (T)cachedGo.GetComponent<T>();
+			return cachedGo.GetComponent<T>();
 		}
 
 #if UNITY_EDITOR
@@ -184,7 +184,7 @@ namespace KHFC {
 
 			List<string> insertList = new() { "\tenum Alias {" };
 			List<string> cacheKeyList = new();
-			//int count = -1;
+
 			// 캐시 키 생성 후 enum 이름으로 만든다
 			transform.DoRecursively(tr => {
 				if (tr == transform)

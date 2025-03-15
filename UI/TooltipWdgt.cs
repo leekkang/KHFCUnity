@@ -34,8 +34,6 @@ namespace KHFC {
 #endif
 
 		protected override void Start() {
-			base.Awake();
-
 			Transform parent = transform.parent;
 
 			while (parent != null && !parent.TryGetComponent(out m_Parent)) {
@@ -50,10 +48,9 @@ namespace KHFC {
 													System.Reflection.BindingFlags.NonPublic;
 			string delName = "OnEnter" + gameObject.name;
 			System.Reflection.MethodInfo info = m_Parent.GetType().GetMethod(delName, flag);
-			if (info != null)
-				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
-			else
-				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
+			m_Enter = info != null
+				? (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info)
+				: (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
 #if UNITY_EDITOR
 			if (m_Enter == null)
 				Debug.LogWarning($"{delName} is not founded in {parent.name}");
@@ -63,10 +60,9 @@ namespace KHFC {
 
 			delName = "OnExit" + gameObject.name;
 			info = m_Parent.GetType().GetMethod(delName, flag);
-			if (info != null)
-				m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
-			else
-				m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnExitDefault");
+			m_Exit = info != null
+				? (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info)
+				: (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnExitDefault");
 #if UNITY_EDITOR
 			if (m_Exit == null)
 				Debug.LogWarning($"{delName} is not founded in {parent.name}");

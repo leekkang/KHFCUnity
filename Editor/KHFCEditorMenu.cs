@@ -37,7 +37,7 @@ namespace KHFC.Editor {
 				GameObject target = obj.FindRecursively(NAME_ASSET_LINK_OBJ);
 				if (target != null && target.TryGetComponent(out AssetLinkData comp)) {
 					comp.Awake();
-					AssetLinkDataEditor.SetAllData();
+					EditorLinkData.SetAllData();
 					return;
 				}
 			}
@@ -46,7 +46,7 @@ namespace KHFC.Editor {
 			GameObject linkObj = new GameObject(NAME_ASSET_LINK_OBJ);
 			AssetLinkData component = linkObj.AddComponent<AssetLinkData>();
 			component.Awake();
-			AssetLinkDataEditor.SetAllData();
+			EditorLinkData.SetAllData();
 		}
 		//	[MenuItem("KHFC/Fill Asset Link Data", isValidateFunction:true)]
 		//	static bool ValidateFillAssetLinkData() {

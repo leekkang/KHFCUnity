@@ -7,10 +7,10 @@ using UnityEditor;
 namespace KHFC.Editor {
 	[CustomEditor(typeof(MonoBehaviour), true)]
 	public class MonoBehaviourInspector : UnityEditor.Editor {
-		[SerializeField] private List<MethodInfo> m_ListMethod;
-		[SerializeField] private List<string> m_ListInfo;
+		[SerializeField] List<MethodInfo> m_ListMethod;
+		[SerializeField] List<string> m_ListInfo;
 
-		private void OnEnable() {
+		void OnEnable() {
 			CreateInspectorButton();
 		}
 
@@ -32,7 +32,7 @@ namespace KHFC.Editor {
 			}
 		}
 
-		private void CreateInspectorButton() {
+		void CreateInspectorButton() {
 			m_ListMethod = new List<MethodInfo>();
 			m_ListInfo = new List<string>();
 
@@ -46,13 +46,12 @@ namespace KHFC.Editor {
 
 				int len = arrAttribute.Length;
 				for (int j = 0; j < len; j++) {
-					if (arrAttribute[j] is InspectorButtonAttribute) {
+					if (arrAttribute[j] is InspectorButtonAttribute attribute) {
 						m_ListMethod.Add(method);
-						m_ListInfo.Add(((InspectorButtonAttribute)arrAttribute[j]).m_Msg);
+						m_ListInfo.Add(attribute.m_Msg);
 					}
 				}
 			}
 		}
 	}
-
 }

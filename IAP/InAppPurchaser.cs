@@ -27,10 +27,10 @@ namespace KHFC.IAP {
 	public delegate void IAPFailedCallback(string productID, PurchaseFailureReason reason, string message);
 
 	public class InAppPurchaser : IDetailedStoreListener {
-		public const string ENV_NAME = "production";
+		const string ENV_NAME = "production";
 
-		static IStoreController m_StoreController;      // The Unity Purchasing system
-		static IExtensionProvider m_ExtensionProvider;  // The store-specific Purchasing subsystems
+		static IStoreController m_StoreController;		// The Unity Purchasing system
+		static IExtensionProvider m_ExtensionProvider;	// The store-specific Purchasing subsystems
 
 		public List<IAPProduct> m_ListProduct;
 		public bool initialized => m_StoreController != null && m_ExtensionProvider != null;
@@ -39,16 +39,6 @@ namespace KHFC.IAP {
 		public IAPFailedCallback m_OnPurchaseFailed;
 
 		bool m_PurchaseProcess = false;
-
-		//async void Start() {
-		//	try {
-		//		var options = new InitializationOptions().SetEnvironmentName(environment);
-		//		await UnityServices.InitializeAsync(options);
-		//	} catch (Exception e) {
-		//		// An error occurred during initialization.
-		//		Debug.LogError($"UnityServices Initialize Failed : {e}");
-		//	}
-		//}
 
 		/// <summary> 상품을 등록한다. Init 이전에 호출해서 리스트를 채워야 함 </summary>
 		public void SetProduct(List<IAPProduct> list) {

@@ -58,20 +58,12 @@ public static class GameObjectEx {
 	}
 
 	public static T SafeAddComponent<T>(this GameObject obj) where T : Component {
-		if (!obj.TryGetComponent(out T comp))
-			return obj.AddComponent<T>();
-
-		return comp;
+		return !obj.TryGetComponent(out T comp) ? obj.AddComponent<T>() : comp;
 	}
 
 	public static Component SafeAddComponent(this GameObject obj, string name) {
 		//Component comp = obj.GetComponent(name) ?? obj.AddComponent(System.Type.GetType(name));
 		Component comp = obj.GetComponent(name);
-		if (comp == null) {
-			//comp = UnityEngineInternal.APIUpdaterRuntimeServices.AddComponent(obj, "Assets/script/Util/Extension/GameObjectEx.cs (74,8)", name);
-			comp = obj.AddComponent(System.Type.GetType(name));
-		}
-
-		return comp;
+		return comp == null ? obj.AddComponent(System.Type.GetType(name)) : comp;
 	}
 }

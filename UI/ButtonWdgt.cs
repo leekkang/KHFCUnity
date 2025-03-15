@@ -61,10 +61,9 @@ namespace KHFC {
 			string postfix = gameObject.name.Replace("btn_", "");
 			string delName = "OnClick" + postfix;
 			System.Reflection.MethodInfo info = m_Parent.GetType().GetMethod(delName, flag);
-			if (info != null)
-				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info);
-			else
-				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, "OnClickDefault", false, false);
+			m_Click = info != null
+				? (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info)
+				: (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, "OnClickDefault", false, false);
 #if UNITY_EDITOR
 			if (m_Click == null)
 				Debug.LogError($"Click Delegate has nullptr\nName : {delName}, Parent : {parent.name}");
@@ -88,10 +87,9 @@ namespace KHFC {
 			string postfix = gameObject.name.Replace("btn_", "");
 			string delName = "OnEnter" + postfix;
 			System.Reflection.MethodInfo info = m_Parent.GetType().GetMethod(delName, flag);
-			if (info != null)
-				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
-			else
-				m_Enter = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
+			m_Enter = info != null
+				? (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info)
+				: (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
 #if UNITY_EDITOR
 			if (m_Enter == null)
 				Debug.LogWarning($"{delName} is not founded in {m_Parent.name}");
@@ -101,10 +99,9 @@ namespace KHFC {
 
 //			delName = "OnExit" + postfix;
 //			info = m_Parent.GetType().GetMethod(delName, flag);
-//			if (info != null)
-//				m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info);
-//			else
-//				m_Exit = (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnExitDefault");
+//			m_Exit = info != null
+//				? (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, info)
+//				: (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnExitDefault");
 //#if UNITY_EDITOR
 //			if (m_Exit == null)
 //				Debug.LogWarning($"{delName} is not founded in {parent.name}");
