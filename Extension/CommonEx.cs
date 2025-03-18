@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public static class CommonEx {
+internal static class CommonEx {
 	public static void SetAlpha(this Graphic graphic, float alpha) {
 		Color color = graphic.color;
 		color.a = alpha;

@@ -88,6 +88,7 @@ namespace KHFC {
 				m_DicEvent.Remove(eventType);
 		}
 
+		[System.Diagnostics.Conditional(Util.CONDITION_SYMBOL)]
 		static void ShowLog(string message, object[] data = null) {
 			if (data != null) {
 				for (int i = 0; i < data.Length; i++) {

@@ -47,7 +47,7 @@ namespace KHFC {
 					m_Instance = (KHFCSetting)Resources.Load("KHFCSetting");
 
 					if (m_Instance == null) {
-						Debug.LogError("KHFCSetting.asset이 없습니다");
+						Util.LogError("KHFCSetting.asset이 없습니다");
 					}
 				}
 				return m_Instance;
@@ -159,7 +159,7 @@ namespace KHFC {
 		//Call Method(classname.methodname)
 		public static void StringCallMethod(string funcName, params object[] funcParameters) {
 			if (string.IsNullOrEmpty(funcName) || !funcName.Contains(".")) {
-				Debug.LogError("String value isn't Correct");
+				Util.LogError("String value isn't Correct");
 				return;
 			}
 
@@ -175,13 +175,13 @@ namespace KHFC {
 			if (classType == null) {
 				classType = System.Type.GetType(className + ", " + m_NameAssemblyEditor);
 				if (classType == null) {
-					Debug.LogError("class name or method name is wrong, " + className + ", " + methodName);
+					Util.LogError("class name or method name is wrong, " + className + ", " + methodName);
 					return;
 				}
 			}
 			System.Reflection.MethodInfo info = classType.GetMethod(methodName);
 			if (info == null) {
-				Debug.LogError("method name is wrong");
+				Util.LogError("method name is wrong");
 				return;
 			}
 
@@ -224,7 +224,7 @@ namespace KHFC {
 		[UnityEditor.InitializeOnLoadMethod]
 		static void OnProjectLoadedInEditor() {
 			m_PrjRootPath = Path.GetDirectoryName(Path.GetDirectoryName(Application.dataPath));
-			Debug.Log("Current Project Root is : " + m_PrjRootPath);
+			Util.Log("Current Project Root is : " + m_PrjRootPath);
 		}
 #endif
 	}

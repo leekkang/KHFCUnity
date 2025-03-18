@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-public static class GameObjectEx {
+internal static class GameObjectEx {
 	public static void ToggleEnable(this Behaviour behaviour) {
 		if (behaviour != null)
 			behaviour.enabled = !behaviour.enabled;

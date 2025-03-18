@@ -68,12 +68,8 @@ namespace KHFC {
 				m_Value[2] = val.w;
 			}
 
-			public static bool operator true(TfInfo info) {
-				return info != null;
-			}
-			public static bool operator false(TfInfo info) {
-				return info == null;
-			}
+			public static bool operator true(TfInfo info) => info != null;
+			public static bool operator false(TfInfo info) => info == null;
 		}
 
 		public System.Action<GameObject> m_OnAfterLoadGuiObj = null;
@@ -361,7 +357,7 @@ namespace KHFC {
 				if (result) {
 					ReleaseAsset(item.m_Name);
 					Destroy(item.m_Obj);
-					//Debug.Log($"Deactive Asset : {item.m_Name}");
+					//Util.Log($"Deactive Asset : {item.m_Name}");
 				}
 
 				return result;
@@ -440,7 +436,7 @@ namespace KHFC {
 		public T CreateAsset<T>(string assetName) where T : Object {
 			Object asset = _LoadFromAddressable(assetName);
 			if (asset == null)
-				Debug.LogWarning("There is no resource, name : " + assetName);
+				Util.LogWarning("There is no resource, name : " + assetName);
 
 			return (T)asset;
 		}
@@ -449,7 +445,7 @@ namespace KHFC {
 		Object CreateAsset(string assetName) {
 			Object asset = _LoadFromAddressable(assetName);
 			if (asset == null)
-				Debug.LogWarning("There is no resource, name : " + assetName);
+				Util.LogWarning("There is no resource, name : " + assetName);
 
 			return asset;
 		}
@@ -458,7 +454,7 @@ namespace KHFC {
 		public async AsyncObj CreateAssetAsync(string assetName) {
 			Object asset = await _LoadFromAddressableAsync(assetName);
 			if (asset == null) {
-				Debug.LogWarning("There is no resource, name : " + assetName);
+				Util.LogWarning("There is no resource, name : " + assetName);
 			}
 			return asset;
 		}
@@ -479,7 +475,7 @@ namespace KHFC {
 
 			_LoadFromAddressableAsync(assetName, (asset) => {
 				if (asset == null) {
-					Debug.LogWarning("There is no resource, name : " + assetName);
+					Util.LogWarning("There is no resource, name : " + assetName);
 					onAfter?.Invoke(null);
 					return;
 				}
@@ -561,10 +557,10 @@ namespace KHFC {
 #if KHFC_ADDRESSABLES
 		void LoadAssetPostProcess(ref AsyncOperationHandle<Object> handle, ref string assetName, System.Action<Object> onAfter) {
 			if (handle.Status == AsyncOperationStatus.Succeeded) {
-				//Debug.Log($"Async operation succeeded : {assetName}");
+				//Util.Log($"Async operation succeeded : {assetName}");
 				onAfter?.Invoke(handle.Result);
 			} else if (handle.Status == AsyncOperationStatus.Failed) {
-				//Debug.LogError("Async operation failed");
+				//Util.LogError("Async operation failed");
 				Addressables.Release(handle);
 				onAfter?.Invoke(null);
 			}
@@ -578,7 +574,7 @@ namespace KHFC {
 #if KHFC_ADDRESSABLES
 			AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(assetName);
 			if (!handle.IsValid()) {
-				Debug.LogError($"Invalid AsyncOperationHandle name : {assetName}");
+				Util.LogError($"Invalid AsyncOperationHandle name : {assetName}");
 				Addressables.Release(handle);
 				return null;
 			}
@@ -596,7 +592,7 @@ namespace KHFC {
 #if KHFC_ADDRESSABLES
 			AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(assetName);
 			if (!handle.IsValid()) {
-				Debug.LogError($"Invalid AsyncOperationHandle name : {assetName}");
+				Util.LogError($"Invalid AsyncOperationHandle name : {assetName}");
 				Addressables.Release(handle);
 				return null;
 			}
@@ -604,10 +600,10 @@ namespace KHFC {
 			if (handle.IsDone) {
 				LoadAssetPostProcess(ref handle, ref assetName, (obj) => asset = obj);
 				if (asset != null)
-					Debug.Log($"LoadFromAddressable Complete : {asset.name}");
+					Util.Log($"LoadFromAddressable Complete : {asset.name}");
 				return asset;
 			} else
-				Debug.Log("Async operation still in progress");
+				Util.Log("Async operation still in progress");
 
 #if KHFC_UNITASK
 			asset = await handle.ToUniTask();
@@ -615,7 +611,7 @@ namespace KHFC {
 			asset = await handle;
 #endif
 			if (asset != null)
-				Debug.Log($"LoadFromAddressable Complete : {asset.name}");
+				Util.Log($"LoadFromAddressable Complete : {asset.name}");
 #endif
 			return asset;
 		}
@@ -629,7 +625,7 @@ namespace KHFC {
 #if KHFC_ADDRESSABLES
 			AsyncOperationHandle<Object> handle = Addressables.LoadAssetAsync<Object>(assetName);
 			if (!handle.IsValid()) {
-				Debug.LogError($"Invalid AsyncOperationHandle name : {assetName}");
+				Util.LogError($"Invalid AsyncOperationHandle name : {assetName}");
 				Addressables.Release(handle);
 				onAfter(null);
 				return;
@@ -637,17 +633,17 @@ namespace KHFC {
 			//AsyncOperationHandle<long> sizeHandle = Addressables.GetDownloadSizeAsync(key); ;
 			//sizeHandle.Completed += (op) => {
 			//	long result = op.Result;
-			//	Debug.Log($"{key} size : {result}");
+			//	Util.Log($"{key} size : {result}");
 			//};
 
 			if (handle.IsDone)
 				LoadAssetPostProcess(ref handle, ref assetName, onAfter);
 			//else
-			//	Debug.Log("Async operation still in progress");
+			//	Util.Log("Async operation still in progress");
 
 			handle.Completed += (operation) => {
 				LoadAssetPostProcess(ref operation, ref assetName, onAfter);
-				//Debug.Log($"_LoadFromAddressable Complete : {operation.Result.name}");
+				//Util.Log($"_LoadFromAddressable Complete : {operation.Result.name}");
 			};
 #else
 			onAfter(asset);

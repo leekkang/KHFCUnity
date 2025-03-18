@@ -22,25 +22,20 @@ public class InitializeUnityServices : UnityEngine.MonoBehaviour {
 	}
 
 	void OnSuccess() {
-		string text = "Congratulations!\nUnity Gaming Services has been successfully initialized.";
-		//informationText.text = text;
-		UnityEngine.Debug.Log(text);
+		KHFC.Util.Log("Congratulations!\nUnity Gaming Services has been successfully initialized.");
 	}
 
 	void OnError(string msg) {
-		string text = $"Unity Gaming Services failed to initialize with error: {msg}.";
-		//informationText.text = text;
-		UnityEngine.Debug.LogError(text);
+		KHFC.Util.LogError($"Unity Gaming Services failed to initialize with error: {msg}.");
 	}
 
 	void Start() {
 		if (UnityServices.State == ServicesInitializationState.Uninitialized) {
-			var text =
+			KHFC.Util.LogError(
 				"Error: Unity Gaming Services not initialized.\n" +
 				"To initialize Unity Gaming Services, open the file \"InitializeGamingServices.cs\" " +
-				"and uncomment the line \"Initialize(OnSuccess, OnError);\" in the \"Awake\" method.";
-			//informationText.text = text;
-			UnityEngine.Debug.LogError(text);
+				"and uncomment the line \"Initialize(OnSuccess, OnError);\" in the \"Awake\" method."
+				);
 		}
 	}
 }

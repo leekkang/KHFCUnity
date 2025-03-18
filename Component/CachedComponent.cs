@@ -33,7 +33,7 @@ namespace KHFC {
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
 		public GameObject GetCachedObject<T>(T alias) where T : System.Enum {
 			if (m_ListCachedObject == null) {
-				Debug.LogError($"Cached Object List is null!");
+				Util.LogError($"Cached Object List is null!");
 				return null;
 			}
 
@@ -43,7 +43,7 @@ namespace KHFC {
 			if (m_ListCachedObject.Count > index)
 				return m_ListCachedObject[index];
 			else {
-				Debug.LogError($"Cached Object is not found : {alias}");
+				Util.LogError($"Cached Object is not found : {alias}");
 				return null;
 			}
 		}
@@ -52,7 +52,7 @@ namespace KHFC {
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
 		public GameObject GetCachedObject(int index) {
 			if (m_ListCachedObject == null) {
-				Debug.LogError($"Cached Object List is null!");
+				Util.LogError($"Cached Object List is null!");
 				return null;
 			}
 
@@ -60,7 +60,7 @@ namespace KHFC {
 				//if (m_ListCachedObject.TryGetValue(aliasIndex, out GameObject obj))
 				return m_ListCachedObject[index];
 			else {
-				Debug.LogError($"Cached Object is not found : {index}");
+				Util.LogError($"Cached Object is not found : {index}");
 				return null;
 			}
 		}
@@ -75,7 +75,7 @@ namespace KHFC {
 				return null;
 
 			if (typeof(T) == typeof(GameObject))
-				Debug.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
+				Util.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
 
 			return cachedGo.GetComponent<T>();
 		}
@@ -88,7 +88,7 @@ namespace KHFC {
 				return null;
 
 			if (typeof(T) == typeof(GameObject))
-				Debug.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
+				Util.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
 
 			return cachedGo.GetComponent<T>();
 		}

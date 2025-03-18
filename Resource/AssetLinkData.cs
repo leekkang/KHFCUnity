@@ -98,11 +98,11 @@ namespace KHFC {
 
 		public void AddLink<T>(string folderName, string prefabName, T obj) where T : UnityEngine.Object {
 			//if (m_ListLink.TryGetValue(out GameObject prefab, x => x.name == prefabName)) {
-			//	Debug.Log($"Replace Asset : {prefab.name}");
+			//	Util.Log($"Replace Asset : {prefab.name}");
 			//} else {
 				m_ListLink.Add(obj);
 				m_ListName.Add(prefabName);
-				Debug.Log($"Create Link : {prefabName}");
+				Util.Log($"Create Link : {prefabName}");
 			//}
 			EditorUtility.SetDirty(gameObject);
 		}
@@ -116,11 +116,11 @@ namespace KHFC {
 		//public void AddPanel(PanelType type, GameObject obj) {
 		//	if (m_ListPanel.TryGetValue(out PanelLinkData panel, x => x.m_Type == type)) {
 		//		panel.m_Obj = obj;
-		//		Debug.Log($"Replace Asset : {type}");
+		//		Util.Log($"Replace Asset : {type}");
 		//	} else {
 		//		panel = new PanelLinkData(type, obj);
 		//		m_ListPanel.Add(panel);
-		//		Debug.Log($"Create Asset : {type}");
+		//		Util.Log($"Create Asset : {type}");
 		//	}
 		//	EditorUtility.SetDirty(gameObject);
 		//}
@@ -134,11 +134,11 @@ namespace KHFC {
 		//public void AddEffect(EffectType type, GameObject obj) {
 		//	if (m_ListEffect.TryGetValue(out EffectLinkData panel, x => x.m_Type == type)) {
 		//		panel.m_Obj = obj;
-		//		Debug.Log($"Replace Asset : {type}");
+		//		Util.Log($"Replace Asset : {type}");
 		//	} else {
 		//		panel = new EffectLinkData(type, obj);
 		//		m_ListEffect.Add(panel);
-		//		Debug.Log($"Create Asset : {type}");
+		//		Util.Log($"Create Asset : {type}");
 		//	}
 		//	EditorUtility.SetDirty(gameObject);
 		//}

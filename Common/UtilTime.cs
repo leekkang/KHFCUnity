@@ -3,7 +3,7 @@
 using System;
 
 namespace KHFC {
-	public class TimeUtil {
+	internal partial class Util {
 		public readonly static DateTime epochTime = new(1970, 1, 1);
 
 		/// <summary> UTC 기준 현재 시각 </summary>

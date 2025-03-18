@@ -67,7 +67,7 @@ namespace KHFC.IAP {
 				await UnityServices.InitializeAsync(options);
 			} catch (Exception e) {
 				// An error occurred during initialization.
-				UnityEngine.Debug.LogError($"UnityServices Initialize Failed : {e}");
+				Util.LogError($"UnityServices Initialize Failed : {e}");
 			}
 			InitializePurchasing();
 		}
@@ -78,7 +78,7 @@ namespace KHFC.IAP {
 				UnityServices.InitializeAsync(options).Wait();
 			} catch (Exception e) {
 				// An error occurred during initialization.
-				UnityEngine.Debug.LogError($"UnityServices Initialize Failed : {e}");
+				Util.LogError($"UnityServices Initialize Failed : {e}");
 			}
 			InitializePurchasing();
 		}
@@ -90,24 +90,24 @@ namespace KHFC.IAP {
 			ConfigurationBuilder builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 			foreach (IAPProduct shopData in m_ListProduct) {
 				builder.AddProduct(shopData.ID, shopData.Type);
-				UnityEngine.Debug.Log($"IAP AddProduct:{shopData.ID}, {shopData.Type}");
+				Util.Log($"IAP AddProduct:{shopData.ID}, {shopData.Type}");
 			}
 
 			UnityPurchasing.Initialize(this, builder);
 		}
 
 		public void OnInitialized(IStoreController controller, IExtensionProvider extensions) {
-			UnityEngine.Debug.Log("IAP OnInitialized: Success");
+			Util.Log("IAP OnInitialized: Success");
 
 			m_StoreController = controller;
 			m_ExtensionProvider = extensions;
 		}
 
 		public void OnInitializeFailed(InitializationFailureReason error) {
-			UnityEngine.Debug.Log($"IAP OnInitializeFailed: {error}");
+			Util.Log($"IAP OnInitializeFailed: {error}");
 		}
 		public void OnInitializeFailed(InitializationFailureReason error, string message) {
-			UnityEngine.Debug.Log($"IAP OnInitializeFailed: {error}\nmessage: {message}");
+			Util.Log($"IAP OnInitializeFailed: {error}\nmessage: {message}");
 		}
 
 
@@ -120,7 +120,7 @@ namespace KHFC.IAP {
 			return true;
 #endif
 			if (!initialized) {
-				UnityEngine.Debug.Log($"BuyProductID {productID}  FAIL. Not initialized.");
+				Util.Log($"BuyProductID {productID}  FAIL. Not initialized.");
 				m_PurchaseProcess = false;
 				return false;
 			}
@@ -129,10 +129,10 @@ namespace KHFC.IAP {
 			m_PurchaseProcess = true;
 
 			if (product != null && product.availableToPurchase) {
-				UnityEngine.Debug.Log(string.Format("Purchasing product asychronously: '{0}'", product.definition.id));
+				Util.Log(string.Format("Purchasing product asychronously: '{0}'", product.definition.id));
 				m_StoreController.InitiatePurchase(product);
 			} else {
-				UnityEngine.Debug.Log($"BuyProductID {productID} : FAIL. Not purchasing product, either is not found or is not available for purchase");
+				Util.Log($"BuyProductID {productID} : FAIL. Not purchasing product, either is not found or is not available for purchase");
 				m_PurchaseProcess = false;
 			}
 
@@ -143,7 +143,7 @@ namespace KHFC.IAP {
 		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args) {
 			bool validPurchase = true;
 #if UNITY_ANDROID
-			UnityEngine.Debug.Log("IAP receipt: " + args.purchasedProduct.receipt);
+			Util.Log("IAP receipt: " + args.purchasedProduct.receipt);
 			//if (isAllowedFormat(args.purchasedProduct.transactionID) == false) {
 			//	//영수증 포맷이 일치하지 않음
 			//	Debug.Log("TransactionID is Not Matched.");
@@ -157,14 +157,14 @@ namespace KHFC.IAP {
 				// On Apple stores, receipts contain multiple products.
 				var result = validator.Validate(args.purchasedProduct.receipt);
 				// For informational purposes, we list the receipt(s)
-				UnityEngine.Debug.Log("Receipt is valid. Contents:");
+				Util.Log("Receipt is valid. Contents:");
 				foreach (IPurchaseReceipt productReceipt in result) {
-					UnityEngine.Debug.Log(productReceipt.productID);
-					UnityEngine.Debug.Log(productReceipt.purchaseDate);
-					UnityEngine.Debug.Log(productReceipt.transactionID);
+					Util.Log(productReceipt.productID);
+					Util.Log(productReceipt.purchaseDate);
+					Util.Log(productReceipt.transactionID);
 				}
 			} catch (IAPSecurityException e) {
-				UnityEngine.Debug.Log("Invalid receipt, not unlocking content : " + e);
+				Util.Log("Invalid receipt, not unlocking content : " + e);
 				validPurchase = false;
 			}
 #endif
@@ -196,7 +196,7 @@ namespace KHFC.IAP {
 						return google.purchaseToken;
 				}
 			} catch (IAPSecurityException) {
-				UnityEngine.Debug.Log("Invalid receipt, not unlocking content");
+				Util.Log("Invalid receipt, not unlocking content");
 			}
 #endif
 			return string.Empty;
@@ -204,13 +204,13 @@ namespace KHFC.IAP {
 
 		public void OnPurchaseFailed(Product product, PurchaseFailureDescription desc) {
 			m_PurchaseProcess = false;
-			UnityEngine.Debug.Log(string.Format("IAP OnPurchaseFailed: '{0}'\nreason: {1}\nmessage: {2}", product.definition.storeSpecificId, desc.reason, desc.message));
+			Util.Log(string.Format("IAP OnPurchaseFailed: '{0}'\nreason: {1}\nmessage: {2}", product.definition.storeSpecificId, desc.reason, desc.message));
 			m_OnPurchaseFailed?.Invoke(product.definition.id, desc.reason, desc.message);
 		}
 
 		public void OnPurchaseFailed(Product product, PurchaseFailureReason reason) {
 			m_PurchaseProcess = false;
-			UnityEngine.Debug.Log(string.Format("IAP OnPurchaseFailed: '{0}'\nreason: {1}", product.definition.storeSpecificId, reason));
+			Util.Log(string.Format("IAP OnPurchaseFailed: '{0}'\nreason: {1}", product.definition.storeSpecificId, reason));
 			m_OnPurchaseFailed?.Invoke(product.definition.id, reason, string.Empty);
 		}
 
@@ -220,7 +220,7 @@ namespace KHFC.IAP {
 			// If Purchasing has not yet been set up ...
 			if (!initialized) {
 				// ... report the situation and stop restoring. Consider either waiting longer, or retrying initialization.
-				UnityEngine.Debug.Log("RestorePurchases FAIL. Not initialized.");
+				Util.Log("RestorePurchases FAIL. Not initialized.");
 				return;
 			}
 
@@ -228,12 +228,12 @@ namespace KHFC.IAP {
 			if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.IPhonePlayer &&
 				UnityEngine.Application.platform != UnityEngine.RuntimePlatform.OSXPlayer) {
 				// We are not running on an Apple device. No work is necessary to restore purchases.
-				UnityEngine.Debug.Log("RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
+				Util.Log("RestorePurchases FAIL. Not supported on this platform. Current = " + Application.platform);
 				return;
 			}
 
 			// ... begin restoring purchases
-			UnityEngine.Debug.Log("RestorePurchases started ...");
+			Util.Log("RestorePurchases started ...");
 
 			// Fetch the Apple store-specific subsystem.
 			IAppleExtensions apple = m_ExtensionProvider.GetExtension<IAppleExtensions>();
@@ -242,7 +242,7 @@ namespace KHFC.IAP {
 			apple.RestoreTransactions((result, code) => {
 				// The first phase of restoration. If no more responses are received on ProcessPurchase then 
 				// no purchases are available to be restored.
-				UnityEngine.Debug.Log("RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore.");
+				Util.Log("RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore.");
 			});
 #endif
 		}

@@ -145,7 +145,7 @@ internal static class TransformEx {
 		if (current == -1) {
 			Transform tr = target.Find(fullName);
 			if (null == tr) {
-				Debug.LogError("Can't Find Transfrom by FullName : " + fullName);
+				KHFC.Util.LogError("Can't Find Transfrom by FullName : " + fullName);
 				return null;
 			}
 			return tr;
@@ -160,7 +160,7 @@ internal static class TransformEx {
 
 		Transform child = target.Find(gameObjectName);
 		if (child == null) {
-			Debug.LogError("Can't Find Transfrom by FullName : " + fullName);
+			KHFC.Util.LogError("Can't Find Transfrom by FullName : " + fullName);
 			return null;
 		}
 

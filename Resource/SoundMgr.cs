@@ -228,7 +228,7 @@ namespace KHFC {
 		public void PrespawnAudioAsync(string name, System.Action<GameObject> actOnAfter, bool isEfx = true) {
 			SpawnSoundAsync(name, (obj) => {
 				if (obj == null)
-					Debug.LogWarning("Can't LoadSound : " + name);
+					Util.LogWarning("Can't LoadSound : " + name);
 				else
 					AfterSpawn(obj, isEfx);
 
@@ -278,7 +278,7 @@ namespace KHFC {
 		async AsyncVoid PlayEfxAsync(string name, float delay, float volume = -1f, Vector3 pos = default, Transform parent = null, float startTime = 0f, bool ignoreScale = false) {
 			GameObject sounObj = SpawnSound(name, pos, parent);
 			if (sounObj == null) {
-				Debug.LogWarning("Can't LoadSound : " + name);
+				Util.LogWarning("Can't LoadSound : " + name);
 				return;
 			}
 			AudioSource newSource = sounObj.GetComponent<AudioSource>();
@@ -324,7 +324,7 @@ namespace KHFC {
 
 			GameObject soundObj = SpawnSound(name);
 			if (soundObj == null) {
-				Debug.LogWarning("Can't Load Sound : " + name);
+				Util.LogWarning("Can't Load Sound : " + name);
 				return;
 			}
 
@@ -371,7 +371,7 @@ namespace KHFC {
 
 			GameObject sounObj = SpawnSound(name, pos, parent);
 			if (sounObj == null) {
-				Debug.LogWarning("Can't LoadSound : " + name);
+				Util.LogWarning("Can't LoadSound : " + name);
 				yield break;
 			}
 			AudioSource newSource = sounObj.GetComponent<AudioSource>();
@@ -420,7 +420,7 @@ namespace KHFC {
 
 			GameObject soundObj = SpawnSound(name);
 			if (soundObj == null) {
-				Debug.LogWarning("Can't Load Sound : " + name);
+				Util.LogWarning("Can't Load Sound : " + name);
 				yield break;
 			}
 

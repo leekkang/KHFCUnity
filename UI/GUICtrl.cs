@@ -144,7 +144,7 @@ namespace KHFC {
 		/// <remarks> 오류가 있어 진행이 안되어도 true를 리턴. 이건 코드 문제가 아니기 때문이다 </remarks>
 		bool TryCheckRegist(int panelType, ref string address, out AbstractPanel panel) {
 			if (address == null) {
-				Debug.Log($"PanelType Address is not registered : {panelType}");
+				Util.Log($"PanelType Address is not registered : {panelType}");
 				panel = null;
 				return true;
 			}
@@ -201,7 +201,7 @@ namespace KHFC {
 		/// <param name="removeOnly"> 팝업 연출 없이 제거하고 싶을 때 사용 </param>
 		public AbstractPanel PopPanel(bool removeOnly = false) {
 			if (m_History.Count <= 1) {
-				Debug.Log("Stack History has only single Panel");
+				Util.Log("Stack History has only single Panel");
 				return null;
 			}
 
@@ -423,7 +423,7 @@ namespace KHFC {
 						scriptName = "";
 					}
 				} else {
-					Debug.LogError("해당 Panel에 맞는 스크립트가 없습니다 Name : " + scriptName);
+					Util.LogError("해당 Panel에 맞는 스크립트가 없습니다 Name : " + scriptName);
 				}
 			}
 

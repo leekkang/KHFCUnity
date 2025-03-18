@@ -1,6 +1,6 @@
 ﻿
 namespace KHFC {
-	public static class Base64Util {
+	internal partial class Util {
 		public static string Encoding(string text, System.Text.Encoding encodeType = null) {
 			encodeType ??= System.Text.Encoding.UTF8;
 			byte[] bytes = encodeType.GetBytes(text);

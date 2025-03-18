@@ -1,5 +1,5 @@
 ﻿
-public static class StringEx {
+internal static class StringEx {
 	/// <summary> 대문자를 기준으로 공백을 넣은 문자열로 변경해주는 함수 </summary>
 	public static string SpacingUpperCase(this string value) {
 		if (string.IsNullOrEmpty(value))

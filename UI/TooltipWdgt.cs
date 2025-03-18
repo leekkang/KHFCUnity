@@ -28,8 +28,8 @@ namespace KHFC {
 		protected override void Reset() {
 			base.Reset();
 			Start();
-			Debug.Log($"m_EnterFuncName : {m_EnterFuncName}");
-			Debug.Log($"m_ExitFuncName : {m_ExitFuncName}");
+			Util.Log($"m_EnterFuncName : {m_EnterFuncName}");
+			Util.Log($"m_ExitFuncName : {m_ExitFuncName}");
 		}
 #endif
 
@@ -40,7 +40,7 @@ namespace KHFC {
 				parent = parent.parent;
 			}
 			if (parent == null) {
-				Debug.LogError($"{name} doesn't have parent");
+				Util.LogError($"{name} doesn't have parent");
 				return;
 			}
 			System.Reflection.BindingFlags flag = System.Reflection.BindingFlags.Instance |
@@ -53,7 +53,7 @@ namespace KHFC {
 				: (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnEnterDefault");
 #if UNITY_EDITOR
 			if (m_Enter == null)
-				Debug.LogWarning($"{delName} is not founded in {parent.name}");
+				Util.LogWarning($"{delName} is not founded in {parent.name}");
 			else
 				m_EnterFuncName = m_Enter.GetMethodInfo().ToString();
 #endif
@@ -65,7 +65,7 @@ namespace KHFC {
 				: (DelHover)Delegate.CreateDelegate(typeof(DelHover), m_Parent, "OnExitDefault");
 #if UNITY_EDITOR
 			if (m_Exit == null)
-				Debug.LogWarning($"{delName} is not founded in {parent.name}");
+				Util.LogWarning($"{delName} is not founded in {parent.name}");
 			else
 				m_ExitFuncName = m_Exit.GetMethodInfo().ToString();
 #endif
