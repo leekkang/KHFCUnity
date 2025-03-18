@@ -13,9 +13,7 @@ namespace KHFC {
 		static extern void NSLog_iOS(string log);
 #endif
 
-		public static bool isDebugBuild {
-			get { return UnityEngine.Debug.isDebugBuild; }
-		}
+		public static bool isDebugBuild => UnityEngine.Debug.isDebugBuild;
 
 		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
 		public static void Log(object message) {
