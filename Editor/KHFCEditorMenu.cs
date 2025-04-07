@@ -132,6 +132,18 @@ namespace KHFC.Editor {
 				MaterialFinderEditorWindow.ShowWindow();
 		}
 
+		/// <summary> 특정 텍스쳐의 모든 링크를 찾아주는 윈도우를 연다 </summary>
+		[MenuItem("KHFC/Window/Open Texture Finder Window", priority = (int)MenuPriority.Window + 1)]
+		static public void OpenTextureFinderEditorWindow() {
+			Texture2D tex = null;
+			if (Selection.activeObject is Texture2D)
+				tex = Selection.activeObject as Texture2D;
+			if (tex != null)
+				TextureFinderEditorWindow.ShowWindow(tex);
+			else
+				TextureFinderEditorWindow.ShowWindow();
+		}
+
 		/// <summary> 게임창의 사이즈를 변경한다 </summary>
 		[MenuItem("KHFC/Window/Open Resize Editor Window", priority = (int)MenuPriority.Window + 2)]
 		static public void OpenResizeEditorWindow() {
@@ -254,6 +266,18 @@ namespace KHFC.Editor {
 		[MenuItem("Assets/KHFC/Find All Particles That Use This", isValidateFunction: true)]
 		static bool ValidateFindAllParticlesThatUseThisMaterial() {
 			return Selection.activeObject is Material;
+		}
+
+		/// <summary>
+		/// 선택한 텍스쳐를 사용하는 모든 오브젝트를 찾는 함수
+		/// </summary>
+		[MenuItem("Assets/KHFC/Find All Materials That Use This", priority = (int)MenuPriority.Assets)]
+		public static void FindAllObjectsThatUseThisTexture() {
+			TextureFinderEditorWindow.ShowWindow(Selection.activeObject as Texture2D);
+		}
+		[MenuItem("Assets/KHFC/Find All Materials That Use This", isValidateFunction: true)]
+		static bool ValidateFindAllObjectsThatUseThisTexture() {
+			return Selection.activeObject is Texture2D;
 		}
 
 		/// <summary>
