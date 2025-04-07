@@ -8,6 +8,23 @@ namespace KHFC {
 			return System.Math.Abs(a - b) < epsilon;
 		}
 
+		// 삼각함수 - 가로 x, 세로 y, 사이각 theta, 빗면이 h인 직각삼각형 기준
+		// Sin theta : h / y
+		// Cos theta : h / x
+		// Tan theta : y / x
+		// Csc theta : y / h (Cosecant)
+		// Sec theta : x / h (Secant)
+		// Cot theta : x / y
+		// Tan = Sin / Cos, Cot = C
+		// Sin(a + b) = Sin(a)Cos(b) + Cos(a)Sin(b)
+		// Cos(a + b) = Cos(a)Cos(b) - Sin(a)Sin(b)
+
+		// Arc : 역함수
+		// ASin : ASin(Sin theta) = theta
+		// ACos : ACos(Cos theta) = theta
+		// ATan : ATan(Tan theta) = theta
+		// Atan2 : x, y 좌표를 받아서 정확한 각도를 출력해냄
+
 		/// <summary> y축 기준 <paramref name="vec"/> 와의 사이각을 반환한다. </summary>
 		/// <remarks> 왼손좌표계 기준 반시계 방향이 + 이다 -> 왼쪽을 보고있으면 +값, 오른쪽을 보고있으면 -값을 반환한다. </remarks>
 		public static float GetLookAngle(UnityEngine.Vector2 vec) {
