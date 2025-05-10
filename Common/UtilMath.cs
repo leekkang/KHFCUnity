@@ -2,10 +2,12 @@
 
 namespace KHFC {
 	internal partial class Util {
+		public static int Abs(int val) => val < 0 ? -val : val;
+		public static float Abs(float val) => val < 0f ? -val : val;
 
 		/// <summary> 소수점 4자리 까지 비교 </summary>
 		public static bool FloatEqual(float a, float b, float epsilon = 1.0E-4f) {
-			return System.Math.Abs(a - b) < epsilon;
+			return Abs(a - b) < epsilon;
 		}
 
 		// 삼각함수 - 가로 x, 세로 y, 사이각 theta, 빗면이 h인 직각삼각형 기준
