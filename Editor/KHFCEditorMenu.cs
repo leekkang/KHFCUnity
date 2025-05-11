@@ -173,36 +173,8 @@ namespace KHFC.Editor {
 
 
 
-		/// <summary> 자식 오브젝트에 붙어있는 컴포넌트에 따라 접두사를 붙이는 함수 </summary>
-		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
-		[MenuItem("GameObject/KHFC/Prefixing by Component Type (GO)", priority = (int)MenuPriority.GameObject + 5)]
-		static void UpdateCachedGameObject() {
-			int count = Selection.gameObjects.Length;
-			if (count == 0)
-				return;
-
-			//bool changed = false;
-			foreach (var go in Selection.gameObjects) {
-				go.transform.DoRecursively((tr) => {
-					if (tr.GetComponent<ParticleSystem>() != null) {
-						if (!tr.name.StartsWith("eff_"))
-							tr.name = "eff_" + tr.name;
-					} else if (tr.GetComponent<SpriteRenderer>() != null
-							 //|| tr.GetComponent<UISprite>() != null	// NGUI 전용
-							 ) {
-						if (!tr.name.StartsWith("spr_"))
-							tr.name = "spr_" + tr.name;
-					}
-				});
-				EditorUtility.SetDirty(go);
-			}
-
-			//if (changed)
-			//	EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
-		}
-
 		/// <summary> 캔버스 아래의 모든 <see cref="MaskableGraphic"/>의 RaycastTarget 옵션을 끈다. </summary>
-		[MenuItem("GameObject/KHFC/Disable Raycast Under Canvas", priority = (int)MenuPriority.GameObject + 5)]
+		[MenuItem("GameObject/KHFC/Disable Raycast Under Canvas", priority = (int)MenuPriority.GameObject)]
 		public static void DisableRaycast() {
 			GameObject go = Selection.activeGameObject;
 
@@ -233,6 +205,34 @@ namespace KHFC.Editor {
 					(Selection.activeGameObject.TryGetComponent(out Canvas canvas) ||
 					Selection.activeGameObject.TryGetComponent(out CanvasGroup group) ||
 					Selection.activeGameObject.TryGetComponent(out CanvasRenderer renderer));
+		}
+
+		/// <summary> 자식 오브젝트에 붙어있는 컴포넌트에 따라 접두사를 붙이는 함수 </summary>
+		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
+		[MenuItem("GameObject/KHFC/Prefixing by Component Type (GO)", priority = (int)MenuPriority.GameObject + 5)]
+		static void UpdateCachedGameObject() {
+			int count = Selection.gameObjects.Length;
+			if (count == 0)
+				return;
+
+			//bool changed = false;
+			foreach (var go in Selection.gameObjects) {
+				go.transform.DoRecursively((tr) => {
+					if (tr.GetComponent<ParticleSystem>() != null) {
+						if (!tr.name.StartsWith("eff_"))
+							tr.name = "eff_" + tr.name;
+					} else if (tr.GetComponent<SpriteRenderer>() != null
+							 //|| tr.GetComponent<UISprite>() != null	// NGUI 전용
+							 ) {
+						if (!tr.name.StartsWith("spr_"))
+							tr.name = "spr_" + tr.name;
+					}
+				});
+				EditorUtility.SetDirty(go);
+			}
+
+			//if (changed)
+			//	EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
 		}
 
 		[MenuItem("Assets/KHFC/Create KHFCSetting Scriptable Object", priority = (int)MenuPriority.Assets)]

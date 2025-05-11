@@ -12,7 +12,7 @@ namespace KHFC.Editor {
 		/// </summary>
 		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("KHFC/Cached Key/Update All GameObject", priority = (int)MenuPriority.CacheKey)]
-		static public void UpdateAllCachedGameObject() {
+		public static void UpdateAllCachedGameObject() {
 			UnityEngine.SceneManagement.Scene curScene = EditorSceneManager.GetActiveScene();
 			GameObject[] arrObj = curScene.GetRootGameObjects();
 			bool changed = false;
@@ -31,7 +31,7 @@ namespace KHFC.Editor {
 		/// </summary>
 		/// <remarks> 폴더 내에 프리팹화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("KHFC/Cached Key/Update All Prefab", priority = (int)MenuPriority.CacheKey + 1)]
-		static public void UpdateAllCachedPrefab() {
+		public static void UpdateAllCachedPrefab() {
 			string[] arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
 			for (int i = 0; i < arrGUID.Length; i++) {
 				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
@@ -50,7 +50,7 @@ namespace KHFC.Editor {
 		/// <summary> <see cref="KHFC.CachedComponent"/>를 상속받은 오브젝트의 캐시 키를 업데이트하는 함수 </summary>
 		/// <remarks> 씬 내에 인스턴스화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("GameObject/KHFC/Update Cache Key (GO)", priority = (int)MenuPriority.GameObject)]
-		private static void UpdateCachedGameObject() {
+		static void UpdateCachedGameObject() {
 			int count = Selection.gameObjects.Length;
 			if (count == 0)
 				return;
@@ -69,7 +69,7 @@ namespace KHFC.Editor {
 		/// <summary> <see cref="KHFC.CachedComponent"/>를 상속받은 오브젝트의 캐시 키를 업데이트하는 함수 </summary>
 		/// <remarks> 폴더 내에 프리팹화 된 오브젝트만을 대상으로 한다. </remarks>
 		[MenuItem("Assets/KHFC/Update Cache Key (P)", true)]
-		private static void UpdateCachedPrefab() {
+		static void UpdateCachedPrefab() {
 			int count = Selection.gameObjects.Length;
 			if (count == 0)
 				return;

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -139,7 +139,6 @@ namespace KHFC.Editor {
 				GUI.enabled = true;
 			}
 
-
 			m_SerializedObj.ApplyModifiedProperties();
 		}
 
@@ -162,6 +161,7 @@ namespace KHFC.Editor {
 				Debug.LogError("MaterialFinder : There is no material in AssetDatabase");
 				return;
 			}
+
 			string guid = AssetDatabase.AssetPathToGUID(path, AssetPathToGUIDOptions.OnlyExistingAssets);
 			m_Source = mat;
 			m_ListSceneObj = new List<GameObject>();
@@ -268,8 +268,7 @@ namespace KHFC.Editor {
 			m_SceneReorderableList = new(m_ListSceneObj, typeof(GameObject), true, true, false, false) {
 				drawHeaderCallback = (Rect rect) => {
 					EditorGUI.LabelField(rect, "Particle Parent List in Scene", headerLabelStyle);
-				}
-					,
+				},
 				drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
 					GameObject element = (GameObject)m_SceneReorderableList.list[index];
 					rect.y += 2;
@@ -284,8 +283,7 @@ namespace KHFC.Editor {
 			m_PrefabReorderableList = new(m_ListPrefab, typeof(GameObject), true, true, false, false) {
 				drawHeaderCallback = (Rect rect) => {
 					EditorGUI.LabelField(rect, "Particle Root Object List of Prefab", headerLabelStyle);
-				}
-					,
+				},
 				drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
 					GameObject element = (GameObject)m_PrefabReorderableList.list[index];
 					rect.y += 2;

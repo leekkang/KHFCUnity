@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -18,7 +18,7 @@ namespace KHFC.Editor {
 		static float s_PreviousWindowWidth = m_Size.x;
 		static GUILayoutOption s_NameWidthOption = GUILayout.Width(NAME_MIN_WIDTH);
 
-		// SerializedObject¿Í SerializedProperty¸¦ À§ÇÑ ÇÊµå
+		// SerializedObjectì™€ SerializedPropertyë¥¼ ìœ„í•œ í•„ë“œ
 		SerializedObject m_SerializedObj;
 
 		GUIStyle titleLabelStyle;
@@ -32,18 +32,18 @@ namespace KHFC.Editor {
 		ReorderableList m_SceneReorderableList;
 		ReorderableList m_PrefabReorderableList;
 
-		/// <summary> ¹Ù²Ù°í ½ÍÀº ÅØ½ºÃÄ </summary>
+		/// <summary> ë°”ê¾¸ê³  ì‹¶ì€ í…ìŠ¤ì³ </summary>
 		static Texture2D m_Source;
-		//[SerializeField] Texture2D m_Source;	// SerializedProperty´Â static field¿¡´Â »ç¿ëÇÏÁö ¸øÇÑ´Ù
-		/// <summary> <see cref="m_Source"/>¿¡¼­ ±³Ã¼ÇÒ ÅØ½ºÃÄ </summary>
+		//[SerializeField] Texture2D m_Source;	// SerializedPropertyëŠ” static fieldì—ëŠ” ì‚¬ìš©í•˜ì§€ ëª»í•œë‹¤
+		/// <summary> <see cref="m_Source"/>ì—ì„œ êµì²´í•  í…ìŠ¤ì³ </summary>
 		static Texture2D m_Dest;
 		//[SerializeField] Texture2D m_Dest;
 
-		/// <summary> ´ë»ó ÅØ½ºÃÄ¸¦ ¸ŞÀÎÀ¸·Î »ç¿ëÇÏ´Â ¸ÓÅ×¸®¾ó ¸®½ºÆ® </summary>
+		/// <summary> ëŒ€ìƒ í…ìŠ¤ì³ë¥¼ ë©”ì¸ìœ¼ë¡œ ì‚¬ìš©í•˜ëŠ” ë¨¸í…Œë¦¬ì–¼ ë¦¬ìŠ¤íŠ¸ </summary>
 		List<Material> m_ListMaterial;
-		/// <summary> ¾À ³»¿¡¼­ ÇØ´ç ÅØ½ºÃÄ¸¦ »ç¿ëÇÏ´Â ¿ÀºêÁ§Æ®µé </summary>
+		/// <summary> ì”¬ ë‚´ì—ì„œ í•´ë‹¹ í…ìŠ¤ì³ë¥¼ ì‚¬ìš©í•˜ëŠ” ì˜¤ë¸Œì íŠ¸ë“¤ </summary>
 		List<UnityEngine.UI.Image> m_ListSceneImage;
-		/// <summary> ÀÌ¹ÌÁö ¿ÀºêÁ§Æ®°¡ ºÙ¾îÀÖ´Â ÇÁ¸®ÆÕµé </summary>
+		/// <summary> ì´ë¯¸ì§€ ì˜¤ë¸Œì íŠ¸ê°€ ë¶™ì–´ìˆëŠ” í”„ë¦¬íŒ¹ë“¤ </summary>
 		[SerializeField] List<GameObject> m_ListPrefab;
 		List<UnityEngine.UI.Image> m_ListPrefabImage;
 
@@ -75,7 +75,7 @@ namespace KHFC.Editor {
 		}
 
 		void OnEnable() {
-			// SerializedObject ÃÊ±âÈ­
+			// SerializedObject ì´ˆê¸°í™”
 			m_SerializedObj = new SerializedObject(this);
 			//m_SourceMat = m_SerializedObj.FindProperty("m_Source");
 			//m_DestMat = m_SerializedObj.FindProperty("m_Dest");
@@ -99,7 +99,7 @@ namespace KHFC.Editor {
 
 				GUILayout.Space(5);
 
-				EditorGUILayout.LabelField("º¯°æ Àü ÅØ½ºÃÄ", headerLabelStyle);
+				EditorGUILayout.LabelField("ë³€ê²½ ì „ í…ìŠ¤ì³", headerLabelStyle);
 
 				GUILayout.BeginHorizontal();
 				EditorGUILayout.LabelField("Source", s_NameWidthOption);
@@ -109,7 +109,7 @@ namespace KHFC.Editor {
 				GUILayout.EndHorizontal();
 
 
-				EditorGUILayout.LabelField("º¯°æ ÈÄ ÅØ½ºÃÄ", headerLabelStyle);
+				EditorGUILayout.LabelField("ë³€ê²½ í›„ í…ìŠ¤ì³", headerLabelStyle);
 				GUILayout.BeginHorizontal();
 				EditorGUILayout.LabelField("Dest", s_NameWidthOption);
 				m_Dest = (Texture2D)EditorGUILayout.ObjectField(m_Dest, typeof(Texture2D), false);
@@ -143,7 +143,6 @@ namespace KHFC.Editor {
 				GUI.enabled = true;
 			}
 
-
 			m_SerializedObj.ApplyModifiedProperties();
 		}
 
@@ -166,6 +165,7 @@ namespace KHFC.Editor {
 				Debug.LogError("TextureFinder : There is no texture in AssetDatabase");
 				return;
 			}
+
 			string guid = AssetDatabase.AssetPathToGUID(path, AssetPathToGUIDOptions.OnlyExistingAssets);
 			m_Source = tex;
 			m_ListMaterial = new List<Material>();
@@ -179,7 +179,7 @@ namespace KHFC.Editor {
 			List<ParticleSystemRenderer> listPS = new();
 			List<int> listInstID = new();
 
-			// 1. ÇØ´ç ÅØ½ºÃÄ¸¦ »ç¿ëÇÏ´Â ¸ÓÅ×¸®¾ó ¾Ö¼ÂµéÀ» Ã£´Â´Ù
+			// 1. í•´ë‹¹ í…ìŠ¤ì³ë¥¼ ì‚¬ìš©í•˜ëŠ” ë¨¸í…Œë¦¬ì–¼ ì• ì…‹ë“¤ì„ ì°¾ëŠ”ë‹¤
 			string[] arrGUID = AssetDatabase.FindAssets("t:material", new string[] { MATERIAL_ROOT_PATH });
 			for (int i = 0; i < arrGUID.Length; i++) {
 				string prefabPath = AssetDatabase.GUIDToAssetPath(arrGUID[i]);
@@ -190,9 +190,9 @@ namespace KHFC.Editor {
 				}
 			}
 
-			// 2. ¾À ³»ÀÇ ÀÌ¹ÌÁö ¿ÀºêÁ§Æ®¿¡ ÀÖ´Â ÅØ½ºÃÄ¸¦ Ã£´Â´Ù
+			// 2. ì”¬ ë‚´ì˜ ì´ë¯¸ì§€ ì˜¤ë¸Œì íŠ¸ì— ìˆëŠ” í…ìŠ¤ì³ë¥¼ ì°¾ëŠ”ë‹¤
 
-			// - ¾À ³» ¸ğµç ParticleSystem ÄÄÆ÷³ÍÆ®¸¦ Ã£À½
+			// - ì”¬ ë‚´ ëª¨ë“  ParticleSystem ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ìŒ
 			UnityEngine.SceneManagement.Scene activeScene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
 			GameObject[] rootObjects = activeScene.GetRootGameObjects();
 			foreach (GameObject go in rootObjects) {
@@ -205,11 +205,11 @@ namespace KHFC.Editor {
 				}
 			}
 
-			// - ÄÄÆ÷³ÍÆ®¸¦ Ã£´Â ´Ù¸¥ ¹æ¹ı
+			// - ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ëŠ” ë‹¤ë¥¸ ë°©ë²•
 			//UnityEngine.UI.Image[] arrPS = Object.FindObjectsOfType<UnityEngine.UI.Image>();
 			//FindAllParticleInstance(arrPS);
 
-			// 3. ÇÁ¸®ÆÕ ¾Ö¼Âµé ³» ÀÌ¹ÌÁö ¿ÀºêÁ§Æ®¿¡ ÀÖ´Â ÅØ½ºÃÄ¸¦ Ã£´Â´Ù
+			// 3. í”„ë¦¬íŒ¹ ì• ì…‹ë“¤ ë‚´ ì´ë¯¸ì§€ ì˜¤ë¸Œì íŠ¸ì— ìˆëŠ” í…ìŠ¤ì³ë¥¼ ì°¾ëŠ”ë‹¤
 
 			arrGUID = AssetDatabase.FindAssets("t:prefab", new string[] { PREFAB_ROOT_PATH });
 			for (int i = 0; i < arrGUID.Length; i++) {
@@ -225,12 +225,12 @@ namespace KHFC.Editor {
 				}
 			}
 
-			// º¯È¯ °á°ú Ãâ·Â
+			// ë³€í™˜ ê²°ê³¼ ì¶œë ¥
 
 			NativeArray<GUID> arrGuid = new(listInstID.Count, Allocator.Temp);
 			//for (int i = 0; i < listMatInstID.Count; ++i)
 			//	arrGuid[i] = new GUID();
-			// InstanceID ¹è¿­À» GUID ¹è¿­·Î º¯È¯
+			// InstanceID ë°°ì—´ì„ GUID ë°°ì—´ë¡œ ë³€í™˜
 			AssetDatabase.InstanceIDsToGUIDs(new NativeArray<int>(listInstID.ToArray(), Allocator.Temp), arrGuid);
 
 			int count = 0, idx = 0;
@@ -291,8 +291,7 @@ namespace KHFC.Editor {
 			m_MaterialReorderableList = new(m_ListMaterial, typeof(Material), true, true, false, false) {
 				drawHeaderCallback = (Rect rect) => {
 					EditorGUI.LabelField(rect, "Material List Used Texture", headerLabelStyle);
-				}
-					,
+				},
 				drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
 					Material element = (Material)m_MaterialReorderableList.list[index];
 					rect.y += 2;
@@ -308,8 +307,7 @@ namespace KHFC.Editor {
 			m_SceneReorderableList = new(m_ListSceneImage, typeof(UnityEngine.UI.Image), true, true, false, false) {
 				drawHeaderCallback = (Rect rect) => {
 					EditorGUI.LabelField(rect, "Parent Image List in Scene", headerLabelStyle);
-				}
-					,
+				},
 				drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
 					UnityEngine.UI.Image element = (UnityEngine.UI.Image)m_SceneReorderableList.list[index];
 					rect.y += 2;
@@ -324,8 +322,7 @@ namespace KHFC.Editor {
 			m_PrefabReorderableList = new(m_ListPrefab, typeof(GameObject), true, true, false, false) {
 				drawHeaderCallback = (Rect rect) => {
 					EditorGUI.LabelField(rect, "Root GameObject List of Prefab", headerLabelStyle);
-				}
-					,
+				},
 				drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
 					GameObject element = (GameObject)m_PrefabReorderableList.list[index];
 					rect.y += 2;
