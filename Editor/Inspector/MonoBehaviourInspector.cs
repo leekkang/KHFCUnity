@@ -37,7 +37,8 @@ namespace KHFC.Editor {
 			m_ListInfo = new List<string>();
 
 			Type type = target.GetType();
-			MethodInfo[] arrMethod = type.GetMethods();
+			MethodInfo[] arrMethod = type.GetMethods(BindingFlags.Instance | BindingFlags.Static
+													| BindingFlags.Public | BindingFlags.NonPublic);
 
 			int count = arrMethod.Length;
 			for (int i = 0; i < count; i++) {
