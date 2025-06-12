@@ -163,11 +163,27 @@ namespace KHFC.Editor {
 			KHFC.Editor.ScreenCapture.TakeScreenCapture();
 		}
 
+		/// <summary> 선택한 게임오브젝트의 활성화 상태를 변경한다 </summary>
 		[MenuItem("KHFC/Shortcut/SetActive %e", priority = (int)MenuPriority.Shortcut)]
 		public static void SetActive() {
 			foreach (GameObject obj in Selection.objects) {
 				obj.SetActive(!obj.activeSelf);
 				EditorUtility.SetDirty(obj);
+			}
+		}
+		/// <summary> 현재 선택한 오브젝트들의 부모 오브젝트들을 저장한다. </summary>
+		[MenuItem("KHFC/Shortcut/SavePrefab %q", priority = (int)MenuPriority.Shortcut + 1)]
+		public static void SavePrefab() {
+			List<GameObject> listParent = new();
+			foreach (GameObject obj in Selection.objects) {
+				GameObject targetPrefab = PrefabUtility.GetOutermostPrefabInstanceRoot(obj);
+				if (targetPrefab != null
+					&& PrefabUtility.IsPartOfPrefabInstance(targetPrefab)
+					&& !listParent.Contains(targetPrefab)) {
+					listParent.Add(targetPrefab);
+				}
+				//PrefabUtility.ApplyPrefabInstance(targetPrefab, InteractionMode.UserAction);
+				PrefabUtility.ApplyPrefabInstances(listParent.ToArray(), InteractionMode.UserAction);
 			}
 		}
 
