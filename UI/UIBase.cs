@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿
+using System;
 using UnityEngine;
 
 namespace KHFC {
 	public abstract class UIBase : CachedComponent {
 		/// <summary> 모든 UI의 <see cref="Graphics"/>가 사용하는 아틀라스들의 리스트 </summary>
-		static RefList<UnityEngine.U2D.SpriteAtlas> mListLoadedAtlas;
+		static RefList<UnityEngine.U2D.SpriteAtlas> sListLoadedAtlas;
 
 		static readonly object LockTouchObj = new();
 		static int LockTouch = 0;
@@ -107,24 +106,24 @@ namespace KHFC {
 
 
 		public static bool TryGetAtlas(string name, out UnityEngine.U2D.SpriteAtlas atlas) {
-			if (mListLoadedAtlas == null) {
+			if (sListLoadedAtlas == null) {
 				atlas = null;
 				return false;
 			}
-			atlas = mListLoadedAtlas.Find(x => x.name == name);
+			atlas = sListLoadedAtlas.Find(x => x.name == name);
 			return atlas != null;
 		}
 		public static void AddAtlas(UnityEngine.U2D.SpriteAtlas atlas) {
-			mListLoadedAtlas ??= new RefList<UnityEngine.U2D.SpriteAtlas>();
-			mListLoadedAtlas.Add(atlas);
+			sListLoadedAtlas ??= new RefList<UnityEngine.U2D.SpriteAtlas>();
+			sListLoadedAtlas.Add(atlas);
 		}
 		/// <summary> 리스트에서 제거되면 true, 아니면 false </summary>
 		public static bool RemoveAtlas(UnityEngine.U2D.SpriteAtlas atlas) {
-			return mListLoadedAtlas != null && mListLoadedAtlas.Remove(atlas);
+			return sListLoadedAtlas != null && sListLoadedAtlas.Remove(atlas);
 		}
 		/// <summary> 리스트에서 제거되면 true, 아니면 false </summary>
 		public static bool RemoveAtlas(string name) {
-			return mListLoadedAtlas != null && mListLoadedAtlas.Remove(x => x.name == name);
+			return sListLoadedAtlas != null && sListLoadedAtlas.Remove(x => x.name == name);
 		}
 	}
 }

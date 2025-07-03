@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-internal static class ListExt {
+internal static class ListEx {
 	/// <summary> Array.Copy를 호출하지 않는 제거함수 </summary>
 	/// <remarks> Time Complexity : O(1) </remarks>
 	public static bool RemoveAtBySwap<T>(this List<T> list, int index) {

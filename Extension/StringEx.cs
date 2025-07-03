@@ -5,7 +5,7 @@ internal static class StringEx {
 		if (string.IsNullOrEmpty(value))
 			return "";
 
-		System.Text.StringBuilder sb = new();   // c# 9.0: Target-typed new expressions
+		System.Text.StringBuilder sb = new();	// c# 9.0: Target-typed new expressions
 		sb.Append(value[0]);
 
 		int length = value.Length;

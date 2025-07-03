@@ -1,10 +1,9 @@
 ﻿
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 internal static class CommonEx {
-	public static void SetAlpha(this Graphic graphic, float alpha) {
+	public static void SetAlpha(this UnityEngine.UI.Graphic graphic, float alpha) {
 		Color color = graphic.color;
 		color.a = alpha;
 		graphic.color = color;
