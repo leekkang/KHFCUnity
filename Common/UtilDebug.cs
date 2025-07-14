@@ -1,8 +1,6 @@
 ﻿
 
 using System;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace KHFC {
 	internal partial class Util {
@@ -15,36 +13,45 @@ namespace KHFC {
 
 		public static bool isDebugBuild => UnityEngine.Debug.isDebugBuild;
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
-		public static void Log(object message) {
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
+		public static void Log(object message, bool threadsafe = false) {
 #if UNITY_IOS
 			NSLog_iOS(message.ToString());
 #else
-			UnityEngine.Debug.Log(message);
+			if (threadsafe)
+				ThreadDispatcher.Enqueue(() => UnityEngine.Debug.Log(message));
+			else
+				UnityEngine.Debug.Log(message);
 #endif
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
 		public static void Log(object message, UnityEngine.Object context) {
 			UnityEngine.Debug.Log(message, context);
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
-		public static void LogError(object message) {
-			UnityEngine.Debug.LogError(message);
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
+		public static void LogError(object message, bool threadsafe = false) {
+			if (threadsafe)
+				ThreadDispatcher.Enqueue(() => UnityEngine.Debug.LogError(message));
+			else
+				UnityEngine.Debug.LogError(message);
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
 		public static void LogError(object message, UnityEngine.Object context) {
 			UnityEngine.Debug.LogError(message, context);
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
-		public static void LogWarning(object message) {
-			UnityEngine.Debug.LogWarning(message);
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
+		public static void LogWarning(object message, bool threadsafe = false) {
+			if (threadsafe)
+				ThreadDispatcher.Enqueue(() => UnityEngine.Debug.LogWarning(message));
+			else
+				UnityEngine.Debug.LogWarning(message);
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
 		public static void LogWarning(object message, UnityEngine.Object context) {
 			UnityEngine.Debug.LogWarning(message, context);
 		}
@@ -53,24 +60,24 @@ namespace KHFC {
 			UnityEngine.Debug.LogException(exception);
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
 		public static void Break() {
 			UnityEngine.Debug.Break();
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
 		public static void DrawLine(UnityEngine.Vector3 start, UnityEngine.Vector3 end,
 			UnityEngine.Color color = default, float duration = 0.0f, bool depthTest = true) {
 			UnityEngine.Debug.DrawLine(start, end, color, duration, depthTest);
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
 		public static void DrawRay(UnityEngine.Vector3 start, UnityEngine.Vector3 dir,
 			UnityEngine.Color color = default, float duration = 0.0f, bool depthTest = true) {
 			UnityEngine.Debug.DrawRay(start, dir, color, duration, depthTest);
 		}
 
-		[System.Diagnostics.Conditional(CONDITION_SYMBOL)]
+		[System.Diagnostics.Conditional(CONDITION_SYMBOL), System.Diagnostics.Conditional("UNITY_EDITOR")]
 		public static void Assert(bool condition) {
 			if (!condition)
 				throw new Exception();

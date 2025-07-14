@@ -13,6 +13,10 @@ namespace KHFC {
 		[SerializeField]
 		protected List<GameObject> m_ListCachedObject;
 
+		/// <summary> GetComponent의 오버헤드를 줄이기 위해 컴포넌트를 캐싱하는 딕셔너리 </summary>
+		[NonSerialized]
+		Dictionary<ObjectTypeKey, Component> m_DicCachedComponent = new();
+
 #if UNITY_EDITOR
 		/// <summary> 해당 스크립트에서 사용할 모든 게임 오브젝트의 경로 </summary>
 		/// <remarks> key는 경로, value는 함수에서 가져오도록 등록할 이름 </remarks>
@@ -77,7 +81,7 @@ namespace KHFC {
 			if (typeof(T) == typeof(GameObject))
 				Util.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
 
-			return cachedGo.GetComponent<T>();
+			return GetCachedComponent<T>(cachedGo);
 		}
 
 		/// <summary> 인덱스로 캐싱된 오브젝트에 지정한 컴포넌트를 찾아 반환하는 함수 </summary>
@@ -90,7 +94,57 @@ namespace KHFC {
 			if (typeof(T) == typeof(GameObject))
 				Util.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
 
-			return cachedGo.GetComponent<T>();
+			return GetCachedComponent<T>(cachedGo);
+		}
+
+
+		readonly struct ObjectTypeKey : IEquatable<ObjectTypeKey> {
+			public readonly GameObject Go;
+			public readonly Type Type;
+
+			public ObjectTypeKey(GameObject go, Type type) {
+				Go = go;
+				Type = type;
+			}
+
+			public bool Equals(ObjectTypeKey other) =>
+				Go == other.Go && Type == other.Type;
+
+			public override bool Equals(object obj) =>
+				obj is ObjectTypeKey other && Equals(other);
+
+			public override int GetHashCode() {
+				unchecked {
+					return ((Go != null ? Go.GetHashCode() : 0) * 397) ^ (Type != null ? Type.GetHashCode() : 0);
+				}
+			}
+		}
+
+		T GetCachedComponent<T>(GameObject go) where T : Component {
+			ObjectTypeKey key = new(go, typeof(T));
+			if (!m_DicCachedComponent.TryGetValue(key, out Component comp)) {
+				comp = go.GetComponent<T>();
+				m_DicCachedComponent[key] = comp;
+			}
+			return (T)comp;
+		}
+
+		/// <summary> 오브젝트가 파괴되거나 더 이상 필요 없을 때 캐시에서 제거 </summary>
+		void RemoveCache(GameObject go) {
+			List<ObjectTypeKey> list = new();
+
+			foreach (var key in m_DicCachedComponent.Keys) {
+				if (key.Go == go)
+					list.Add(key);
+			}
+
+			foreach (var key in list) {
+				m_DicCachedComponent.Remove(key);
+			}
+		}
+
+		void ClearCache() {
+			m_DicCachedComponent.Clear();
 		}
 
 #if UNITY_EDITOR
@@ -106,7 +160,8 @@ namespace KHFC {
 			m_ListCachedObject = new List<GameObject>();
 			m_ListCachedObject.Resize(m_DicCacheKey.Count);
 			foreach (var key in m_DicCacheKey) {
-				Transform tf = transform.GetTransformByFullName(key.Key);
+				//Transform tf = transform.GetTransformByFullName(key.Key);
+				Transform tf = transform.Find(key.Key);
 
 				if (tf == null) {
 					Debug.LogError($"Can't Find Transfrom by FullName : {key}, Panel : {GetType().Name}");
