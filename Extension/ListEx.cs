@@ -8,9 +8,10 @@ internal static class ListEx {
 	public static bool RemoveAtBySwap<T>(this List<T> list, int index) {
 		if (index < 0 || index >= list.Count)
 			return false;
-		list[index] = list[^1];		// c# 8.0 : Indices and har operator
-		//list[index] = list[list.Count - 1];
-		list.RemoveAt(list.Count - 1);
+		int count = list.Count;
+		//list[index] = list[^1];		// c# 8.0 : Indices and har operator
+		list[index] = list[count - 1];
+		list.RemoveAt(count - 1);
 		return true;
 	}
 
