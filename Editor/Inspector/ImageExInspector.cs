@@ -1,7 +1,6 @@
 ﻿
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.Experimental.Playables;
 
 namespace KHFC.Editor {
 	[CustomEditor(typeof(UnityEngine.UI.Image), true)]

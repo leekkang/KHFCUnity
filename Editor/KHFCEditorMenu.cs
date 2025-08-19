@@ -5,7 +5,6 @@ using UnityEditor.SceneManagement;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Text;
-using Unity.Collections;
 
 namespace KHFC.Editor {
 	// priority 순서 : 값이 작을수록 위쪽에 배치, 기본값은 1000이다.
