@@ -74,6 +74,7 @@ namespace KHFC {
 				m_ClickWithParam = (DelClickWithParam)Delegate.CreateDelegate(typeof(DelClickWithParam), m_Parent, "OnClickDefault", false, false);
 #if UNITY_EDITOR
 				Util.LogError($"Click Delegate has nullptr\nName : {delName}, Parent : {parent.name}");
+				m_ClickFuncName = m_ClickWithParam.GetMethodInfo().ToString();
 #endif
 			} else {
 				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info);
@@ -81,11 +82,11 @@ namespace KHFC {
 					m_WithParam = true;
 					m_ClickWithParam = (DelClickWithParam)Delegate.CreateDelegate(typeof(DelClickWithParam), m_Parent, info);
 				}
+#if UNITY_EDITOR
+				m_ClickFuncName = info.ToString();
+#endif
 			}
 
-#if UNITY_EDITOR
-			m_ClickFuncName = info.ToString();
-#endif
 			if (m_EnableHover)
 				AllocHoverFunc();
 		}
