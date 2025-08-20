@@ -4,12 +4,18 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace KHFC {
-	public delegate void DelClick(GameObject obj);
+	public delegate void DelClick();
+	public delegate void DelClickWithParam(GameObject obj);
 
 	[DisallowMultipleComponent]
 	public class ButtonWdgt : UnityEngine.UI.Selectable, IPointerClickHandler, ISubmitHandler {
 		UIBase m_Parent;
-		DelClick m_Click;	// 얘네들 에디터 타임에 저장할 수 있는 방법은 UnityEvent 말고 없음. NGUI도 뜯어보면 런타임에 델리게이트 찾더라.
+
+		// 얘네들 에디터 타임에 저장할 수 있는 방법은 UnityEvent 말고 없음. NGUI도 뜯어보면 런타임에 델리게이트 찾더라.
+		DelClick m_Click;
+		DelClickWithParam m_ClickWithParam;
+		bool m_WithParam = false;
+
 		DelHover m_Enter;
 		//DelHover m_Exit;
 
@@ -54,6 +60,8 @@ namespace KHFC {
 				Util.LogError($"{name} doesn't have parent");
 				return;
 			}
+
+			m_WithParam = false;
 			System.Reflection.BindingFlags flag = System.Reflection.BindingFlags.Instance |
 													System.Reflection.BindingFlags.Public |
 													System.Reflection.BindingFlags.NonPublic;
@@ -61,16 +69,23 @@ namespace KHFC {
 			string postfix = gameObject.name.Replace("btn_", "");
 			string delName = "OnClick" + postfix;
 			System.Reflection.MethodInfo info = m_Parent.GetType().GetMethod(delName, flag);
-			m_Click = info != null
-				? (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info)
-				: (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, "OnClickDefault", false, false);
+			if (info == null) {
+				m_WithParam = true;
+				m_ClickWithParam = (DelClickWithParam)Delegate.CreateDelegate(typeof(DelClickWithParam), m_Parent, "OnClickDefault", false, false);
 #if UNITY_EDITOR
-			if (m_Click == null)
 				Util.LogError($"Click Delegate has nullptr\nName : {delName}, Parent : {parent.name}");
-			else
-				m_ClickFuncName = m_Click.GetMethodInfo().ToString();
 #endif
+			} else {
+				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info);
+				if (m_Click == null) {
+					m_WithParam = true;
+					m_ClickWithParam = (DelClickWithParam)Delegate.CreateDelegate(typeof(DelClickWithParam), m_Parent, info);
+				}
+			}
 
+#if UNITY_EDITOR
+			m_ClickFuncName = info.ToString();
+#endif
 			if (m_EnableHover)
 				AllocHoverFunc();
 		}
@@ -120,7 +135,10 @@ namespace KHFC {
 			if (m_OnClickSound)
 				SoundMgr.inst.PlayEfx(m_ClickSoundName, m_ClickSoundVolume);
 
-			m_Click(this.gameObject);
+			if (m_WithParam)
+				m_ClickWithParam(this.gameObject);
+			else
+				m_Click();
 
 			UIBase.lockTouch = false;
 		}
