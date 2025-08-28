@@ -9,6 +9,12 @@ internal static class CommonEx {
 		graphic.color = color;
 	}
 
+	public static void SetAlpha(this UnityEngine.Material material, float alpha) {
+		Color color = material.color;
+		color.a = alpha;
+		material.color = color;
+	}
+
 	public static int Sum(this IEnumerable<int> array) {
 		int sum = 0;
 		foreach (int nums in array)
