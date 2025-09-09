@@ -33,6 +33,7 @@ namespace KHFC {
 		//}
 #endif
 
+#if UNITY_EDITOR
 		/// <summary> <see cref="System.Enum"/> 타입을 인덱스로 사용해서 캐싱된 오브젝트를 찾는 함수 </summary>
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
 		public GameObject GetCachedObject<T>(T alias) where T : System.Enum {
@@ -51,7 +52,16 @@ namespace KHFC {
 				return null;
 			}
 		}
+#else
+		public GameObject GetCachedObject<T>(T alias) where T : System.Enum {
+			int index = (int)(object)alias;
+			if (m_ListCachedObject.Count > index)
+				return m_ListCachedObject[index];
+			return null;
+		}
+#endif
 
+#if UNITY_EDITOR
 		/// <summary> 인덱스로 캐싱된 오브젝트를 찾는 함수 </summary>
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
 		public GameObject GetCachedObject(int index) {
@@ -60,14 +70,18 @@ namespace KHFC {
 				return null;
 			}
 
+			//if (m_ListCachedObject.TryGetValue(aliasIndex, out GameObject obj))
 			if (m_ListCachedObject.Count > index)
-				//if (m_ListCachedObject.TryGetValue(aliasIndex, out GameObject obj))
 				return m_ListCachedObject[index];
 			else {
 				Util.LogError($"Cached Object is not found : {index}");
 				return null;
 			}
 		}
+#else
+		public GameObject GetCachedObject(int index)
+			=> m_ListCachedObject.Count > index ? m_ListCachedObject[index] : null;
+#endif
 
 		/// <summary>
 		/// <see cref="System.Enum"/> 타입을 인덱스로 사용해서 캐싱된 오브젝트에 지정한 컴포넌트를 찾아 반환하는 함수
@@ -77,10 +91,10 @@ namespace KHFC {
 			GameObject cachedGo = GetCachedObject(alias);
 			if (cachedGo == null)
 				return null;
-
+#if UNITY_EDITOR
 			if (typeof(T) == typeof(GameObject))
 				Util.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
-
+#endif
 			return GetCachedComponent<T>(cachedGo);
 		}
 
@@ -90,10 +104,10 @@ namespace KHFC {
 			GameObject cachedGo = GetCachedObject(index);
 			if (cachedGo == null)
 				return null;
-
+#if UNITY_EDITOR
 			if (typeof(T) == typeof(GameObject))
 				Util.LogWarning($"Use Component Type, current type : {typeof(T).Name}");
-
+#endif
 			return GetCachedComponent<T>(cachedGo);
 		}
 
