@@ -25,14 +25,7 @@ namespace KHFC {
 			}
 		}
 
-		protected Transform m_CachedTransform;
-		public RectTransform rt {
-			get {
-				if (m_CachedTransform == null)
-					m_CachedTransform = GetComponent<RectTransform>();
-				return m_CachedTransform as RectTransform;
-			}
-		}
+		public RectTransform rt => transform as RectTransform;
 
 		bool m_OnInitialized;
 		public bool initialized => m_OnInitialized;
@@ -41,10 +34,6 @@ namespace KHFC {
 		/// <summary> 해당 UI의 초기화에 필요한 정보를 로드하는 함수 </summary>
 		public virtual void Init() {
 			m_OnInitialized = true;
-		}
-
-		public virtual void Awake() {
-			m_CachedTransform = transform;
 		}
 
 		void OnEnable() {
