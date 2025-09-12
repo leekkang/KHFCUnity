@@ -88,19 +88,26 @@ namespace KHFC {
 			lockTouch = true;
 		}
 
+		/// <summary> 버튼에 OnClick- 함수가 없을 때 기본적으로 호출하는 함수 </summary>
+		/// <param name="obj"> 호출한 버튼 오브젝트 </param>
+		public void OnClickDefault(GameObject obj) {
+#if UNITY_EDITOR
+			Debug.Log($"{GetType()} OnClick is not registered : {obj.name}");
+#endif
+		}
+
+		/// <summary> 버튼에 OnEnter- 함수가 없을 때 기본적으로 호출하는 함수 </summary>
+		/// <param name="obj"> 호출한 버튼 오브젝트 </param>
 		public virtual void OnEnterDefault(GameObject obj) {
 #if UNITY_EDITOR
 			Debug.Log($"{GetType()} OnEnter is not registered : {obj.name}");
 #endif
 		}
+		/// <summary> 버튼에 OnExit- 함수가 없을 때 기본적으로 호출하는 함수 </summary>
+		/// <param name="obj"> 호출한 버튼 오브젝트 </param>
 		public virtual void OnExitDefault(GameObject obj) {
 #if UNITY_EDITOR
 			Debug.Log($"{GetType()} OnExit is not registered : {obj.name}");
-#endif
-		}
-		public void OnClickDefault(GameObject obj) {
-#if UNITY_EDITOR
-			Debug.Log($"{GetType()} OnClick is not registered : {obj.name}");
 #endif
 		}
 

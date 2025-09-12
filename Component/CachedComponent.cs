@@ -272,8 +272,11 @@ namespace KHFC {
 
 				str = str[1..]; // c# 8.0 ranges operator
 
-				// 별명은 현재 이름 + 부모 이름으로 표시 (너무 길 수도 있어서, 어차피 딕셔너리에 들어감)
-				string alias = tr.parent != null ? $"{tr.parent.name}_{tr.name}" : $"{tr.name}";
+				// 일단 전체 경로를 표시한다. 생성 이후 이름을 수정하는게 찾는것보다 빠른듯
+				string alias = str.Replace('/', '_');
+
+				//// 별명은 현재 이름 + 부모 이름으로 표시 (너무 길 수도 있어서, 어차피 딕셔너리에 들어감)
+				//string alias = tr.parent != null ? $"{tr.parent.name}_{tr.name}" : $"{tr.name}";
 
 				insertList.Add($"\t\t{alias},");
 				//insertList.Add($"\t\t{alias} = {++count},");
