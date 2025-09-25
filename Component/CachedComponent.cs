@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,10 +34,10 @@ namespace KHFC {
 		//}
 #endif
 
-#if UNITY_EDITOR
 		/// <summary> <see cref="System.Enum"/> 타입을 인덱스로 사용해서 캐싱된 오브젝트를 찾는 함수 </summary>
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
 		public GameObject GetCachedObject<T>(T alias) where T : System.Enum {
+#if UNITY_EDITOR
 			if (m_ListCachedObject == null) {
 				Util.LogError($"Cached Object List is null!");
 				return null;
@@ -51,20 +52,15 @@ namespace KHFC {
 				Util.LogError($"Cached Object is not found : {alias}");
 				return null;
 			}
-		}
 #else
-		public GameObject GetCachedObject<T>(T alias) where T : System.Enum {
-			int index = (int)(object)alias;
-			if (m_ListCachedObject.Count > index)
-				return m_ListCachedObject[index];
-			return null;
-		}
+			return GetCachedObject((int)(object)alias);
 #endif
+		}
 
-#if UNITY_EDITOR
 		/// <summary> 인덱스로 캐싱된 오브젝트를 찾는 함수 </summary>
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
 		public GameObject GetCachedObject(int index) {
+#if UNITY_EDITOR
 			if (m_ListCachedObject == null) {
 				Util.LogError($"Cached Object List is null!");
 				return null;
@@ -77,11 +73,10 @@ namespace KHFC {
 				Util.LogError($"Cached Object is not found : {index}");
 				return null;
 			}
-		}
 #else
-		public GameObject GetCachedObject(int index)
-			=> m_ListCachedObject.Count > index ? m_ListCachedObject[index] : null;
+			return m_ListCachedObject.Count > index ? m_ListCachedObject[index] : null;
 #endif
+		}
 
 		/// <summary>
 		/// <see cref="System.Enum"/> 타입을 인덱스로 사용해서 캐싱된 오브젝트에 지정한 컴포넌트를 찾아 반환하는 함수
