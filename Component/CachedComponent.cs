@@ -261,9 +261,18 @@ namespace KHFC {
 					root = root.parent;
 				}
 
-				// 자식 중 CachedComponent가 존재하는 경우 해당 자식의 하위 오브젝트는 무시한다. 해당 자식은 리스트에 넣어준다.
+				// 자식 중 CachedComponent가 존재하는 경우 해당 자식의 하위 오브젝트는 무시한다.
 				if (root != transform && tr != root)
 					return;
+				// CachedComponent가 존재하는 자식은 리스트에 넣어준다.
+				if (string.IsNullOrEmpty(str)) {
+					str = $"/{tr.name}";
+					root = tr.parent;
+					while (root.GetComponent<CachedComponent>() == null) {
+						str = $"/{root.name}{str}";
+						root = root.parent;
+					}
+				}
 
 				str = str[1..]; // c# 8.0 ranges operator
 
