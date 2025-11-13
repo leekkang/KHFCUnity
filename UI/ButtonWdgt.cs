@@ -26,6 +26,9 @@ namespace KHFC {
 		[FieldName("Hover 사운드 활성화")]
 		public bool m_OnHoverSound = false;
 
+		[KHFC.FieldName("사용자 정의 클릭 함수 사용")]
+		public bool m_UseManualFunc = false;
+
 		[SerializeField][ShowOnly("Click Method")]
 		string m_ClickFuncName;
 		[SerializeField][ShowOnly("HoverEnter Method")]
@@ -52,7 +55,6 @@ namespace KHFC {
 
 		protected override void Start() {
 			Transform parent = transform.parent;
-
 			while (parent != null && !parent.TryGetComponent(out m_Parent)) {
 				parent = parent.parent;
 			}
@@ -61,10 +63,13 @@ namespace KHFC {
 				return;
 			}
 
+			if (m_UseManualFunc)
+				return;
+
 			m_WithParam = false;
-			System.Reflection.BindingFlags flag = System.Reflection.BindingFlags.Instance |
-													System.Reflection.BindingFlags.Public |
-													System.Reflection.BindingFlags.NonPublic;
+			System.Reflection.BindingFlags flag = System.Reflection.BindingFlags.Instance
+												| System.Reflection.BindingFlags.Public
+												| System.Reflection.BindingFlags.NonPublic;
 
 			string postfix = gameObject.name.Replace("btn_", "");
 			string delName = "OnClick" + postfix;
@@ -77,10 +82,15 @@ namespace KHFC {
 				m_ClickFuncName = m_ClickWithParam.GetMethodInfo().ToString();
 #endif
 			} else {
-				m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info);
-				if (m_Click == null) {
+				if (info.GetParameters().Length > 0) {
+#if UNITY_EDITOR
+					if (info.GetParameters()[0].ParameterType != typeof(GameObject))
+						Util.LogError($"Click Delegate Parameter incorrect \nName : {delName}, Parent : {parent.name}");
+#endif
 					m_WithParam = true;
 					m_ClickWithParam = (DelClickWithParam)Delegate.CreateDelegate(typeof(DelClickWithParam), m_Parent, info);
+				} else {
+					m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info);
 				}
 #if UNITY_EDITOR
 				m_ClickFuncName = info.ToString();
@@ -91,14 +101,24 @@ namespace KHFC {
 				AllocHoverFunc();
 		}
 
+
+		public void RegistManualClick(DelClick actOnClick) {
+			m_UseManualFunc = true;
+			m_Click = actOnClick;
+#if UNITY_EDITOR
+			m_ClickFuncName = actOnClick.GetMethodInfo().ToString();
+			Util.Log($"Use Manual Click Function : {m_ClickFuncName/*actOnClick.Method.Name*/}");
+#endif
+		}
+
 		public void AllocHoverFunc() {
 			if (m_Parent == null) {
 				Util.LogError($"{name} doesn't have parent");
 				return;
 			}
-			System.Reflection.BindingFlags flag = System.Reflection.BindingFlags.Instance |
-													System.Reflection.BindingFlags.Public |
-													System.Reflection.BindingFlags.NonPublic;
+			System.Reflection.BindingFlags flag = System.Reflection.BindingFlags.Instance
+												| System.Reflection.BindingFlags.Public
+												| System.Reflection.BindingFlags.NonPublic;
 
 			string postfix = gameObject.name.Replace("btn_", "");
 			string delName = "OnEnter" + postfix;

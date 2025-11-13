@@ -9,6 +9,7 @@ namespace KHFC.Editor {
 		SerializedProperty m_EnableHover;
 		SerializedProperty m_OnClickSound;
 		SerializedProperty m_OnHoverSound;
+		SerializedProperty m_OnManualRegist;
 
 		SerializedProperty m_ClickFuncName;
 		SerializedProperty m_EnterFuncName;
@@ -24,6 +25,7 @@ namespace KHFC.Editor {
 		protected override void OnEnable() {
 			base.OnEnable();
 			//m_Source = (ButtonWdgt)target;
+			m_OnManualRegist = serializedObject.FindProperty("m_UseManualFunc");
 			m_EnableHover = serializedObject.FindProperty("m_EnableHover");
 			m_OnClickSound = serializedObject.FindProperty("m_OnClickSound");
 			m_OnHoverSound = serializedObject.FindProperty("m_OnHoverSound");
@@ -41,6 +43,7 @@ namespace KHFC.Editor {
 
 		public override void OnInspectorGUI() {
 			serializedObject.Update();
+			EditorGUILayout.PropertyField(m_OnManualRegist);
 			EditorGUILayout.PropertyField(m_ClickFuncName);
 			EditorGUILayout.PropertyField(m_OnClickSound);
 			if (m_OnClickSound.boolValue) {
