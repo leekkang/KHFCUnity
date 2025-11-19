@@ -232,11 +232,22 @@ namespace KHFC.Editor {
 			//}
 
 			void FindAllParticleInstance(GameObject parent,
-				ParticleSystem[] arrParticle,
-				bool isPrefab) {
+										 ParticleSystem[] arrParticle,
+										 bool isPrefab) {
 				for (int i = 0, len = arrParticle.Length; i < len; ++i) {
-					ParticleSystemRenderer psRenderer = arrParticle[i].GetComponent<ParticleSystemRenderer>();
-					if (psRenderer == null || psRenderer.sharedMaterial == null)
+					if (!arrParticle[i].TryGetComponent(out ParticleSystemRenderer psRenderer))
+						continue;
+
+					if (psRenderer.trailMaterial != null) {
+						listPS.Add(psRenderer);
+						listMatInstID.Add(psRenderer.trailMaterial.GetInstanceID());
+						if (isPrefab)
+							m_ListPrefab.Add(parent);
+						else
+							m_ListSceneObj.Add(psRenderer.gameObject);
+					}
+
+					if (psRenderer.sharedMaterial == null)
 						continue;
 
 					listPS.Add(psRenderer);
@@ -251,11 +262,20 @@ namespace KHFC.Editor {
 
 		void ReplaceAllMaterial() {
 			for (int i = 0; i < m_ListSceneParticle.Count; ++i) {
-				m_ListSceneParticle[i].sharedMaterial = m_Dest;
-				EditorUtility.SetDirty(m_ListSceneParticle[i]);
+				if (m_ListSceneParticle[i].sharedMaterial == m_Source) {
+					m_ListSceneParticle[i].sharedMaterial = m_Dest;
+					EditorUtility.SetDirty(m_ListSceneParticle[i]);
+				}
+				if (m_ListSceneParticle[i].trailMaterial == m_Source) {
+					m_ListSceneParticle[i].trailMaterial = m_Dest;
+					EditorUtility.SetDirty(m_ListSceneParticle[i]);
+				}
 			}
 			for (int i = 0; i < m_ListPrefabParticle.Count; ++i) {
-				m_ListPrefabParticle[i].sharedMaterial = m_Dest;
+				if (m_ListPrefabParticle[i].sharedMaterial == m_Source)
+					m_ListPrefabParticle[i].sharedMaterial = m_Dest;
+				if (m_ListPrefabParticle[i].trailMaterial == m_Source)
+					m_ListPrefabParticle[i].trailMaterial = m_Dest;
 			}
 			m_Source = m_Dest;
 			m_Dest = null;
