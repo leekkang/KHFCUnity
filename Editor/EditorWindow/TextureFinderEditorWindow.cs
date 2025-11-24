@@ -217,10 +217,10 @@ namespace KHFC.Editor {
 				GameObject go = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject;
 				UnityEngine.UI.Image[] arrImage = go.GetComponentsInChildren<UnityEngine.UI.Image>(true);
 				for (int j = 0, len = arrImage.Length; j < len; ++j) {
-					if (arrImage[i].mainTexture != null) {
-						listInstID.Add(arrImage[i].mainTexture.GetInstanceID());
+					if (arrImage[j].mainTexture != null) {
+						listInstID.Add(arrImage[j].mainTexture.GetInstanceID());
 						m_ListPrefab.Add(go);
-						m_ListPrefabImage.Add(arrImage[i]);
+						m_ListPrefabImage.Add(arrImage[j]);
 					}
 				}
 			}
