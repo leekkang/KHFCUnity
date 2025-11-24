@@ -7,18 +7,21 @@ using UnityEditor;
 namespace KHFC.Editor {
 	[CustomEditor(typeof(MonoBehaviour), true)]
 	public class MonoBehaviourInspector : UnityEditor.Editor {
-		[SerializeField] List<MethodInfo> m_ListMethod;
-		[SerializeField] List<string> m_ListInfo;
+		[SerializeField] protected List<MethodInfo> m_ListMethod;
+		[SerializeField] protected List<string> m_ListInfo;
 
 		void OnEnable() {
-			CreateInspectorButton();
+			GetInspectorButtonInfo();
 		}
 
 		public override void OnInspectorGUI() {
 			base.OnInspectorGUI();
 			if (Application.isBatchMode)
 				return;
+			DrawInspectorButton();
+		}
 
+		protected void DrawInspectorButton() {
 			int methodCount = m_ListMethod.Count;
 			for (int i = 0; i < methodCount; i++) {
 				var method = m_ListMethod[i];
@@ -32,7 +35,7 @@ namespace KHFC.Editor {
 			}
 		}
 
-		void CreateInspectorButton() {
+		protected void GetInspectorButtonInfo() {
 			m_ListMethod = new List<MethodInfo>();
 			m_ListInfo = new List<string>();
 
