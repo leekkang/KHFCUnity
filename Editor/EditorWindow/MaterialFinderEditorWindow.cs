@@ -200,8 +200,9 @@ namespace KHFC.Editor {
 				FindAllParticleInstance(go, arrParticle, true);
 			}
 
-			// 변환 결과 출력
+			// 3. 변환 결과 출력
 
+			// 찾은 모든 머테리얼 중 필요한 머테리얼을 가진 파티클만 남도록 리스트를 갱신한다.
 			NativeArray<GUID> arrGuid = new(listMatInstID.Count, Allocator.Temp);
 			//for (int i = 0; i < listMatInstID.Count; ++i)
 			//	arrGuid[i] = new GUID();
@@ -231,6 +232,7 @@ namespace KHFC.Editor {
 			//	Debug.Log($"Material GUID: {arrGuid[i]}");
 			//}
 
+			// 단일 오브젝트 아래의 모든 파티클을 찾아서 리스트를 채운다.
 			void FindAllParticleInstance(GameObject parent,
 										 ParticleSystem[] arrParticle,
 										 bool isPrefab) {
