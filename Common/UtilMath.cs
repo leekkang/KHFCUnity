@@ -27,7 +27,7 @@ namespace KHFC {
 		// ATan : ATan(Tan theta) = theta
 		// Atan2 : x, y 좌표를 받아서 정확한 각도를 출력해냄
 
-		/// <summary> y축 기준 <paramref name="vec"/> 와의 사이각을 반환한다. </summary>
+		/// <summary> +x축과 <paramref name="vec"/> 와의 사이각을 반환한다. (-180 ~ 180) </summary>
 		/// <remarks> 왼손좌표계 기준 반시계 방향이 + 이다 -> 왼쪽을 보고있으면 +값, 오른쪽을 보고있으면 -값을 반환한다. </remarks>
 		public static float GetLookAngle(UnityEngine.Vector2 vec) {
 			return UnityEngine.Mathf.Atan2(vec.y, vec.x) * UnityEngine.Mathf.Rad2Deg;

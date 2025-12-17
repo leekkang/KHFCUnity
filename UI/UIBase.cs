@@ -43,33 +43,27 @@ namespace KHFC {
 			OnEnableProcess();
 		}
 		void OnDisable() {
-#if UNITY_EDITOR
-			if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode &&
-				UnityEditor.EditorApplication.isPlaying)
-				return;
-#endif
-
+//#if UNITY_EDITOR
+//			if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode && !UnityEditor.EditorApplication.isPlaying)
+//				return;
+//#endif
 			if (!m_OnInitialized)
 				return;
 
 			OnDisableProcess();
 		}
 
+		/// <summary> <see cref="Init"/> 호출 이후 동작하도록 <see cref="OnEnable"/> 을 래핑하는 함수 </summary>
 		public virtual void OnEnableProcess() { }
+		/// <summary> <see cref="Init"/> 호출 이후 동작하도록 <see cref="OnDisable"/> 을 래핑하는 함수 </summary>
 		public virtual void OnDisableProcess() { }
 		public virtual void OnDestroyProcess() { }
 
 
 		protected GameObject Get(int index) => GetCachedObject(index);
-		protected GameObject Get<T>(T alias) where T : System.Enum {
-			return GetCachedObject(alias);
-		}
-		protected T Get<T>(Enum alias) where T : Component {
-			return GetCachedObject<T>(alias);
-		}
-		protected T Get<T>(int index) where T : Component {
-			return GetCachedObject<T>(index);
-		}
+		protected GameObject Get<T>(T alias) where T : System.Enum => GetCachedObject(alias);
+		protected T Get<T>(Enum alias) where T : Component => GetCachedObject<T>(alias);
+		protected T Get<T>(int index) where T : Component => GetCachedObject<T>(index);
 
 
 		/// <summary> OnClick 함수를 실행하기 전 호출하는 함수, 보통 오작동 방지를 위해 터치제한 등을 거는 용도로 사용한다 </summary>
