@@ -59,11 +59,31 @@ namespace KHFC {
 		public virtual void OnDisableProcess() { }
 		public virtual void OnDestroyProcess() { }
 
-
 		protected GameObject Get(int index) => GetCachedObject(index);
-		protected GameObject Get<T>(T alias) where T : System.Enum => GetCachedObject(alias);
-		protected T Get<T>(Enum alias) where T : Component => GetCachedObject<T>(alias);
+		protected GameObject Get<T>(T alias) where T : struct, System.Enum => GetCachedObject(alias);
 		protected T Get<T>(int index) where T : Component => GetCachedObject<T>(index);
+
+		/// <summary> 박싱 없이 컴포넌트를 추가로 가져오는 방법 - 브릿지 사용 </summary>
+		/// <remarks> "Get{Component}.At(Alias)" 형태로 사용 </remarks>
+		protected GetHelper<T> Get<T>() where T : Component => new GetHelper<T>(this);
+		protected readonly struct GetHelper<T> where T : Component {
+			readonly UIBase context;
+			public GetHelper(UIBase target) => context = target;
+
+			/// <summary> Enum을 자동추론 </summary>
+			public T At<TEnum>(TEnum alias) where TEnum : struct, System.Enum
+				=> context.GetCachedObject<T, TEnum>(alias);
+		}
+
+		/// <summary> <see cref="Get{T}(int)"/> 를 대신 사용 </summary>
+		/// <remark> 박싱 제거하고싶은데 c# 은 제네릭 부분적 추론이 안되기 때문에 어쩔수없음 </remark>
+		//protected T Get<T>(System.Enum alias) where T : Component {
+		//	int index = -1;
+		//	if (alias is IConvertible conv)
+		//		index = conv.ToInt32(null);
+
+		//	return GetCachedObject<T>(index);
+		//}
 
 
 		/// <summary> OnClick 함수를 실행하기 전 호출하는 함수, 보통 오작동 방지를 위해 터치제한 등을 거는 용도로 사용한다 </summary>

@@ -48,7 +48,8 @@ namespace KHFC {
 
 			Start();
 			Util.Log($"m_ClickFuncName : {m_ClickFuncName}");
-			Util.Log($"m_EnterFuncName : {m_EnterFuncName}");
+			if (m_EnableHover)
+				Util.Log($"m_EnterFuncName : {m_EnterFuncName}");
 			//Util.Log($"m_ExitFuncName : {m_ExitFuncName}");
 		}
 #endif
@@ -79,7 +80,7 @@ namespace KHFC {
 				m_ClickWithParam = (DelClickWithParam)Delegate.CreateDelegate(typeof(DelClickWithParam), m_Parent, "OnClickDefault", false, false);
 #if UNITY_EDITOR
 				Util.LogError($"Click Delegate has nullptr\nName : {delName}, Parent : {parent.name}");
-				m_ClickFuncName = m_ClickWithParam.GetMethodInfo().ToString();
+				m_ClickFuncName = $"{m_Parent.name} -> {m_ClickWithParam.GetMethodInfo()}";
 #endif
 			} else {
 				if (info.GetParameters().Length > 0) {
@@ -93,7 +94,7 @@ namespace KHFC {
 					m_Click = (DelClick)Delegate.CreateDelegate(typeof(DelClick), m_Parent, info);
 				}
 #if UNITY_EDITOR
-				m_ClickFuncName = info.ToString();
+				m_ClickFuncName = $"{m_Parent.name} -> {info}";
 #endif
 			}
 
@@ -130,7 +131,7 @@ namespace KHFC {
 			if (m_Enter == null)
 				Util.LogWarning($"{delName} is not founded in {m_Parent.name}");
 			else
-				m_EnterFuncName = m_Enter.GetMethodInfo().ToString();
+				m_EnterFuncName = $"{m_Parent.name} -> {m_Enter.GetMethodInfo()}";
 #endif
 
 //			delName = "OnExit" + postfix;

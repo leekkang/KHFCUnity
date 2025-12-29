@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -16,12 +15,12 @@ namespace KHFC {
 
 		/// <summary> GetComponent의 오버헤드를 줄이기 위해 컴포넌트를 캐싱하는 딕셔너리 </summary>
 		[NonSerialized]
-		Dictionary<ObjectTypeKey, Component> m_DicCachedComponent = new();
+		readonly Dictionary<ObjectTypeKey, Component> m_DicCachedComponent = new();
 
 #if UNITY_EDITOR
 		/// <summary> 해당 스크립트에서 사용할 모든 게임 오브젝트의 경로 </summary>
 		/// <remarks> key는 경로, value는 함수에서 가져오도록 등록할 이름 </remarks>
-		public Dictionary<string, int> m_DicCacheKey;
+		protected Dictionary<string, int> m_DicCacheKey;
 
 		public virtual void LoadCacheKeys() { }
 
@@ -34,33 +33,47 @@ namespace KHFC {
 		//}
 #endif
 
+		// C++의 union을 흉내 내어 박싱을 방지하는 컨버터
+		[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
+		public struct EnumConverter<T> where T : struct, System.Enum {
+			[System.Runtime.InteropServices.FieldOffset(0)] public T EnumValue;
+			[System.Runtime.InteropServices.FieldOffset(0)] public int IntValue;
+		}
+
 		/// <summary> <see cref="System.Enum"/> 타입을 인덱스로 사용해서 캐싱된 오브젝트를 찾는 함수 </summary>
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
-		public GameObject GetCachedObject<T>(T alias) where T : System.Enum {
-#if UNITY_EDITOR
+		public GameObject GetCachedObject<T>(T alias) where T : struct, System.Enum {
+//#if UNITY_EDITOR
 			if (m_ListCachedObject == null) {
 				Util.LogError($"Cached Object List is null!");
 				return null;
 			}
 
-			//int aliasIndex = Convert.ToInt32(alias);
-			int index = (int)(object)alias;
+			EnumConverter<T> converter = new() { EnumValue = alias };
+			int index = converter.IntValue;
 
-			if (m_ListCachedObject.Count > index)
+			//int index = Convert.ToInt32(alias);
+			//int index = System.Collections.Generic.EqualityComparer<T>.Default.GetHashCode(alias);
+			//int index = -1;
+			//if (alias is IConvertible convertible) {
+			//	index = convertible.ToInt32(null);
+			//}
+
+			if ((uint)index < (uint)m_ListCachedObject.Count)
 				return m_ListCachedObject[index];
-			else {
-				Util.LogError($"Cached Object is not found : {alias}");
-				return null;
-			}
-#else
-			return GetCachedObject((int)(object)alias);
-#endif
+
+			//Util.LogError($"Cached Object is not found : {alias}");
+			Util.LogError($"Cached Object is not found : " + index);
+			return null;
+//#else
+//			return GetCachedObject((int)alias);
+//#endif
 		}
 
 		/// <summary> 인덱스로 캐싱된 오브젝트를 찾는 함수 </summary>
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
 		public GameObject GetCachedObject(int index) {
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
 			if (m_ListCachedObject == null) {
 				Util.LogError($"Cached Object List is null!");
 				return null;
@@ -69,20 +82,19 @@ namespace KHFC {
 			//if (m_ListCachedObject.TryGetValue(aliasIndex, out GameObject obj))
 			if (m_ListCachedObject.Count > index)
 				return m_ListCachedObject[index];
-			else {
-				Util.LogError($"Cached Object is not found : {index}");
-				return null;
-			}
-#else
-			return m_ListCachedObject.Count > index ? m_ListCachedObject[index] : null;
-#endif
+
+			Util.LogError($"Cached Object is not found : {index}");
+			return null;
+//#else
+//			return m_ListCachedObject.Count > index ? m_ListCachedObject[index] : null;
+//#endif
 		}
 
 		/// <summary>
 		/// <see cref="System.Enum"/> 타입을 인덱스로 사용해서 캐싱된 오브젝트에 지정한 컴포넌트를 찾아 반환하는 함수
 		/// </summary>
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
-		public T GetCachedObject<T>(System.Enum alias) where T : Component {
+		public T GetCachedObject<T, TEnum>(TEnum alias) where T : Component where TEnum : struct, System.Enum {
 			GameObject cachedGo = GetCachedObject(alias);
 			if (cachedGo == null)
 				return null;
@@ -107,7 +119,7 @@ namespace KHFC {
 		}
 
 
-		readonly struct ObjectTypeKey : IEquatable<ObjectTypeKey> {
+		protected readonly struct ObjectTypeKey : IEquatable<ObjectTypeKey> {
 			public readonly GameObject Go;
 			public readonly Type Type;
 
@@ -124,7 +136,9 @@ namespace KHFC {
 
 			public override int GetHashCode() {
 				unchecked {
-					return ((Go != null ? Go.GetHashCode() : 0) * 397) ^ (Type != null ? Type.GetHashCode() : 0);
+					// GameObject의 인스턴스 ID를 사용하는 것이 메모리 주소 직접 참조보다 안전
+					int hash = (Go != null) ? Go.GetInstanceID() : 0;
+					return (hash * 397) ^ (Type != null ? Type.GetHashCode() : 0);
 				}
 			}
 		}
@@ -135,7 +149,17 @@ namespace KHFC {
 				comp = go.GetComponent<T>();
 				m_DicCachedComponent[key] = comp;
 			}
+			// Unity의 Null 체크(Object == null)와 C#의 실제 null 체크를 결합
+			if (ReferenceEquals(comp, null) || comp == null)
+				return null;
 			return (T)comp;
+
+			// 안전한 캐스팅 시도
+			T result = comp as T;
+			if (result == null)
+				Util.LogError($" Cast failed: {comp.GetType().Name} to {typeof(T).Name}");
+
+			return result;
 		}
 
 		/// <summary> 오브젝트가 파괴되거나 더 이상 필요 없을 때 캐시에서 제거 </summary>
