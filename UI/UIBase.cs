@@ -71,12 +71,22 @@ namespace KHFC {
 			public GetHelper(UIBase target) => context = target;
 
 			/// <summary> Enum을 자동추론 </summary>
-			public T At<TEnum>(TEnum alias) where TEnum : struct, System.Enum
-				=> context.GetCachedObject<T, TEnum>(alias);
+			public T At<TEnum>(TEnum alias) where TEnum : struct, System.Enum {
+				if (context == null)
+					return null;
+
+				int index = System.Collections.Generic.EqualityComparer<TEnum>.Default.GetHashCode(alias);
+
+				// 2. 이미 검증된 'int 인덱스 기반'의 제네릭 함수 호출
+				// 이 함수는 T가 Component라는 것만 알면 되므로 IL2CPP가 아주 잘 찾아갑니다.
+				return context.GetCachedObject<T>(index);
+
+				//return context.GetCachedObject<T, TEnum>(alias);
+			}
 		}
 
 		/// <summary> <see cref="Get{T}(int)"/> 를 대신 사용 </summary>
-		/// <remark> 박싱 제거하고싶은데 c# 은 제네릭 부분적 추론이 안되기 때문에 어쩔수없음 </remark>
+		/// <remarks> 박싱 제거하고싶은데 c# 은 제네릭 부분적 추론이 안되기 때문에 어쩔수없음 </remarks>
 		//protected T Get<T>(System.Enum alias) where T : Component {
 		//	int index = -1;
 		//	if (alias is IConvertible conv)

@@ -34,11 +34,12 @@ namespace KHFC {
 #endif
 
 		// C++의 union을 흉내 내어 박싱을 방지하는 컨버터
-		[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
-		public struct EnumConverter<T> where T : struct, System.Enum {
-			[System.Runtime.InteropServices.FieldOffset(0)] public T EnumValue;
-			[System.Runtime.InteropServices.FieldOffset(0)] public int IntValue;
-		}
+		// 제네릭으로 사용불가! Explicit을 사용하려면 무조건 컴파일 타임에 크기가 결정되어야 한다!
+		//[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
+		//public struct EnumConverter<T> where T : struct, System.Enum {
+		//	[System.Runtime.InteropServices.FieldOffset(0)] public T EnumValue;
+		//	[System.Runtime.InteropServices.FieldOffset(0)] public int IntValue;
+		//}
 
 		/// <summary> <see cref="System.Enum"/> 타입을 인덱스로 사용해서 캐싱된 오브젝트를 찾는 함수 </summary>
 		/// <remarks> <see cref="LoadCacheKeys()"/> 함수에서 필요한 오브젝트의 경로를 지정한다. </remarks>
@@ -49,15 +50,14 @@ namespace KHFC {
 				return null;
 			}
 
-			EnumConverter<T> converter = new() { EnumValue = alias };
-			int index = converter.IntValue;
-
 			//int index = Convert.ToInt32(alias);
-			//int index = System.Collections.Generic.EqualityComparer<T>.Default.GetHashCode(alias);
+			int index = System.Collections.Generic.EqualityComparer<T>.Default.GetHashCode(alias);
 			//int index = -1;
 			//if (alias is IConvertible convertible) {
 			//	index = convertible.ToInt32(null);
 			//}
+			//EnumConverter<T> converter = new() { EnumValue = alias };
+			//int index = converter.IntValue;
 
 			if ((uint)index < (uint)m_ListCachedObject.Count)
 				return m_ListCachedObject[index];
