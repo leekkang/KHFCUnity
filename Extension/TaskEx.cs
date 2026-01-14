@@ -8,15 +8,20 @@ using System.Threading.Tasks;
 #endif
 
 internal static class TaskEx {
-	public static void CancelAndDispose(this CancellationTokenSource cts) {
+	public static void SafeCancelAndDispose(this CancellationTokenSource cts) {
 		if (cts == null)
 			return;
-		try { cts.Cancel(); } catch { }
-		cts.Dispose();
+		try {
+			if (!cts.IsCancellationRequested)
+				cts.Cancel();
+		} catch {
+		} finally {
+			cts.Dispose();
+		}
 	}
 
 	/// <summary> 특정 시간 후 자동 취소 설정 (CancelAfter 대체용) </summary>
-	public static void CancelAfterSafe(this CancellationTokenSource cts, int milliseconds) {
+	public static void SafeCancelAfter(this CancellationTokenSource cts, int milliseconds) {
 		if (cts == null)
 			return;
 		if (milliseconds <= 0) {
