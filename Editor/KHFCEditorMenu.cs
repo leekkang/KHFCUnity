@@ -271,6 +271,20 @@ namespace KHFC.Editor {
 				&& (arrGUID != null && arrGUID.Length > 0);
 		}
 
+
+		/// <summary>
+		/// 선택한 스크립트를 사용하는 모든 오브젝트(씬/프리팹)를 찾는 함수
+		/// </summary>
+		[MenuItem("Assets/KHFC/Find All Objects That Use This Script", priority = (int)MenuPriority.Assets)]
+		public static void FindAllObjectsThatUseThisScript() {
+			ScriptFinderEditorWindow.ShowWindow(Selection.activeObject as MonoScript);
+		}
+		[MenuItem("Assets/KHFC/Find All Objects That Use This Script", isValidateFunction: true)]
+		static bool ValidateFindAllObjectsThatUseThisScript() {
+			// 선택된 객체가 MonoScript(스크립트 파일)일 때만 메뉴를 활성화합니다.
+			return Selection.activeObject is MonoScript;
+		}
+
 		/// <summary>
 		/// 선택한 머테리얼을 사용하는 모든 파티클을 찾는 함수
 		/// </summary>

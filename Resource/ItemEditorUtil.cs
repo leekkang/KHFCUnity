@@ -1,18 +1,24 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace KHFC {
 //	public static class ItemEditorUtil {
-//		const string ITEM_MATERIAL_PATH = "Assets/Media/Materials/SpriteMaterial.mat";
+//		const string ITEM_MATERIAL_PATH = "Assets/Media/Material/SpriteMaterial.mat";
 
 //		/// <summary>
 //		/// 자동으로 대상 오브젝트에 사용하는 스프라이트들을 링크하고 <see cref="SpriteRenderer"/> 오브젝트들을 생성해주는 함수
 //		/// </summary>
 //		public static void AutoSetItemSprite<T>(T item, string path, string prefix, Transform parentTr) where T : Item {
 //#if UNITY_EDITOR
+//			UnityEditor.Undo.SetCurrentGroupName($"Auto Set Item Sprite: {item.name}");
+//			int undoGroup = UnityEditor.Undo.GetCurrentGroup();
+
 //			Transform parent = parentTr != null ? parentTr : item.transform;
 //			//Transform parent = parentTr ?? item.transform;
+
+//			UnityEditor.Undo.RecordObject(item, "Update Item Data");
 
 //			// 아이템에 사용하는 머테리얼을 가져온다.
 //			Material mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(ITEM_MATERIAL_PATH);
@@ -27,29 +33,39 @@ namespace KHFC {
 //				name = name.Replace(prefix, "spr_");
 
 //				SpriteRenderer renderer = GetRendererObject(name, parent);
+//				UnityEditor.Undo.RecordObject(renderer, "Update Renderer");
 //				renderer.material = mat;
 //				renderer.sprite = arrSprite[i];
+//				UnityEditor.EditorUtility.SetDirty(renderer);
 
 //				listRenderer.Add(renderer);
 //			}
 
 //			// 스프라이트 렌더러 리스트를 아이템에 저장
-//			item.m_ListSpriteRenderer = listRenderer.ToArray();
+//			item.m_ArrRenderer = listRenderer.ToArray();
 
 //			Debug.Log($"==== {typeof(T)} Setting is Finished ====");
 
-//			UnityEditor.EditorUtility.SetDirty(item.gameObject);
-//			UnityEditor.AssetDatabase.Refresh();
+//			UnityEditor.EditorUtility.SetDirty(item);
+//			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(item.gameObject);
+
+//			UnityEditor.Undo.CollapseUndoOperations(undoGroup);
 //#endif
 //		}
+
 //		/// <summary>
 //		/// 자동으로 대상 오브젝트에 사용하는 스프라이트들을 링크하고 <see cref="SpriteRenderer"/> 오브젝트들을 생성해주는 함수
 //		/// </summary>
 //		/// <remarks> 패널은 m_ListSpriteRendererer를 1개만 등록한다. 스프라이트 자체를 교체하는 경우가 많기 때문 </remarks>
 //		public static void AutoSetPanelSprite<T>(T panel, string path, string prefix, Transform parentTr) where T : Panel {
 //#if UNITY_EDITOR
+//			UnityEditor.Undo.SetCurrentGroupName($"Auto Set Panel Sprite: {panel.name}");
+//			int undoGroup = UnityEditor.Undo.GetCurrentGroup();
+
 //			Transform parent = parentTr != null ? parentTr : panel.transform;
 //			//Transform parent = parentTr ?? item.transform;
+
+//			UnityEditor.Undo.RecordObject(panel, "Update Panel Data");
 
 //			// 아이템에 사용하는 머테리얼을 가져온다.
 //			Material mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(ITEM_MATERIAL_PATH);
@@ -61,14 +77,18 @@ namespace KHFC {
 //				name = name.Replace(prefix, "spr_");
 
 //				SpriteRenderer renderer = GetRendererObject(name, parent);
+//				UnityEditor.Undo.RecordObject(renderer, "Update Renderer");
 //				renderer.material = mat;
 //				renderer.sprite = arrSprite[i];
+//				UnityEditor.EditorUtility.SetDirty(renderer);
 //			}
 
 //			Debug.Log($"==== {typeof(T)} Setting is Finished ====");
 
-//			UnityEditor.EditorUtility.SetDirty(panel.gameObject);
-//			UnityEditor.AssetDatabase.Refresh();
+//			UnityEditor.EditorUtility.SetDirty(panel);
+//			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(panel.gameObject);
+
+//			UnityEditor.Undo.CollapseUndoOperations(undoGroup);
 //#endif
 //		}
 
@@ -83,11 +103,15 @@ namespace KHFC {
 //		/// <param name="prefix"> 이미지가 공통으로 사용하는 접두사. 해당 이미지만 로드 </param>
 //		/// <param name="parentTr"> 렌더러 오브젝트를 붙일 부모 오브젝트 </param>
 //		/// <param name="isSpriteAnimation"> 스프라이트 애니메이션을 사용하는 경우 true </param>
-//		public static void AutoSetSpriteWithColor<T>(T item, string path, string prefix, Transform parentTr,
-//			bool isSpriteAnimation) where T : Item {
+//		public static void AutoSetSpriteWithColor<T>(T item, string path, string prefix, Transform parentTr, bool isSpriteAnimation) where T : Item {
 //#if UNITY_EDITOR
+//			UnityEditor.Undo.SetCurrentGroupName($"Auto Set Sprite With Color: {item.name}");
+//			int undoGroup = UnityEditor.Undo.GetCurrentGroup();
+
 //			Transform parent = parentTr != null ? parentTr : item.transform;
 //			//Transform parent = parentTr ?? item.transform;
+
+//			UnityEditor.Undo.RecordObject(item, "Update Item Data");
 
 //			// 아이템에 사용하는 머테리얼을 가져온다.
 //			Material mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(ITEM_MATERIAL_PATH);
@@ -116,6 +140,8 @@ namespace KHFC {
 //			Sprite[] arrSprite = KHFC.AssetUtility.LoadAllSprites(path);
 //			for (int i = 0; i < arrSprite.Length; i++) {
 //				string name = arrSprite[i].name;
+//				if (name.Length < prefix.Length)
+//					continue;
 //				int colorNum = GetColorNumber(name[prefix.Length..]);
 
 //				// 스프라이트 애니메이션은 렌더러가 1개만 있으면 된다.
@@ -126,8 +152,10 @@ namespace KHFC {
 //					name = "spr_" + name[(prefix.Length + (colorNum == 0 ? 0 : 3))..];
 
 //				SpriteRenderer renderer = GetRendererObject(name, parent);
+//				UnityEditor.Undo.RecordObject(renderer, "Update Renderer");
 //				renderer.material = mat;
 //				renderer.sprite = arrSprite[i];
+//				UnityEditor.EditorUtility.SetDirty(renderer);
 
 //				if (colorNum == 0)
 //					listNonColorSprite.Add(renderer);
@@ -144,20 +172,26 @@ namespace KHFC {
 //			// 논컬러 스프라이트를 렌더러 배열에 추가한다
 //			listRenderer.AddRange(listNonColorSprite);
 //			// 스프라이트 렌더러 리스트를 아이템에 저장
-//			item.m_ListSpriteRenderer = listRenderer.ToArray();
+//			item.m_ArrRenderer = listRenderer.ToArray();
 
 //			Debug.Log($"==== {typeof(T)} Setting is Finished ====");
 
-//			UnityEditor.EditorUtility.SetDirty(item.gameObject);
-//			UnityEditor.AssetDatabase.Refresh();
+//			UnityEditor.EditorUtility.SetDirty(item);
+//			UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(item.gameObject);
+
+//			UnityEditor.Undo.CollapseUndoOperations(undoGroup);
 //#endif
 //		}
 
+//		// 에디터의 계층구조 뷰의 "Create Empty" 커맨드가 수행하는 함수와 비슷한 코드를 사용한 함수
 
-//		/// <summary> 에디터의 계층구조 뷰의 "Create Empty" 커맨드가 수행하는 함수와 비슷한 코드를 사용한 함수 </summary>
-//		public static GameObject CreateGameObject(string name, Transform parent) {
+//		/// <summary> 명시적인 Undo 트래킹을 지원하는 오브젝트 생성 함수 </summary>
+//		static GameObject CreateGameObject(string name, Transform parent) {
 //#if UNITY_EDITOR
-//			GameObject go = UnityEditor.ObjectFactory.CreateGameObject(name);
+//			//GameObject go = UnityEditor.ObjectFactory.CreateGameObject(name);
+//			GameObject go = new GameObject(name);
+//			UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create Obj: " + name);
+
 //			UnityEditor.Undo.SetTransformParent(go.transform, parent, "Reparenting");
 
 //			go.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
@@ -184,12 +218,12 @@ namespace KHFC {
 //			if (target != null) {
 //				// 같은 이름을 가진 오브젝트가 존재할 경우 컴포넌트를 붙인다.
 //				if (!target.TryGetComponent(out renderer))
-//					renderer = target.gameObject.AddComponent<SpriteRenderer>();
+//					renderer = UnityEditor.Undo.AddComponent<SpriteRenderer>(target.gameObject);
 //				return renderer;
 //			}
 
 //			GameObject newObj = CreateGameObject(name, parent);
-//			renderer = newObj.AddComponent<SpriteRenderer>();
+//			renderer = UnityEditor.Undo.AddComponent<SpriteRenderer>(newObj);
 
 //			return renderer;
 //		}
