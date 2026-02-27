@@ -207,7 +207,7 @@ namespace KHFC {
 //#endif
 //		}
 
-
+//#if UNITY_EDITOR
 //		/// <summary> <see cref="SpriteRenderer"/> 오브젝트를 찾아서 반환한다. 없으면 생성한다. </summary>
 //		/// <param name="name"></param>
 //		/// <param name="parent"></param>
@@ -227,5 +227,6 @@ namespace KHFC {
 
 //			return renderer;
 //		}
+//#endif
 //	}
 }
