@@ -3,7 +3,7 @@ using UnityEngine;
 using PrimeTween;
 
 namespace KHFC {
-	public class PositionTweenPlayer : BaseRandomTweenPlayer {
+	public class ScaleTweenPlayer : BaseRandomTweenPlayer {
 		public Transform[] m_ArrTarget;
 		public TweenSettings<Vector3> m_Setting;
 
@@ -33,7 +33,7 @@ namespace KHFC {
 				);
 			}
 
-			return Tween.LocalPosition(target, finalSettings);
+			return Tween.Scale(target, finalSettings);
 		}
 
 		protected override void SaveDefaultValue() {
@@ -43,7 +43,7 @@ namespace KHFC {
 			m_ArrDefaultValue = new Vector3[m_ArrTarget.Length];
 			for (int i = 0; i < m_ArrTarget.Length; i++) {
 				if (m_ArrTarget[i] != null)
-					m_ArrDefaultValue[i] = m_ArrTarget[i].localPosition;
+					m_ArrDefaultValue[i] = m_ArrTarget[i].localScale;
 			}
 		}
 
@@ -53,7 +53,7 @@ namespace KHFC {
 
 			for (int i = 0; i < m_ArrTarget.Length; i++) {
 				if (m_ArrTarget[i] != null && i < m_ArrDefaultValue.Length)
-					m_ArrTarget[i].localPosition = m_ArrDefaultValue[i];
+					m_ArrTarget[i].localScale = m_ArrDefaultValue[i];
 			}
 		}
 	}
