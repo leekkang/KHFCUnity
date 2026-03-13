@@ -31,7 +31,7 @@ namespace KHFC {
 		public bool initialized => m_OnInitialized;
 
 
-		/// <summary> 해당 UI의 초기화에 필요한 정보를 로드하는 함수 </summary>
+		/// <summary> 해당 UI의 초기화에 필요한 정보를 로드하는 함수, 오버라이드 시 base 함수를 호출해야 한다 </summary>
 		public virtual void Init() {
 			m_OnInitialized = true;
 		}
@@ -77,10 +77,8 @@ namespace KHFC {
 
 				int index = System.Collections.Generic.EqualityComparer<TEnum>.Default.GetHashCode(alias);
 
-				// 2. 이미 검증된 'int 인덱스 기반'의 제네릭 함수 호출
-				// 이 함수는 T가 Component라는 것만 알면 되므로 IL2CPP가 아주 잘 찾아갑니다.
+				// 이 함수는 T가 Component라는 것만 알면 되므로 IL2CPP가 잘 찾아감
 				return context.GetCachedObject<T>(index);
-
 				//return context.GetCachedObject<T, TEnum>(alias);
 			}
 		}
