@@ -155,7 +155,7 @@ namespace KHFC {
 			m_Parent.OnPreClickDefault();
 
 			if (m_OnClickSound)
-				SoundMgr.inst.PlayEfx(m_ClickSoundName, m_ClickSoundVolume);
+				SoundMgr.instance.PlayEfx(m_ClickSoundName, m_ClickSoundVolume);
 
 			if (m_WithParam)
 				m_ClickWithParam(this.gameObject);
@@ -177,7 +177,7 @@ namespace KHFC {
 				return;
 
 			if (m_OnHoverSound)
-				SoundMgr.inst.PlayEfx(m_HoverSoundName, m_HoverSoundVolume);
+				SoundMgr.instance.PlayEfx(m_HoverSoundName, m_HoverSoundVolume);
 
 			m_Enter(this.gameObject);
 		}

@@ -75,7 +75,7 @@ namespace KHFC {
 			base.OnPointerEnter(eventData);
 
 			if (m_OnHoverSound)
-				SoundMgr.inst.PlayEfx(m_HoverSoundName, m_HoverSoundVolume);
+				SoundMgr.instance.PlayEfx(m_HoverSoundName, m_HoverSoundVolume);
 
 			m_Enter(this.gameObject);
 		}

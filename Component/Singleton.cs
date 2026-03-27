@@ -5,7 +5,7 @@ namespace KHFC {
 		static T m_Instance;
 		static readonly object _lockObj = new();
 
-		public static T inst {
+		public static T instance {
 			get {
 				if (ApplicationIsQuitting) {
 					Debug.LogWarning("[Singleton] Instance '" + typeof(T) +
@@ -16,7 +16,7 @@ namespace KHFC {
 
 				lock (_lockObj) {
 					if (m_Instance == null) {
-						m_Instance = (T)FindObjectOfType(typeof(T));
+						m_Instance = (T)FindFirstObjectByType(typeof(T));
 
 						if (m_Instance == null) {
 							// Need to create a new GameObject to attach the singleton to
@@ -27,7 +27,7 @@ namespace KHFC {
 							DontDestroyOnLoad(obj);
 						}
 
-						if (FindObjectsOfType(typeof(T)).Length > 1) {
+						if (FindObjectsByType(typeof(T), FindObjectsSortMode.None).Length > 1) {
 							Debug.LogError("[Singleton] Something went really wrong " +
 											" - there should never be more than 1 Singleton!" +
 											" Reopenning the scene might fix it.");

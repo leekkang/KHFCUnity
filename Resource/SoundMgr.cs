@@ -31,7 +31,7 @@ namespace KHFC {
 				m_Source = null;
 				m_IgnoreTimescale = false;
 				if (m_CoEnd != null)
-					SoundMgr.inst.StopCoroutine(m_CoEnd);
+					SoundMgr.instance.StopCoroutine(m_CoEnd);
 				m_CoEnd = null;
 				if (m_Token != null) {
 					m_Token.Cancel();
@@ -155,7 +155,7 @@ namespace KHFC {
 			if (m_ListEfx.TryGetValue(out SoundSource sound, item => item.m_Name == name))
 				StopEfx(sound, true);
 			else
-				PoolMgr.inst.UnLoadObject(name);
+				PoolMgr.instance.UnLoadObject(name);
 		}
 
 		public void CleanEfx() {
@@ -242,10 +242,10 @@ namespace KHFC {
 		}
 
 		GameObject SpawnSound(string name, Vector3 pos = default, Transform parent = null) {
-			return PoolMgr.inst.SpawnGameObject(name, parent, pos, type: AssetType.Audio);
+			return PoolMgr.instance.SpawnGameObject(name, parent, pos, type: AssetType.Audio);
 		}
 		void SpawnSoundAsync(string name, System.Action<GameObject> actOnAfter, Vector3 pos = default, Transform parent = null) {
-			PoolMgr.inst.SpawnGameObjectAsync(name, actOnAfter, parent, pos, type: AssetType.Audio);
+			PoolMgr.instance.SpawnGameObjectAsync(name, actOnAfter, parent, pos, type: AssetType.Audio);
 		}
 
 		void AfterSpawn(GameObject obj, bool isEfx = true) {
@@ -256,7 +256,7 @@ namespace KHFC {
 
 				m_ListEfx.Add(sound);
 			}
-			PoolMgr.inst.DespawnObject(obj);
+			PoolMgr.instance.DespawnObject(obj);
 		}
 
 		void PlayEfx(string name, float delay, float volume, Vector3 pos, Transform parent, float startTime, bool ignoreScale) {
@@ -463,9 +463,9 @@ namespace KHFC {
 				return;
 
 			if (unloadObject)
-				PoolMgr.inst.UnLoadObject(audioSource.name);
+				PoolMgr.instance.UnLoadObject(audioSource.name);
 			else
-				PoolMgr.inst.DespawnObject(audioSource.gameObject);
+				PoolMgr.instance.DespawnObject(audioSource.gameObject);
 		}
 
 		SoundSource GetSoundSource() {

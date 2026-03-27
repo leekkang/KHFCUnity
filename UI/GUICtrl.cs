@@ -83,7 +83,7 @@ namespace KHFC {
 			if (TryCheckRegist(panelType, ref address, out AbstractPanel panel))
 				return panel;
 
-			GameObject go = PoolMgr.inst.CreateGameObject(address, activeEnable:false);
+			GameObject go = PoolMgr.instance.CreateGameObject(address, activeEnable:false);
 			_RegistProcess(go, panelType);
 			m_OnAfterCreatePanel?.Invoke(panel);
 
@@ -109,7 +109,7 @@ namespace KHFC {
 			if (TryCheckRegist(panelType, ref address, out AbstractPanel panel))
 				return panel;
 
-			GameObject go = await PoolMgr.inst.CreateGameObjectAsync(address, activeEnable: false);
+			GameObject go = await PoolMgr.instance.CreateGameObjectAsync(address, activeEnable: false);
 			_RegistProcess(go, panelType);
 			m_OnAfterCreatePanel?.Invoke(panel);
 
@@ -125,7 +125,7 @@ namespace KHFC {
 				return;
 			}
 
-			PoolMgr.inst.CreateGameObjectAsync(address, (go) => {
+			PoolMgr.instance.CreateGameObjectAsync(address, (go) => {
 				_RegistProcess(go, panelType);
 				m_OnAfterCreatePanel?.Invoke(panel);
 			}, activeEnable: false);
@@ -162,7 +162,7 @@ namespace KHFC {
 		public void UnregistPanel(int panelType) {
 			if (m_DicPanel.TryGetValue(panelType, out AbstractPanel panel)) {
 				panel.OnDestroyProcess();
-				PoolMgr.inst.ReleaseAsset(m_DicPanel[panelType].gameObject);
+				PoolMgr.instance.ReleaseAsset(m_DicPanel[panelType].gameObject);
 				m_DicPanel.Remove(panelType);
 			}
 		}
